@@ -217,12 +217,12 @@ def add_object(object_type):
         new = Question(quiz_id=request.form['quiz_id'])
         db.add(new)
         db.commit()
-        return new
+        return {'id':new.id}
     elif object_type == 'option':
         new = Option(question_id=request.form['question_id'])
         db.add(new)
         db.commit()
-        return new
+        return {'id':new.id}
 
 # app routes end
 
