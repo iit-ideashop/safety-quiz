@@ -1,6 +1,7 @@
 # imports
+import os
 from flask import Flask, request, session, g, redirect, url_for, render_template, abort, flash, get_flashed_messages, \
-    jsonify
+    jsonify, send_from_directory
 from flask_bootstrap import Bootstrap
 import sqlalchemy as sa
 from sqlalchemy.orm import relationship, scoped_session, sessionmaker, joinedload
@@ -11,12 +12,17 @@ from typing import Optional, Tuple, List, Callable, Union
 import decimal
 import json
 from multidict import MultiDict
+from werkzeug.utils import secure_filename
 
 # app setup
 app = Flask(__name__, static_url_path='/static', static_folder='static')  # create the application instance :)
 app.config.from_object(__name__)
 app.config.from_pyfile('config.cfg')
 app.config.from_envvar('FLASKR_SETTINGS', silent=True)
+
+UPLOAD_FOLDER = 'static/images'
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 # application
 Bootstrap(app)
@@ -120,6 +126,34 @@ def index():
     else:
         return render_template('index.html', available=available)
 
+@app.route('/admin/upload', methods=['GET','POST'])
+def upload_file():
+    if request.method == 'POST':
+        # check if the post request has the file part
+        if 'file' not in request.files:
+            flash('No file part')
+            return redirect(url_for('index'))
+        file = request.files['file']
+        # if user does not select file, browser also
+        # submit an empty part without filename
+        if file.filename == '':
+            flash('No selected file')
+            return redirect(url_for('index'))
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            return redirect(url_for('uploaded_file',
+                                   filename=filename))
+
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+@app.route('/uploads/<filename>')
+def uploaded_file(filename):
+    return send_from_directory(app.config['UPLOAD_FOLDER'],
+                               filename)
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -183,7 +217,6 @@ def edit_quiz(id):
             questions = db.query(Question).filter_by(quiz_id=id).all()
             return render_template('admin/quiz.html', questions=questions)
         elif request.method == 'POST':
-            print(request.form)
             form_data = MultiDict()
             form_data.extend({'question':{}})
             form_data.extend({'option':{}})
@@ -193,7 +226,6 @@ def edit_quiz(id):
                     form_data[line_data[0]].update({line_data[1]:{line_data[2]:each[1]}})
                 else:
                     form_data[line_data[0]][line_data[1]].update({line_data[2]:each[1]})
-            print(form_data['option'])
             for question_id in form_data['question']:
                 if db.query(Question).filter_by(id=question_id):
                     db.merge(Question(id=question_id,
@@ -206,6 +238,17 @@ def edit_quiz(id):
                 if db.query(Option).filter_by(id=option_id):
                     db.merge(Option(id=option_id,
                                     text=form_data['option'][option_id]['text']))
+            for file in request.files:
+                if request.files[file] and allowed_file(request.files[file].filename):
+                    print("New file %s: %s" % (file,request.files[file]))
+                    object_data=file.split("_")
+                    filename = secure_filename(request.files[file].filename)
+                    request.files[file].save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+                    path = url_for('uploaded_file', filename=filename)
+                    if object_data[0] == 'question':
+                        db.merge(Question(id=object_data[1], image=path))
+                    elif object_data[0] == 'option':
+                        db.merge(Option(id=object_data[1], image=path))
             db.commit()
             return redirect(url_for('edit_quiz', id=id))
     else: return redirect(url_for('index'))
@@ -229,7 +272,6 @@ def add_object(object_type):
 @app.teardown_appcontext
 def close_db(error):
     db_session.remove()
-
 
 # end teardown
 
