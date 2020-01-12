@@ -25,7 +25,7 @@ Bootstrap(app)
 engine = sa.create_engine(app.config['DB'], pool_recycle=3600, encoding='utf-8')
 Base = declarative_base()
 
-
+# Quiz App Model
 class User(Base):
     __tablename__ = 'users'
     sid = sa.Column(sa.Integer, primary_key=True, autoincrement=False, nullable=False)
@@ -104,6 +104,10 @@ class HasRemoveMethod:
 # create tables if they don't exist & define db_sessions
 db_session: Union[Callable[[], sa.orm.Session], HasRemoveMethod] = scoped_session(sessionmaker(bind=engine))
 Base.metadata.create_all(engine)
+
+
+# CheckIn App Model Subset
+
 
 @app.before_request
 def before_request():

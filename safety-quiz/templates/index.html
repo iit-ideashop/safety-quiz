@@ -2,36 +2,46 @@
 {% block page %}
 <h3>Hello {{session['email'] }}</h3>
 <div class="card">
-    <div class="card-header">
-       Available Quizes:
-    </div>
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th scope="col">Quiz</th>
-                <th scope="col">Score</th>
-                <th scope="col">Last Taken</th>
-                <th scope="col"></th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for each in available %}
-            <tr>
-                <th scope="row">{{each.quiz.name}}</th>
-                <td>{{each.last_score}}
-                    {% if each.last_score == 100 %}
-                        Pass
-                        <!--#TODO Pass Mark-->
-                    {% else %}
-                        Fail
-                        <!--TODO Fail Mark-->
-                    {% endif %}
-                </td>
-                <td>{{each.last_taken}}</td>
-                <td><a class="btn btn-primary btn-sm" href="{{url_for('quiz', id=each.quiz_id)}}" role="button">Take the Quiz</a></td>
-            </tr>
-           {% endfor %}
-        </tbody>
-    </table>
+    {% if available %}
+        <div class="card-header">
+           Available Quizes:
+        </div>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th scope="col">Quiz</th>
+                    <th scope="col">Score</th>
+                    <th scope="col">Last Taken</th>
+                    <th scope="col"></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for each in available %}
+                <tr>
+                    <th scope="row">{{each.quiz.name}}</th>
+                    <td>{{each.last_score}}
+                        {% if each.last_score == 100 %}
+                            Pass
+                            <!--#TODO Pass Mark-->
+                        {% else %}
+                            Fail
+                            <!--TODO Fail Mark-->
+                        {% endif %}
+                    </td>
+                    <td>{{each.last_taken}}</td>
+                    <td><a class="btn btn-primary btn-sm" href="{{url_for('quiz', id=each.quiz_id)}}" role="button">Take the Quiz</a></td>
+                </tr>
+               {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <div class="card-header">
+            No quizzes available
+        </div>
+        <div class="card-body">
+            <p>You don't have any quizzes assigned for now. We typically assign a review quiz one week after
+                safety training. You will receive an email at your IIT email address once it's assigned.</p>
+        </div>
+    {% endif %}
 </div>
 {% endblock %}
