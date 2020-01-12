@@ -1,0 +1,25 @@
+{% extends 'layout.html' %}
+{% block page %}
+<h1>{{questions[0].quiz.name}} Quiz</h1>
+<form method="post" href="{{url_for('quiz',id=questions[0].quiz.id)}}">
+{% for question in questions %}
+    <div class="card" style="margin:1em;">
+        <div class="card-header">
+            <h3>{{question.prompt}}</h3>
+            <h6>{{question.description}}</h6>
+        </div>
+        <div class="card-body">
+            {% for option in question.option %}
+                <div class="form-check">
+                    <input class="form-check-input" type="{{question.option_type}}" name="{{question.id}}" value="{{option.id}}" id="{{option.id}}">
+                    <label class="form-check-label" for="{{option.id}}">
+                        {{option.text}}
+                    </label>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endfor %}
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+{% endblock %}
