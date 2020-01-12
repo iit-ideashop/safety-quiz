@@ -2,9 +2,9 @@
 {% block page %}
 <h3>Hello {{session['email'] }}</h3>
 <div class="card">
-    {% if available %}
+    {% if available | length > 0 %}
         <div class="card-header">
-           Available Quizes:
+           Available quizzes
         </div>
         <table class="table table-striped">
             <thead>

@@ -1,7 +1,9 @@
 # imports
+import fontawesome as fontawesome
 from flask import Flask, request, session, g, redirect, url_for, render_template, abort, flash, get_flashed_messages, \
     jsonify
 from flask_bootstrap import Bootstrap
+from flask_fontawesome import FontAwesome
 import sqlalchemy as sa
 from sqlalchemy.orm import relationship, scoped_session, sessionmaker, joinedload
 from sqlalchemy.ext.declarative import declarative_base
@@ -20,6 +22,7 @@ app.config.from_envvar('FLASKR_SETTINGS', silent=True)
 
 # application
 Bootstrap(app)
+FontAwesome(app)
 
 # DB Setup
 engine = sa.create_engine(app.config['DB'], pool_recycle=3600, encoding='utf-8')
@@ -106,14 +109,12 @@ db_session: Union[Callable[[], sa.orm.Session], HasRemoveMethod] = scoped_sessio
 Base.metadata.create_all(engine)
 
 
-# CheckIn App Model Subset
-
-
 @app.before_request
 def before_request():
     if 'sid' not in session \
             and request.endpoint != 'login':
         return redirect(url_for('login'))
+
 
 @app.route('/')
 def index():
@@ -123,6 +124,7 @@ def index():
         return render_template('admin/index.html', available=available)
     else:
         return render_template('index.html', available=available)
+
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -139,10 +141,12 @@ def login():
     else:
         return render_template('login.html')
 
+
 @app.route('/logout')
 def logout():
     session.clear()
     return redirect(url_for('index'))
+
 
 @app.route('/quiz/<id>', methods=['GET','POST'])
 def quiz(id):
@@ -179,6 +183,7 @@ def quiz(id):
         flash(("Score: %s/%s aka %s%%" % (quiz_current_score,quiz_max_score,((quiz_current_score/quiz_max_score)*100))), 'info')
         return redirect(url_for('index'))
 
+
 @app.route('/edit_quiz/<id>', methods=['GET','POST'])
 def edit_quiz(id):
     db = db_session()
@@ -214,6 +219,7 @@ def edit_quiz(id):
             return redirect(url_for('edit_quiz', id=id))
     else: return redirect(url_for('index'))
 
+
 @app.route('/admin/api/add/<object_type>', methods=['POST'])
 def add_object(object_type):
     db = db_session()
@@ -229,6 +235,7 @@ def add_object(object_type):
         return {'id':new.id}
 
 # app routes end
+
 
 @app.teardown_appcontext
 def close_db(error):
