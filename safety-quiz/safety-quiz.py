@@ -205,7 +205,7 @@ def quiz(id):
             if question_max_score == question_current_score:
                 quiz_current_score += 1.0
         quiz_percent = ((quiz_current_score/quiz_max_score)*100)
-        quiz = db.query(UserQuizzes).filter_by(user_id=session['sid']).one()
+        quiz = db.query(UserQuiz).filter_by(user_id=session['sid']).one()
         quiz.last_score = quiz_percent
         quiz.last_taken = sa.func.now()
         db.commit()
