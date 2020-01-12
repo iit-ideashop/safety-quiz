@@ -1,0 +1,17 @@
+{% extends 'layout.html' %}
+{% block page %}
+<div class="card card-default">
+    <div class="card-header">
+        Login
+    </div>
+    <div class="card-body">
+        <form action="/login" method="post">
+            <div class="form-group">
+                <label for="email">IIT Email</label>
+                <input type="email" id="email" name="email" required/>
+            </div>
+            <input type="submit" value="Login" class="btn btn-primary"/>
+        </form>
+    </div>
+</div>
+{% endblock %}
