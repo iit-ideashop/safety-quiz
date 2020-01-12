@@ -30,7 +30,7 @@
                 </td>
                 <td>{{each.last_taken}}</td>
                 <td><a class="btn btn-primary btn-sm" href="{{url_for('quiz', id=each.quiz_id)}}" role="button">Take the Quiz</a></td>
-                <td><a class="btn btn-primary btn-sm" href="{{url_for('quiz', id=each.quiz_id)}}" role="button">Edit Quiz</a></td>
+                <td><a class="btn btn-primary btn-sm" href="{{url_for('edit_quiz', id=each.quiz_id)}}" role="button">Edit Quiz</a></td>
             </tr>
            {% endfor %}
         </tbody>

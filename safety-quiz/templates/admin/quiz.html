@@ -1,25 +1,32 @@
 {% extends 'layout.html' %}
 {% block page %}
-<h1>{{questions[0].quiz.name}} Quiz</h1>
-<form method="post" href="{{url_for('quiz',id=questions[0].quiz.id)}}">
+<h1>Editing: {{questions[0].quiz.name}} Quiz</h1>
+<form method="post" href="{{url_for('edit_quiz',id=questions[0].quiz.id)}}">
 {% for question in questions %}
     <div class="card" style="margin:1em;">
         <div class="card-header">
-            <h3>{{question.prompt}}</h3>
-            <h6>{{question.description}}</h6>
+            <h3>Prompt: <input type="text" value="{{question.prompt}}" name="question_{{question.id}}_prompt"</h3>
+            <div class="form-group">
+                <label for="question_{{question.id}}_description">Description:</label>
+                <textarea class="form-control" id ="question_{{question.id}}_description" name="question_{{question.id}}_description" rows="2">{{question.description}}</textarea>
+            </div>
         </div>
         <div class="card-body">
             {% for option in question.option %}
-                <div class="form-check">
+                <div class="form-check" style="margin:0.25em;">
                     <input class="form-check-input" type="{{question.option_type}}" name="{{question.id}}" value="{{option.id}}" id="{{option.id}}">
-                    <label class="form-check-label" for="{{option.id}}">
-                        {{option.text}}
+                    <label class="form-check-label" for="option_{{option.id}}_text">
+                        <textarea class="form-control" id="option_{{option.id}}_text" name="option_{{option.id}}_text" rows="2">{{option.text}}</textarea>
                     </label>
+                    <label class="form-check-label" for="{{option.id}}"><button class="btn-sm btn-danger">Delete Option</button><!--TODO Make this work.--></label>
                 </div>
             {% endfor %}
         </div>
+        <div class="card-footer">
+            <button class="btn-sm btn-danger">Delete Question</button><!--TODO Make this work.-->
+        </div>
     </div>
 {% endfor %}
-    <button type="submit" class="btn btn-primary">Submit</button>
+    <button type="submit" class="btn btn-primary">Update Quiz</button>
 </form>
 {% endblock %}

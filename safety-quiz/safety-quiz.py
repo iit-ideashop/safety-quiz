@@ -10,6 +10,7 @@ from datetime import datetime
 from typing import Optional, Tuple, List, Callable, Union
 import decimal
 import json
+from multidict import MultiDict
 
 # app setup
 app = Flask(__name__, static_url_path='/static', static_folder='static')  # create the application instance :)
@@ -71,7 +72,7 @@ class Question(Base):
     prompt = sa.Column(sa.String(length=250))
     description = sa.Column(sa.String(length=250))
     image = sa.Column(sa.String(length=100))
-    option_type = sa.Column(sa.String(length=50), nullable=False)
+    option_type = sa.Column(sa.String(length=50), nullable=False) #current allowable [radio, checkbox]
 
     quiz = relationship('Quiz', lazy="joined")
     option = relationship('Option')
@@ -84,7 +85,7 @@ class Option(Base):
     __tablename__ = 'options'
     id = sa.Column(sa.Integer, primary_key=True, autoincrement=True)
     question_id = sa.Column(sa.Integer, sa.ForeignKey('questions.id'), nullable=False)
-    text = sa.Column(sa.String(length=250), nullable=False)
+    text = sa.Column(sa.String(length=250))
     image = sa.Column(sa.String(length=100))
     correct = sa.Column(sa.Boolean, default=False, nullable=False)
 
@@ -173,6 +174,41 @@ def quiz(id):
         db.commit()
         flash(("Score: %s/%s aka %s%%" % (quiz_current_score,quiz_max_score,((quiz_current_score/quiz_max_score)*100))), 'info')
         return redirect(url_for('index'))
+
+@app.route('/edit_quiz/<id>', methods=['GET','POST'])
+def edit_quiz(id):
+    db = db_session()
+    if db.query(User).filter_by(sid=session['sid']).one().admin:
+        if request.method == 'GET':
+            questions = db.query(Question).filter_by(quiz_id=id).all()
+            return render_template('admin/quiz.html', questions=questions)
+        elif request.method == 'POST':
+            print(request.form)
+            form_data = MultiDict()
+            form_data.extend({'question':{}})
+            form_data.extend({'option':{}})
+            for each in request.form.items():
+                line_data = each[0].split("_")
+                if not form_data[line_data[0]].get(line_data[1]):
+                    form_data[line_data[0]].update({line_data[1]:{line_data[2]:each[1]}})
+                else:
+                    form_data[line_data[0]][line_data[1]].update({line_data[2]:each[1]})
+            print(form_data['option'])
+            for question_id in form_data['question']:
+                if db.query(Question).filter_by(id=question_id):
+                    db.merge(Question(id=question_id,
+                             prompt=form_data['question'][question_id]['prompt'],
+                             description=form_data['question'][question_id]['description']))
+                else: db.add(Question(quiz_id=id,
+                                      prompt=form_data['question'][question_id]['prompt'],
+                                      description=form_data['question'][question_id]['description']))
+            for option_id in form_data['option']:
+                if db.query(Option).filter_by(id=option_id):
+                    db.merge(Option(id=option_id,
+                                    text=form_data['option'][option_id]['text']))
+            db.commit()
+            return redirect(url_for('edit_quiz', id=id))
+    else: return redirect(url_for('index'))
 
 # app routes end
 
