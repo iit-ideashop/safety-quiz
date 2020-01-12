@@ -5,25 +5,45 @@
         {% for question in questions %}
             <div class="card" style="margin:1em;">
                 <div class="card-header">
-                    <div class="form-group">
-                        <input type="text" value="{{ question.prompt }}" name="question_{{ question.id }}_prompt"
-                        class="form-control" />
-                    </div>
-                    <div class="form-group">
-                    <textarea class="form-control" id="question_{{ question.id }}_description"
-                                  name="question_{{ question.id }}_description"
-                                  rows="2">{{ question.description }}</textarea>
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="form-group">
+                                <input type="text" value="{{ question.prompt }}" name="question_{{ question.id }}_prompt"
+                                class="form-control" />
+                            </div>
+                            <div class="form-group">
+                            <textarea class="form-control" id="question_{{ question.id }}_description"
+                                          name="question_{{ question.id }}_description"
+                                          rows="2">{{ question.description }}</textarea>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            {% if question.image %}
+                                <img class="img-fluid" style="max-width: 50%;" src="{{question.image}}"/>
+                            {% endif %}
+                            <div class="form-group">
+                                <input type="file" name="question_{{question.id}}_file" id="question_{{question.id}}_file">
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="card-body">
                     {% for option in question.option %}
                         <div class="form-row" id="option_row_{{ option.id }}">
-                            <div class="col-11 align-items-center">
+                            <div class="col-8 align-items-center">
                                 <div class="form-check">
                                     <input class="form-check-input" type="{{ question.option_type }}" name="{{ question.id }}"
                                            value="{{ option.id }}" id="{{ option.id }}" />
                                     <input class="form-check-label form-control" type="text" name="option_{{ option_id }}_text"
                                        id="option_{{ option.id }}_text" value="{{ option.text }}" />
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                {% if option.image %}
+                                    <img class="img-fluid" style="max-height: 38px; max-width: 38px" src="{{option.image}}"/>
+                                {% endif %}
+                                <div class="form-group">
+                                    <input type="file" name="option_{{option.id}}_file" id="option_{{option.id}}_file">
                                 </div>
                             </div>
                             <div class="col-1">
