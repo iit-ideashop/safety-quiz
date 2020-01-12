@@ -1,6 +1,15 @@
 {% extends 'layout.html' %}
 {% block page %}
 <h1>{{questions[0].quiz.name}} Quiz</h1>
+    <div class="card">
+        <div class="card-header">
+            Instructions
+        </div>
+        <div class="card-body">
+            For multiple choice questions, choose the <strong>most</strong> appropriate response. The passing score for
+            this quiz is 100%. You can take it as many times as you want.
+        </div>
+    </div>
 <form method="post" href="{{url_for('quiz',id=questions[0].quiz.id)}}">
 {% for question in questions %}
     <div class="card" style="margin:1em;">

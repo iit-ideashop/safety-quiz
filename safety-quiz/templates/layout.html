@@ -1,10 +1,21 @@
 {% extends "bootstrap/base.html" %}
 {% block title %}Idea Shop Safety Quiz{% endblock %}
+{% block head %}
+    {{ super() }}
+    {{ fontawesome_html() }}
+{% endblock %}
 {% block navbar %}
     <nav class="navbar navbar-default navbar-dark bg-dark">
             <a class="navbar-brand" href="{{ url_for('index') }}">Idea Shop Safety Quiz</a>
-        <ul>
-            <li class="nav-item"><a class="=nav-link" href="{{ url_for('logout') }}">Logout</a></li>
+        <ul class="navbar-nav">
+            {% if session['sid'] %}
+            <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('logout') }}">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Log out
+                </a>
+            </li>
+            {% endif %}
         </ul>
     </nav>
 {% endblock %}

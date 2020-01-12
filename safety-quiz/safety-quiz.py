@@ -1,8 +1,10 @@
 # imports
 import os
+import fontawesome as fontawesome
 from flask import Flask, request, session, g, redirect, url_for, render_template, abort, flash, get_flashed_messages, \
     jsonify, send_from_directory
 from flask_bootstrap import Bootstrap
+from flask_fontawesome import FontAwesome
 import sqlalchemy as sa
 from sqlalchemy.orm import relationship, scoped_session, sessionmaker, joinedload
 from sqlalchemy.ext.declarative import declarative_base
@@ -26,41 +28,42 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 # application
 Bootstrap(app)
+FontAwesome(app)
 
 # DB Setup
 engine = sa.create_engine(app.config['DB'], pool_recycle=3600, encoding='utf-8')
 Base = declarative_base()
 
-
+# Quiz App Model
 class User(Base):
     __tablename__ = 'users'
     sid = sa.Column(sa.Integer, primary_key=True, autoincrement=False, nullable=False)
-    email = sa.Column(sa.String(length=50), nullable=False)
+    email = sa.Column(sa.Text, nullable=False)
     admin = sa.Column(sa.Boolean, nullable=False, default=False)
 
-    user_quizes = relationship('User_Quizes')
+    assigned_quizzes = relationship('UserQuiz')
 
     def __repr__(self):
         return self.email
 
 
 class Quiz(Base):
-    __tablename__ = 'quizes'
+    __tablename__ = 'quizzes'
     id = sa.Column(sa.Integer, primary_key=True, autoincrement=True)
-    name = sa.Column(sa.String(length=100), nullable=False)
-    check_in_machine_id = sa.Column(sa.Integer, nullable=False)
+    name = sa.Column(sa.Text, nullable=False)
+    for_machine = sa.Column(sa.Integer, nullable=False)
 
-    user_quizes = relationship('User_Quizes')
+    assigned_users = relationship('UserQuiz')
 
     def __repr__(self):
         return self.name
 
 
-class User_Quizes(Base):
-    __tablename__ = 'user_quizes'
+class UserQuiz(Base):
+    __tablename__ = 'user_quizzes'
     id = sa.Column(sa.Integer, primary_key=True, autoincrement=True)
     user_id = sa.Column(sa.Integer, sa.ForeignKey('users.sid'), nullable=False)
-    quiz_id = sa.Column(sa.Integer, sa.ForeignKey('quizes.id'), nullable=False)
+    quiz_id = sa.Column(sa.Integer, sa.ForeignKey('quizzes.id'), nullable=False)
     last_score = sa.Column(sa.DECIMAL(5, 2), nullable=True)
     last_taken = sa.Column(sa.DateTime, nullable=True)
 
@@ -74,11 +77,11 @@ class User_Quizes(Base):
 class Question(Base):
     __tablename__ = 'questions'
     id = sa.Column(sa.Integer, primary_key=True, autoincrement=True)
-    quiz_id = sa.Column(sa.Integer, sa.ForeignKey('quizes.id'), nullable=False)
-    prompt = sa.Column(sa.String(length=250))
-    description = sa.Column(sa.String(length=250))
-    image = sa.Column(sa.String(length=100))
-    option_type = sa.Column(sa.String(length=50), default="radio", nullable=False) #current allowable [radio, checkbox]
+    quiz_id = sa.Column(sa.Integer, sa.ForeignKey('quizzes.id'), nullable=False)
+    prompt = sa.Column(sa.Text)
+    description = sa.Column(sa.Text)
+    image = sa.Column(sa.Text)
+    option_type = sa.Column(sa.Text, default="radio", nullable=False) #current allowable [radio, checkbox]
 
     quiz = relationship('Quiz', lazy="joined")
     option = relationship('Option')
@@ -91,8 +94,8 @@ class Option(Base):
     __tablename__ = 'options'
     id = sa.Column(sa.Integer, primary_key=True, autoincrement=True)
     question_id = sa.Column(sa.Integer, sa.ForeignKey('questions.id'), nullable=False)
-    text = sa.Column(sa.String(length=250))
-    image = sa.Column(sa.String(length=100))
+    text = sa.Column(sa.Text)
+    image = sa.Column(sa.Text)
     correct = sa.Column(sa.Boolean, default=False, nullable=False)
 
     question = relationship('Question', lazy="joined")
@@ -120,7 +123,7 @@ def before_request():
 @app.route('/')
 def index():
     db = db_session()
-    available = db.query(User_Quizes).filter_by(user_id=session['sid']).all()
+    available = db.query(UserQuiz).filter_by(user_id=session['sid']).all()
     if db.query(User).filter_by(sid=session['sid']).one().admin:
         return render_template('admin/index.html', available=available)
     else:
@@ -202,7 +205,7 @@ def quiz(id):
             if question_max_score == question_current_score:
                 quiz_current_score += 1.0
         quiz_percent = ((quiz_current_score/quiz_max_score)*100)
-        quiz = db.query(User_Quizes).filter_by(user_id=session['sid']).one()
+        quiz = db.query(UserQuizzes).filter_by(user_id=session['sid']).one()
         quiz.last_score = quiz_percent
         quiz.last_taken = sa.func.now()
         db.commit()
