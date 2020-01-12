@@ -72,7 +72,7 @@ class Question(Base):
     prompt = sa.Column(sa.String(length=250))
     description = sa.Column(sa.String(length=250))
     image = sa.Column(sa.String(length=100))
-    option_type = sa.Column(sa.String(length=50), nullable=False) #current allowable [radio, checkbox]
+    option_type = sa.Column(sa.String(length=50), default="radio", nullable=False) #current allowable [radio, checkbox]
 
     quiz = relationship('Quiz', lazy="joined")
     option = relationship('Option')
@@ -209,6 +209,20 @@ def edit_quiz(id):
             db.commit()
             return redirect(url_for('edit_quiz', id=id))
     else: return redirect(url_for('index'))
+
+@app.route('/admin/api/add/<object_type>', methods=['POST'])
+def add_object(object_type):
+    db = db_session()
+    if object_type == 'question':
+        new = Question(quiz_id=request.form['quiz_id'])
+        db.add(new)
+        db.commit()
+        return new
+    elif object_type == 'option':
+        new = Option(question_id=request.form['question_id'])
+        db.add(new)
+        db.commit()
+        return new
 
 # app routes end
 

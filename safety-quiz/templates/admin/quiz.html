@@ -29,4 +29,8 @@
 {% endfor %}
     <button type="submit" class="btn btn-primary">Update Quiz</button>
 </form>
+    <form href="{{url_for('add_object', object_type='question')}}" method="post" id="add_question">
+        <input type="number" name="quiz_id" value="{{questions[0].quiz_id}}" hidden>
+        <button class="btn btn-success" type="button" id="submitBtn">Add Question</button>
+    </form>
 {% endblock %}
