@@ -52,6 +52,12 @@ class Quiz(Base):
     def __repr__(self):
         return self.name
 
+    def number_assigned(self):
+        return db.query(self.assigned_users).where(UserQuiz.quiz_id == self.id).count()
+
+    def number_passed(self):
+        return db.query(self.assigned_users).where(UserQuiz.quiz_id == self.id).where(UserQuiz.last_score == 1).count()
+
 
 class UserQuiz(Base):
     __tablename__ = 'user_quizzes'
@@ -60,6 +66,7 @@ class UserQuiz(Base):
     quiz_id = sa.Column(sa.Integer, sa.ForeignKey('quizzes.id'), nullable=False)
     last_score = sa.Column(sa.DECIMAL(5, 2), nullable=True)
     last_taken = sa.Column(sa.DateTime, nullable=True)
+    attempts = sa.Column(sa.Integer, nullable=False, default=0)
 
     user = relationship('User', lazy="joined")
     quiz = relationship('Quiz', lazy="joined")
@@ -121,7 +128,8 @@ def index():
     db = db_session()
     available = db.query(UserQuiz).filter_by(user_id=session['sid']).all()
     if db.query(User).filter_by(sid=session['sid']).one().admin:
-        return render_template('admin/index.html', available=available)
+        quizzes = db.query(Quiz).all()
+        return render_template('admin/index.html', available=available, quizzes=quizzes)
     else:
         return render_template('index.html', available=available)
 

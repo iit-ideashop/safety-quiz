@@ -1,36 +1,46 @@
 {% extends 'layout.html' %}
 {% block page %}
-<h1>Editing: {{questions[0].quiz.name}} Quiz</h1>
-<form method="post" href="{{url_for('edit_quiz',id=questions[0].quiz.id)}}">
-{% for question in questions %}
-    <div class="card" style="margin:1em;">
-        <div class="card-header">
-            <h3>Prompt: <input type="text" value="{{question.prompt}}" name="question_{{question.id}}_prompt"</h3>
-            <div class="form-group">
-                <label for="question_{{question.id}}_description">Description:</label>
-                <textarea class="form-control" id ="question_{{question.id}}_description" name="question_{{question.id}}_description" rows="2">{{question.description}}</textarea>
-            </div>
-        </div>
-        <div class="card-body">
-            {% for option in question.option %}
-                <div class="form-check" style="margin:0.25em;">
-                    <input class="form-check-input" type="{{question.option_type}}" name="{{question.id}}" value="{{option.id}}" id="{{option.id}}">
-                    <label class="form-check-label" for="option_{{option.id}}_text">
-                        <textarea class="form-control" id="option_{{option.id}}_text" name="option_{{option.id}}_text" rows="2">{{option.text}}</textarea>
-                    </label>
-                    <label class="form-check-label" for="{{option.id}}"><button class="btn-sm btn-danger">Delete Option</button><!--TODO Make this work.--></label>
+    <h1>Editing: {{ questions[0].quiz.name }} Quiz</h1>
+    <form method="post" href="{{ url_for('edit_quiz',id=questions[0].quiz.id) }}">
+        {% for question in questions %}
+            <div class="card" style="margin:1em;">
+                <div class="card-header">
+                    <div class="form-group">
+                        <input type="text" value="{{ question.prompt }}" name="question_{{ question.id }}_prompt"
+                        class="form-control" />
+                    </div>
+                    <div class="form-group">
+                    <textarea class="form-control" id="question_{{ question.id }}_description"
+                                  name="question_{{ question.id }}_description"
+                                  rows="2">{{ question.description }}</textarea>
+                    </div>
                 </div>
-            {% endfor %}
-        </div>
-        <div class="card-footer">
-            <button class="btn-sm btn-danger">Delete Question</button><!--TODO Make this work.-->
-        </div>
-    </div>
-{% endfor %}
-    <button type="submit" class="btn btn-primary">Update Quiz</button>
-</form>
-    <form href="{{url_for('add_object', object_type='question')}}" method="post" id="add_question">
-        <input type="number" name="quiz_id" value="{{questions[0].quiz_id}}" hidden>
+                <div class="card-body">
+                    {% for option in question.option %}
+                        <div class="form-row" id="option_row_{{ option.id }}">
+                            <div class="col-11 align-items-center">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="{{ question.option_type }}" name="{{ question.id }}"
+                                           value="{{ option.id }}" id="{{ option.id }}" />
+                                    <input class="form-check-label form-control" type="text" name="option_{{ option_id }}_text"
+                                       id="option_{{ option.id }}_text" value="{{ option.text }}" />
+                                </div>
+                            </div>
+                            <div class="col-1">
+                                <button class="btn-sm btn-danger btn-block"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+                <div class="card-footer">
+                    <button class="btn-sm btn-danger">Delete Question</button><!--TODO Make this work.-->
+                </div>
+            </div>
+        {% endfor %}
+        <button type="submit" class="btn btn-primary">Update Quiz</button>
+    </form>
+    <form href="{{ url_for('add_object', object_type='question') }}" method="post" id="add_question">
+        <input type="number" name="quiz_id" value="{{ questions[0].quiz_id }}" hidden>
         <button class="btn btn-success" type="button" id="submitBtn">Add Question</button>
     </form>
 {% endblock %}

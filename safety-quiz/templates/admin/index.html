@@ -1,9 +1,9 @@
 {% extends 'layout.html' %}
 {% block page %}
-<h3>Hello {{session['email'] }}</h3>
+<h3>Hello, {{ session['email'] }}!</h3>
 <div class="card">
     <div class="card-header">
-       Active quizzes
+       Your assigned quizzes
     </div>
     <table class="table table-striped">
         <thead>
@@ -11,6 +11,7 @@
                 <th scope="col">Quiz</th>
                 <th scope="col">Score</th>
                 <th scope="col">Last Taken</th>
+                <th scope="col">Attempts</th>
                 <th scope="col"></th>
                 <th scope="col"></th>
             </tr>
@@ -19,19 +20,69 @@
             {% for each in available %}
             <tr>
                 <th scope="row">{{each.quiz.name}}</th>
-                <td>{{each.last_score}}
-                    {% if each.last_score == 100 %}
-                        Pass
-                        <!--#TODO Pass Mark-->
+                <td>
+                    {% if each.last_score is not none %}
+                        {{each.last_score}}
+                        {% if each.last_score == 100 %}
+                            Pass
+                            <!--#TODO Pass Mark-->
+                        {% else %}
+                            Fail
+                            <!--TODO Fail Mark-->
+                        {% endif %}
                     {% else %}
-                        Fail
-                        <!--TODO Fail Mark-->
+                        <i class="fas fa-exclamation-circle"></i> Not yet taken
                     {% endif %}
                 </td>
-                <td>{{each.last_taken}}</td>
-                <td><a class="btn btn-primary btn-sm" href="{{url_for('quiz', id=each.quiz_id)}}" role="button">Take the Quiz</a></td>
-                <td><a class="btn btn-primary btn-sm" href="{{url_for('edit_quiz', id=each.quiz_id)}}" role="button">Edit Quiz</a></td>
+                <td>{{each.last_taken if each.last_taken is not none else 'Never'}}</td>
+                <td>{{ each.attempts }}</td>
+                <td>
+                    <a class="btn btn-primary btn-sm" href="{{url_for('quiz', id=each.quiz_id)}}" role="button">
+                        <i class="fas fa-user-edit"></i>
+                        Start quiz
+                    </a>
+                </td>
+                <td>
+                    <a class="btn btn-primary btn-sm" href="{{url_for('edit_quiz', id=each.quiz_id)}}" role="button">
+                        <i class="fas fa-edit"></i>
+                        Edit quiz
+                    </a>
+                </td>
             </tr>
+           {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<div class="card">
+    <div class="card-header">
+       All quizzes
+    </div>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th scope="col">Quiz</th>
+                <th scope="col"></th>
+                <th scope="col"></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for each in quizzes %}
+                <tr>
+                    <th scope="row">{{each.name}}</th>
+                    <td>
+                        <a class="btn btn-primary btn-sm" href="{{url_for('quiz', id=each.id)}}" role="button">
+                            <i class="fas fa-user-edit"></i>
+                            Start quiz
+                        </a>
+                    </td>
+                    <td>
+                        <a class="btn btn-primary btn-sm" href="{{url_for('edit_quiz', id=each.id)}}" role="button">
+                            <i class="fas fa-edit"></i>
+                            Edit quiz
+                        </a>
+                    </td>
+                </tr>
            {% endfor %}
         </tbody>
     </table>
