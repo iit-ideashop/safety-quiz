@@ -226,17 +226,26 @@ def edit_quiz(id):
     if db.query(User).filter_by(sid=session['sid']).one().admin:
         if request.method == 'GET':
             questions = db.query(Question).filter_by(quiz_id=id).all()
-            return render_template('admin/quiz.html', questions=questions)
+            return render_template('admin/quiz.html', questions=questions, id=id)
         elif request.method == 'POST':
             form_data = MultiDict()
             form_data.extend({'question':{}})
             form_data.extend({'option':{}})
             for each in request.form.items():
-                line_data = each[0].split("_")
-                if not form_data[line_data[0]].get(line_data[1]):
-                    form_data[line_data[0]].update({line_data[1]:{line_data[2]:each[1]}})
+                if each[0] == 'add_option':
+                    form_data['option'][each[1]]['add'] = True
+                elif each[0] == 'add_question':
+                    form_data['question']['add'] = True
+                elif each[0] == 'delete_question':
+                    form_data['question'][each[1]]['delete'] = True
+                elif each[0] == 'delete_option':
+                    form_data['option'][each[1]]['delete'] = True
                 else:
-                    form_data[line_data[0]][line_data[1]].update({line_data[2]:each[1]})
+                    line_data = each[0].split("_")
+                    if not form_data[line_data[0]].get(line_data[1]):
+                        form_data[line_data[0]].update({line_data[1]:{line_data[2]:each[1]}})
+                    else:
+                        form_data[line_data[0]][line_data[1]].update({line_data[2]:each[1]})
             for question_id in form_data['question']:
                 if db.query(Question).filter_by(id=question_id):
                     db.merge(Question(id=question_id,

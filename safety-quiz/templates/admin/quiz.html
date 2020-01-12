@@ -1,7 +1,7 @@
 {% extends 'layout.html' %}
 {% block page %}
     <h1>Editing: {{ questions[0].quiz.name }} Quiz</h1>
-    <form method="post" href="{{ url_for('edit_quiz',id=questions[0].quiz.id) }}">
+    <form method="post" href="{{ url_for('edit_quiz',id=id) }}">
         {% for question in questions %}
             <div class="card" style="margin:1em;">
                 <div class="card-header">
@@ -34,7 +34,7 @@
                                 <div class="form-check">
                                     <input class="form-check-input" type="{{ question.option_type }}" name="{{ question.id }}"
                                            value="{{ option.id }}" id="{{ option.id }}" />
-                                    <input class="form-check-label form-control" type="text" name="option_{{ option_id }}_text"
+                                    <input class="form-check-label form-control" type="text" name="option_{{ option.id }}_text"
                                        id="option_{{ option.id }}_text" value="{{ option.text }}" />
                                 </div>
                             </div>
@@ -53,14 +53,24 @@
                     {% endfor %}
                 </div>
                 <div class="card-footer">
-                    <button class="btn-sm btn-danger">Delete Question</button><!--TODO Make this work.-->
+                    <button type="submit" class="btn-sm btn-danger" name="delete_question" value="{{ question.id }}">
+                        <i class="fas fa-trash"></i>
+                        Delete question
+                    </button> <!--TODO Make this work.-->
+                    <button type="submit" class="btn-sm btn-success" name="add_option" value="{{ question.id }}">
+                        <i class="fas fa-plus"></i>
+                        Add option
+                    </button>
                 </div>
             </div>
         {% endfor %}
-        <button type="submit" class="btn btn-primary">Update Quiz</button>
-    </form>
-    <form href="{{ url_for('add_object', object_type='question') }}" method="post" id="add_question">
-        <input type="number" name="quiz_id" value="{{ questions[0].quiz_id }}" hidden>
-        <button class="btn btn-success" type="button" id="submitBtn">Add Question</button>
+        <button type="submit" class="btn btn-primary">
+            <i class="fas fa-check"></i>
+            Update quiz
+        </button>
+        <button type="submit" class="btn btn-success" name="add_question" value="True">
+            <i class="fas fa-plus"></i>
+            Add question
+        </button>
     </form>
 {% endblock %}
