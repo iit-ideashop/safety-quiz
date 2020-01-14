@@ -1,6 +1,6 @@
 {% extends 'layout.html' %}
 {% block page %}
-    <h1>Editing: {{ questions[0].quiz.name }} Quiz</h1>
+    <h1>Editing: {{ quiz.name }}</h1>
     <form method="post" href="{{ url_for('edit_quiz',id=id) }}">
         {% for question in questions %}
             <div class="card" style="margin:1em;">
@@ -31,12 +31,21 @@
                     {% for option in question.option %}
                         <div class="form-row" id="option_row_{{ option.id }}">
                             <div class="col-8 align-items-center">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="{{ question.option_type }}" name="{{ question.id }}"
-                                           value="{{ option.id }}" id="{{ option.id }}" />
-                                    <input class="form-check-label form-control" type="text" name="option_{{ option.id }}_text"
-                                       id="option_{{ option.id }}_text" value="{{ option.text }}" />
-                                </div>
+                                {% if question.option_type == 'radio' %}
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="{{ question.option_type }}" name="question_{{ question.id }}_correct"
+                                               value="{{ option.id }}" {% if option.correct %} checked {% endif %} />
+                                        <input class="form-check-label form-control" type="text" name="option_{{ option.id }}_text"
+                                           id="option_{{ option.id }}_text" value="{{ option.text }}" />
+                                    </div>
+                                {% elif question.option_type == 'checkbox' %}
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="{{ question.option_type }}" name="option_{{ option.id }}_correct"
+                                               value="1" id="{{ option.id }}" {% if option.correct %} checked {% endif %} />
+                                        <input class="form-check-label form-control" type="text" name="option_{{ option.id }}_text"
+                                           id="option_{{ option.id }}_text" value="{{ option.text }}" />
+                                    </div>
+                                {% endif %}
                             </div>
                             <div class="col-3">
                                 {% if option.image %}
@@ -47,20 +56,34 @@
                                 </div>
                             </div>
                             <div class="col-1">
-                                <button class="btn-sm btn-danger btn-block"><i class="fas fa-trash"></i></button>
+                                <button class="btn-sm btn-danger btn-block" name="delete_option" value="{{ option.id }}">
+                                    <i class="fas fa-trash"></i>
+                                </button>
                             </div>
                         </div>
                     {% endfor %}
                 </div>
                 <div class="card-footer">
-                    <button type="submit" class="btn-sm btn-danger" name="delete_question" value="{{ question.id }}">
-                        <i class="fas fa-trash"></i>
-                        Delete question
-                    </button> <!--TODO Make this work.-->
-                    <button type="submit" class="btn-sm btn-success" name="add_option" value="{{ question.id }}">
-                        <i class="fas fa-plus"></i>
-                        Add option
-                    </button>
+                    <div class="form-row">
+                        <div class="col-md-2">
+                            <button type="submit" class="btn-sm btn-danger" name="delete_question" value="{{ question.id }}">
+                                <i class="fas fa-trash"></i>
+                                Delete question
+                            </button> <!--TODO Make this work.-->
+                        </div>
+                        <div class="col-md-2">
+                            <button type="submit" class="btn-sm btn-success" name="add_option" value="{{ question.id }}">
+                                <i class="fas fa-plus"></i>
+                                Add option
+                            </button>
+                        </div>
+                        <div class="col">
+                            <select class="form-control" name="question_{{ question.id }}_optiontype">
+                                <option value="radio" {% if question.option_type == 'radio' %} selected {% endif %}>Radio buttons</option>
+                                <option value="checkbox" {% if question.option_type == 'checkbox' %} selected {% endif %}>Checkboxes</option>
+                            </select>
+                        </div>
+                    </div>
                 </div>
             </div>
         {% endfor %}

@@ -93,7 +93,7 @@ class Question(Base):
     option_type = sa.Column(sa.Text, default="radio", nullable=False) #current allowable [radio, checkbox]
 
     quiz = relationship('Quiz', lazy="joined")
-    option = relationship('Option')
+    option = relationship('Option', cascade='all, delete-orphan', lazy="joined")
 
     def __repr__(self):
         return self.prompt
@@ -228,16 +228,17 @@ def edit_quiz(id):
     if db.query(User).filter_by(sid=session['sid']).one().admin:
         if request.method == 'GET':
             questions = db.query(Question).filter_by(quiz_id=id).all()
-            return render_template('admin/quiz.html', questions=questions, id=id)
+            quiz = db.query(Quiz).filter_by(id=id).one()
+            return render_template('admin/quiz.html', quiz=quiz, questions=questions, id=id)
         elif request.method == 'POST':
             form_data = MultiDict()
             form_data.extend({'question':{}})
             form_data.extend({'option':{}})
             for each in request.form.items():
                 if each[0] == 'add_option':
-                    form_data['option'][each[1]]['add'] = True
+                    form_data['question'][each[1]]['add_option'] = True
                 elif each[0] == 'add_question':
-                    form_data['question']['add'] = True
+                    form_data['add_question'] = True
                 elif each[0] == 'delete_question':
                     form_data['question'][each[1]]['delete'] = True
                 elif each[0] == 'delete_option':
@@ -245,21 +246,61 @@ def edit_quiz(id):
                 else:
                     line_data = each[0].split("_")
                     if not form_data[line_data[0]].get(line_data[1]):
-                        form_data[line_data[0]].update({line_data[1]:{line_data[2]:each[1]}})
+                        form_data[line_data[0]].update({line_data[1]: {line_data[2]: each[1]}})
                     else:
-                        form_data[line_data[0]][line_data[1]].update({line_data[2]:each[1]})
+                        form_data[line_data[0]][line_data[1]].update({line_data[2]: each[1]})
+
+            if 'add_question' in form_data:
+                new_question = Question(quiz_id=id, prompt='New Question', description='New Description')
+                db.add(new_question)
+                for i in range(4):
+                    db.add(Option(text='Option ' + str(i + 1), question=new_question))
+
             for question_id in form_data['question']:
                 if db.query(Question).filter_by(id=question_id):
+                    if 'add_option' in form_data['question'][question_id]:
+                        db.add(Option(question_id=question_id, text='New Option'))
+
                     db.merge(Question(id=question_id,
-                             prompt=form_data['question'][question_id]['prompt'],
-                             description=form_data['question'][question_id]['description']))
-                else: db.add(Question(quiz_id=id,
                                       prompt=form_data['question'][question_id]['prompt'],
-                                      description=form_data['question'][question_id]['description']))
+                                      description=form_data['question'][question_id]['description'],
+                                      option_type=form_data['question'][question_id]['optiontype']))
+
             for option_id in form_data['option']:
-                if db.query(Option).filter_by(id=option_id):
-                    db.merge(Option(id=option_id,
-                                    text=form_data['option'][option_id]['text']))
+                option = db.query(Option).get(option_id)
+                if option:
+                    if 'delete' in form_data['option'][option_id]:
+                        option.delete()
+                    else:
+                        try:
+                            if 'correct' in form_data['question'][str(option.question_id)]:
+                                option.correct = form_data['question'][str(option.question_id)]['correct'] == str(option_id)
+                            else:
+                                option.correct = 'correct' in form_data['option'][option_id]
+                        except KeyError:
+                            pass
+
+                        db.merge(Option(id=option_id,
+                                        text=form_data['option'][option_id]['text']))
+
+            for question_id in form_data['question']:
+                if 'delete' in form_data['question'][question_id]:
+                    if 'delete' in form_data['question'][question_id]:
+                        db.query(Option).filter_by(question_id=question_id).delete()
+                        db.query(Question).filter_by(id=question_id).delete()
+                else:
+                    question = db.query(Question).get(question_id)
+                    if question.option_type == 'radio':
+                        # check that only one option is correct on a radio button question
+                        found = False
+                        for option in question.option:
+                            if option.correct:
+                                if not found:
+                                    found = True
+                                else:
+                                    option.correct = False
+
+
             for file in request.files:
                 if request.files[file] and allowed_file(request.files[file].filename):
                     print("New file %s: %s" % (file,request.files[file]))
@@ -271,6 +312,7 @@ def edit_quiz(id):
                         db.merge(Question(id=object_data[1], image=path))
                     elif object_data[0] == 'option':
                         db.merge(Option(id=object_data[1], image=path))
+
             db.commit()
             return redirect(url_for('edit_quiz', id=id))
     else: return redirect(url_for('index'))
