@@ -300,7 +300,6 @@ def edit_quiz(id):
                                 else:
                                     option.correct = False
 
-
             for file in request.files:
                 if request.files[file] and allowed_file(request.files[file].filename):
                     print("New file %s: %s" % (file,request.files[file]))

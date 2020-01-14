@@ -1,7 +1,7 @@
 {% extends 'layout.html' %}
 {% block page %}
     <h1>Editing: {{ quiz.name }}</h1>
-    <form method="post" href="{{ url_for('edit_quiz',id=id) }}">
+    <form method="post" href="{{ url_for('edit_quiz',id=id) }}" enctype="multipart/form-data">
         {% for question in questions %}
             <div class="card" style="margin:1em;">
                 <div class="card-header">
