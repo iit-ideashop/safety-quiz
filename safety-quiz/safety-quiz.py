@@ -270,7 +270,7 @@ def edit_quiz(id):
                 option = db.query(Option).get(option_id)
                 if option:
                     if 'delete' in form_data['option'][option_id]:
-                        option.delete()
+                        db.delete(option)
                     else:
                         try:
                             if 'correct' in form_data['question'][str(option.question_id)]:
