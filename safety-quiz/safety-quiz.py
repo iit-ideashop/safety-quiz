@@ -219,7 +219,7 @@ def quiz(id):
         quiz.last_score = quiz_percent
         quiz.last_taken = sa.func.now()
         db.commit()
-        flash(("Score: %s/%s aka %s%%" % (quiz_current_score,quiz_max_score,((quiz_current_score/quiz_max_score)*100))), 'info')
+        flash(("Score: %s/%s (%s%%)" % (quiz_current_score,quiz_max_score,((quiz_current_score/quiz_max_score)*100))), 'info')
         return redirect(url_for('index'))
 
 @app.route('/edit_quiz/<id>', methods=['GET','POST'])
