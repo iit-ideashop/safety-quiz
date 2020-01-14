@@ -15,6 +15,8 @@ import decimal
 import json
 from multidict import MultiDict
 from werkzeug.utils import secure_filename
+from werkzeug.exceptions import NotFound
+from werkzeug.middleware.dispatcher import DispatcherMiddleware
 
 # app setup
 app = Flask(__name__, static_url_path='/static', static_folder='static')  # create the application instance :)
@@ -295,8 +297,12 @@ def close_db(error):
 
 # end teardown
 
+def no_app(environ, start_response):
+    return NotFound()(environ, start_response)
+
 # main
 if __name__ == '__main__':
+    app.wsgi_app = DispatcherMiddleware(no_app, {'/safety': app.wsgi_app})
     app.run(host='0.0.0.0', debug=True, port=app.config['PORT'])
     app.jinja_env.auto_reload = True
     app.config['TEMPLATES_AUTO_RELOAD'] = True
