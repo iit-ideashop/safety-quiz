@@ -29,6 +29,96 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 Bootstrap(app)
 FontAwesome(app)
 
+# DB Setup
+engine = sa.create_engine(app.config['DB'], pool_recycle=3600, encoding='utf-8')
+Base = declarative_base()
+
+# Quiz App Model
+class User(Base):
+    __tablename__ = 'users'
+    sid = sa.Column(sa.Integer, primary_key=True, autoincrement=False, nullable=False)
+    email = sa.Column(sa.Text, nullable=False)
+    admin = sa.Column(sa.Boolean, nullable=False, default=False)
+
+    assigned_quizzes = relationship('UserQuiz')
+
+    def __repr__(self):
+        return self.email
+
+
+class Quiz(Base):
+    __tablename__ = 'quizzes'
+    id = sa.Column(sa.Integer, primary_key=True, autoincrement=True)
+    name = sa.Column(sa.Text, nullable=False)
+    for_machine = sa.Column(sa.Integer, nullable=False)
+
+    assigned_users = relationship('UserQuiz')
+
+    def __repr__(self):
+        return self.name
+
+    def number_assigned(self):
+        return db.query(self.assigned_users).where(UserQuiz.quiz_id == self.id).count()
+
+    def number_passed(self):
+        return db.query(self.assigned_users).where(UserQuiz.quiz_id == self.id).where(UserQuiz.last_score == 1).count()
+
+
+class UserQuiz(Base):
+    __tablename__ = 'user_quizzes'
+    id = sa.Column(sa.Integer, primary_key=True, autoincrement=True)
+    user_id = sa.Column(sa.Integer, sa.ForeignKey('users.sid'), nullable=False)
+    quiz_id = sa.Column(sa.Integer, sa.ForeignKey('quizzes.id'), nullable=False)
+    last_score = sa.Column(sa.DECIMAL(5, 2), nullable=True)
+    last_taken = sa.Column(sa.DateTime, nullable=True)
+    attempts = sa.Column(sa.Integer, nullable=False, default=0)
+
+    user = relationship('User', lazy="joined")
+    quiz = relationship('Quiz', lazy="joined")
+
+    def __repr__(self):
+        return "%s scored %s on quiz %s on %s." % (self.user.email, self.last_score, self.quiz.name, self.last_taken)
+
+
+class Question(Base):
+    __tablename__ = 'questions'
+    id = sa.Column(sa.Integer, primary_key=True, autoincrement=True)
+    quiz_id = sa.Column(sa.Integer, sa.ForeignKey('quizzes.id'), nullable=False)
+    prompt = sa.Column(sa.Text)
+    description = sa.Column(sa.Text)
+    image = sa.Column(sa.Text)
+    option_type = sa.Column(sa.Text, default="radio", nullable=False) #current allowable [radio, checkbox]
+
+    quiz = relationship('Quiz', lazy="joined")
+    option = relationship('Option', cascade='all, delete-orphan', lazy="joined")
+
+    def __repr__(self):
+        return self.prompt
+
+
+class Option(Base):
+    __tablename__ = 'options'
+    id = sa.Column(sa.Integer, primary_key=True, autoincrement=True)
+    question_id = sa.Column(sa.Integer, sa.ForeignKey('questions.id'), nullable=False)
+    text = sa.Column(sa.Text)
+    image = sa.Column(sa.Text)
+    correct = sa.Column(sa.Boolean, default=False, nullable=False)
+
+    question = relationship('Question', lazy="joined")
+
+    def __repr__(self):
+        return self.text
+
+
+# Just for type-hinting, if you know a better way please fix
+class HasRemoveMethod:
+    def remove(self):
+        pass
+
+
+# create tables if they don't exist & define db_sessions
+db_session: Union[Callable[[], sa.orm.Session], HasRemoveMethod] = scoped_session(sessionmaker(bind=engine))
+Base.metadata.create_all(engine)
 
 @app.before_request
 def before_request():
@@ -220,17 +310,17 @@ def edit_quiz(id):
 								else:
 									option.correct = False
 
-			for file in request.files:
-				if request.files[file] and allowed_file(request.files[file].filename):
-					print("New file %s: %s" % (file, request.files[file]))
-					object_data = file.split("_")
-					filename = secure_filename(request.files[file].filename)
-					request.files[file].save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-					path = url_for('uploaded_file', filename=filename)
-					if object_data[0] == 'question':
-						db.merge(Question(id=object_data[1], image=path))
-					elif object_data[0] == 'option':
-						db.merge(Option(id=object_data[1], image=path))
+            for file in request.files:
+                if request.files[file] and allowed_file(request.files[file].filename):
+                    print("New file %s: %s" % (file,request.files[file]))
+                    object_data=file.split("_")
+                    filename = secure_filename(request.files[file].filename)
+                    request.files[file].save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+                    path = url_for('uploaded_file', filename=filename)
+                    if object_data[0] == 'question':
+                        db.merge(Question(id=object_data[1], image=path))
+                    elif object_data[0] == 'option':
+                        db.merge(Option(id=object_data[1], image=path))
 
 			db.commit()
 			return redirect(url_for('edit_quiz', id=id))
