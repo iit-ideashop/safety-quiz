@@ -2,9 +2,9 @@
 {% block page %}
 <h3>Hello {{session['email'] }}</h3>
 <div class="card">
-    {% if available | length > 0 %}
+    {% if trainings | length > 0 %}
         <div class="card-header">
-           Available quizzes
+           My safety trainings
         </div>
         <table class="table table-striped">
             <thead>
@@ -16,20 +16,31 @@
                 </tr>
             </thead>
             <tbody>
-                {% for each in available %}
+                {% for each in trainings %}
                 <tr>
-                    <th scope="row">{{each.quiz.name}}</th>
-                    <td>{{each.last_score}}
-                        {% if each.last_score == 100 %}
-                            Pass
-                            <!--#TODO Pass Mark-->
+                    <th scope="row">{{ each.machine.name }}</th>
+                    <td>
+                        {% if each.quiz_passed() or each.quiz_available() %}
+                            {{ each.quiz_score }}
+                            {% if each.quiz_passed() %}
+                                Pass
+                                <!--#TODO Pass Mark-->
+                            {% else %}
+                                Fail
+                                <!--TODO Fail Mark-->
+                            {% endif %}
                         {% else %}
-                            Fail
-                            <!--TODO Fail Mark-->
+                            Available soon
                         {% endif %}
                     </td>
-                    <td>{{each.last_taken}}</td>
-                    <td><a class="btn btn-primary btn-sm" href="{{url_for('quiz', id=each.quiz_id)}}" role="button">Take the Quiz</a></td>
+                    <td>{{ each.quiz_taken }}</td>
+                    <td>
+                        {% if each.quiz_available() %}
+                        <a class="btn btn-primary btn-sm" href="{{ url_for('quiz', training_id=each.id)}}" role="button">
+                            Take the Quiz
+                        </a>
+                        {% endif %}
+                    </td>
                 </tr>
                {% endfor %}
             </tbody>
