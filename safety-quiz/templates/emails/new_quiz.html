@@ -1,0 +1,24 @@
+<div>
+<img src="https://wiki.ideashop.iit.edu/logo.png" style="max-height:100px">
+<h2>Hello {{new_quizzes[0].trainee.name}},</h2>
+<p>
+    You have been assigned the following Idea Shop Safety Quizzes.
+    <ul>
+        {% for each in new_quizzes %}
+        <li>{{each.machine.quiz.name}}</li>
+        {% endfor %}
+    </ul>
+    <h2><a href="https://dev.ideashop.iit.edu/safety">Click Here to see your quizzes.</a></h2>
+        <p>Or visit <a href="https://wiki.ideashop.iit.edu/index.php?title=Safety_Quizzes">Safety Quiz Overview</a> for more information.</p>
+    <p>
+        Please complete the quiz before your next visit to the Idea Shop. 100% is required to pass a quiz. You may repeat a quiz as many times as is necessary.
+        <br>All of the information you need to complete the quiz can be found on the <a href="https://wiki.ideashop.iit.edu">Idea Shop Wiki</a>.
+    </p>
+</p>
+
+Regards,
+<br>Idea Shop Robot
+<br>wiki.ideashop.iit.edu
+<br>ideashop@iit.edu
+<br>312.567.3095
+</div>
