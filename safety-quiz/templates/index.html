@@ -1,8 +1,8 @@
 {% extends 'layout.html' %}
 {% block page %}
 <h3>Hello {{session['email'] }}</h3>
-<div class="card">
-    {% if trainings | length > 0 %}
+<div class="card" style="margin: 1em 0em;">
+    {% if trainings %}
         <div class="card-header">
            My safety trainings
         </div>
@@ -12,7 +12,7 @@
                     <th scope="col">Quiz</th>
                     <th scope="col">Score</th>
                     <th scope="col">Last Taken</th>
-                    <th scope="col"></th>
+                    <th scope="col">Take Quiz</th>
                 </tr>
             </thead>
             <tbody>
@@ -29,8 +29,6 @@
                                 Fail
                                 <!--TODO Fail Mark-->
                             {% endif %}
-                        {% else %}
-                            Available soon
                         {% endif %}
                     </td>
                     <td>{{ each.quiz_taken }}</td>
@@ -39,6 +37,10 @@
                         <a class="btn btn-primary btn-sm" href="{{ url_for('quiz', training_id=each.id)}}" role="button">
                             Take the Quiz
                         </a>
+                        {% elif each.quiz_passed() %}
+                            Passed
+                        {% else %}
+                            Available soon
                         {% endif %}
                     </td>
                 </tr>
@@ -55,4 +57,6 @@
         </div>
     {% endif %}
 </div>
+{% block admin %}
+{% endblock %}
 {% endblock %}

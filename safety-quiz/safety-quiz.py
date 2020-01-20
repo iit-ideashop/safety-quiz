@@ -13,7 +13,7 @@ from werkzeug.utils import secure_filename
 from werkzeug.exceptions import NotFound
 from werkzeug.middleware.dispatcher import DispatcherMiddleware
 
-from checkIn import db_session, User, Training, Machine, Quiz, Question, Option
+from checkIn import db_session, User, UserLocation, Type, Training, Machine, Quiz, Question, Option
 
 # app setup
 app = Flask(__name__, static_url_path='/static', static_folder='static')  # create the application instance :)
@@ -29,97 +29,6 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 Bootstrap(app)
 FontAwesome(app)
 
-# DB Setup
-engine = sa.create_engine(app.config['DB'], pool_recycle=3600, encoding='utf-8')
-Base = declarative_base()
-
-# Quiz App Model
-class User(Base):
-	__tablename__ = 'users'
-	sid = sa.Column(sa.Integer, primary_key=True, autoincrement=False, nullable=False)
-	email = sa.Column(sa.Text, nullable=False)
-	admin = sa.Column(sa.Boolean, nullable=False, default=False)
-
-	assigned_quizzes = relationship('UserQuiz')
-
-	def __repr__(self):
-		return self.email
-
-
-class Quiz(Base):
-	__tablename__ = 'quizzes'
-	id = sa.Column(sa.Integer, primary_key=True, autoincrement=True)
-	name = sa.Column(sa.Text, nullable=False)
-	for_machine = sa.Column(sa.Integer, nullable=False)
-
-	assigned_users = relationship('UserQuiz')
-
-	def __repr__(self):
-		return self.name
-
-	def number_assigned(self):
-		return db.query(self.assigned_users).where(UserQuiz.quiz_id == self.id).count()
-
-	def number_passed(self):
-		return db.query(self.assigned_users).where(UserQuiz.quiz_id == self.id).where(UserQuiz.last_score == 1).count()
-
-
-class UserQuiz(Base):
-	__tablename__ = 'user_quizzes'
-	id = sa.Column(sa.Integer, primary_key=True, autoincrement=True)
-	user_id = sa.Column(sa.Integer, sa.ForeignKey('users.sid'), nullable=False)
-	quiz_id = sa.Column(sa.Integer, sa.ForeignKey('quizzes.id'), nullable=False)
-	last_score = sa.Column(sa.DECIMAL(5, 2), nullable=True)
-	last_taken = sa.Column(sa.DateTime, nullable=True)
-	attempts = sa.Column(sa.Integer, nullable=False, default=0)
-
-	user = relationship('User', lazy="joined")
-	quiz = relationship('Quiz', lazy="joined")
-
-	def __repr__(self):
-		return "%s scored %s on quiz %s on %s." % (self.user.email, self.last_score, self.quiz.name, self.last_taken)
-
-
-class Question(Base):
-	__tablename__ = 'questions'
-	id = sa.Column(sa.Integer, primary_key=True, autoincrement=True)
-	quiz_id = sa.Column(sa.Integer, sa.ForeignKey('quizzes.id'), nullable=False)
-	prompt = sa.Column(sa.Text)
-	description = sa.Column(sa.Text)
-	image = sa.Column(sa.Text)
-	option_type = sa.Column(sa.Text, default="radio", nullable=False) #current allowable [radio, checkbox]
-
-	quiz = relationship('Quiz', lazy="joined")
-	option = relationship('Option', cascade='all, delete-orphan', lazy="joined")
-
-	def __repr__(self):
-		return self.prompt
-
-
-class Option(Base):
-	__tablename__ = 'options'
-	id = sa.Column(sa.Integer, primary_key=True, autoincrement=True)
-	question_id = sa.Column(sa.Integer, sa.ForeignKey('questions.id'), nullable=False)
-	text = sa.Column(sa.Text)
-	image = sa.Column(sa.Text)
-	correct = sa.Column(sa.Boolean, default=False, nullable=False)
-
-	question = relationship('Question', lazy="joined")
-
-	def __repr__(self):
-		return self.text
-
-
-# Just for type-hinting, if you know a better way please fix
-class HasRemoveMethod:
-	def remove(self):
-		pass
-
-
-# create tables if they don't exist & define db_sessions
-db_session: Union[Callable[[], sa.orm.Session], HasRemoveMethod] = scoped_session(sessionmaker(bind=engine))
-Base.metadata.create_all(engine)
-
 @app.before_request
 def before_request():
 	if 'sid' not in session \
@@ -130,11 +39,12 @@ def before_request():
 @app.route('/')
 def index():
 	db = db_session()
-	trainings = db.query(Training).filter(Training.trainee_id == session['sid'])
-	if db.query(User).filter_by(sid=session['sid']).one().admin:
+	trainings = db.query(Training).filter(Training.trainee_id == session['sid']).order_by(Training.date).all()
+	if session['admin']:
 		quizzes = db.query(Quiz).all()
-		return render_template('admin/index.html', available=available, quizzes=quizzes)
+		return render_template('admin/index.html', trainings=trainings, quizzes=quizzes)
 	else:
+		print(trainings)
 		return render_template('index.html', trainings=trainings)
 
 
@@ -177,6 +87,12 @@ def login():
 		if user:
 			session['sid'] = user.sid
 			session['email'] = user.email
+			user_level_list = db.query(Type.level).outerjoin(UserLocation).filter(UserLocation.sid == session['sid']).all()
+			user_max_level = max([item for t in user_level_list for item in t])
+			if user_max_level > 75:
+				session['admin'] = user_max_level
+			else:
+				session['admin'] = None
 			return redirect(url_for('index'))
 		else:
 			flash("User not found.", 'danger')
@@ -195,12 +111,14 @@ def logout():
 def quiz(training_id):
 	db = db_session()
 	training = db.query(Training).filter(Training.id == training_id).one_or_none()
-	if not training:
-		return 404
-	questions = training.machine.quiz.questions
+	if not (training and training.machine and training.machine.quiz and training.machine.quiz.questions):
+		flash("There was an error with your request. Please try again or see Idea Shop staff if the issue persists.", 'danger')
+		return redirect(url_for('index'))
+	else:
+		questions = training.machine.quiz.questions
 
 	if request.method == 'GET':
-		return render_template('quiz.html', questions=questions)
+		return render_template('quiz.html', training=training, questions=questions)
 	elif request.method == 'POST':
 		quiz_max_score = 0.0
 		quiz_current_score = 0.0
@@ -229,12 +147,15 @@ def quiz(training_id):
 		flash(("Score: %s/%s (%s%%)" % (
 			quiz_current_score, quiz_max_score, ((quiz_current_score / quiz_max_score) * 100))), 'info')
 		return redirect(url_for('index'))
+	else:
+		flash("There was an error with your request. Please try again or see Idea Shop staff if the issue persists.", 'danger')
+		return redirect(url_for('index'))
 
 
 @app.route('/edit_quiz/<id>', methods=['GET', 'POST'])
 def edit_quiz(id):
 	db = db_session()
-	if db.query(User).filter_by(sid=session['sid']).one().admin:
+	if session['admin']:
 		if request.method == 'GET':
 			questions = db.query(Question).filter_by(quiz_id=id).all()
 			quiz = db.query(Quiz).filter_by(id=id).one()
