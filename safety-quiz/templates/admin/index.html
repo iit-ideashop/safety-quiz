@@ -7,7 +7,8 @@
     <table class="table table-striped">
         <thead>
             <tr>
-                <th scope="col">Quiz</th>
+                <th scope="col">Machine Name</th>
+                <th scope="col">Quiz Name</th>
                 <th scope="col"></th>
             </tr>
         </thead>
@@ -15,8 +16,9 @@
             {% for each in quizzes %}
                 <tr>
                     <th scope="row">{{each.name}}</th>
+                    <th scope="row">{{each.quiz.name}}</th>
                     <td>
-                        <a class="btn btn-primary btn-sm" href="{{url_for('edit_quiz', id=each.id)}}" role="button">
+                        <a class="btn btn-primary btn-sm" href="{{url_for('edit_quiz', id=each.quiz.id)}}" role="button">
                             <i class="fas fa-edit"></i>
                             Edit quiz
                         </a>

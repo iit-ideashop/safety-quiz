@@ -9,6 +9,7 @@
         <table class="table table-striped">
             <thead>
                 <tr>
+                    <th scope="col">Training</th>
                     <th scope="col">Quiz</th>
                     <th scope="col">Score</th>
                     <th scope="col">Last Taken</th>
@@ -18,15 +19,19 @@
             <tbody>
                 {% for each in trainings %}
                 <tr>
-                    <th scope="row">{{ each.machine.name }}</th>
+                    <th scope="row">{{ each.machine.location.name }}</th>
+                    <th scope="row">{{ each.machine.quiz.name }}</th>
                     <td>
                         {% if each.quiz_passed() or each.quiz_available() %}
                             {{ each.quiz_score }}
                             {% if each.quiz_passed() %}
-                                Pass
+                                % -- Pass
                                 <!--#TODO Pass Mark-->
                             {% else %}
-                                Fail
+                                {% if each.quiz_score %}
+                                %
+                                {% endif %}
+                                &nbsp;-- Fail
                                 <!--TODO Fail Mark-->
                             {% endif %}
                         {% endif %}

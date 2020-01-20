@@ -13,7 +13,7 @@ from werkzeug.utils import secure_filename
 from werkzeug.exceptions import NotFound
 from werkzeug.middleware.dispatcher import DispatcherMiddleware
 
-from checkIn import db_session, User, UserLocation, Type, Training, Machine, Quiz, Question, Option
+from checkIn import db_session, User, UserLocation, Location, Type, Training, Machine, Quiz, Question, Option
 
 # app setup
 app = Flask(__name__, static_url_path='/static', static_folder='static')  # create the application instance :)
@@ -39,9 +39,10 @@ def before_request():
 @app.route('/')
 def index():
 	db = db_session()
-	trainings = db.query(Training).filter(Training.trainee_id == session['sid']).order_by(Training.date).all()
+	trainings = db.query(Training).outerjoin(Machine).filter(Training.trainee_id == session['sid']).filter(Training.invalidation_date == None).filter(Machine.location_id.in_((2,3))).order_by(Training.date).all()
 	if session['admin']:
-		quizzes = db.query(Quiz).all()
+		quizzes = db.query(Machine).filter(Machine.quiz_id != None).order_by(Machine.quiz_id).all()
+		print(quizzes)
 		return render_template('admin/index.html', trainings=trainings, quizzes=quizzes)
 	else:
 		print(trainings)
