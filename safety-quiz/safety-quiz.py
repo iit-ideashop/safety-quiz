@@ -42,10 +42,8 @@ def index():
 	trainings = db.query(Training).outerjoin(Machine).filter(Training.trainee_id == session['sid']).filter(Training.invalidation_date == None).filter(Machine.location_id.in_((2,3))).order_by(Training.date).all()
 	if session['admin']:
 		quizzes = db.query(Machine).filter(Machine.quiz_id != None).order_by(Machine.quiz_id).all()
-		print(quizzes)
 		return render_template('admin/index.html', trainings=trainings, quizzes=quizzes)
 	else:
-		print(trainings)
 		return render_template('index.html', trainings=trainings)
 
 
@@ -85,7 +83,7 @@ def login():
 	if request.method == 'POST':
 		db = db_session()
 		user = db.query(User).filter_by(email=request.form['email']).one_or_none()
-		if user:
+		if user and (user.sid == int(request.form['pin'])):
 			session['sid'] = user.sid
 			session['email'] = user.email
 			user_level_list = db.query(Type.level).outerjoin(UserLocation).filter(UserLocation.sid == session['sid']).all()
@@ -96,7 +94,7 @@ def login():
 				session['admin'] = None
 			return redirect(url_for('index'))
 		else:
-			flash("User not found.", 'danger')
+			flash("User / Pin combonation incorrect.", 'danger')
 			return render_template('login.html')
 	else:
 		return render_template('login.html')
