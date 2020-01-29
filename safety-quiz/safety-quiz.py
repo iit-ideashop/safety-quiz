@@ -13,7 +13,7 @@ from werkzeug.utils import secure_filename
 from werkzeug.exceptions import NotFound
 from werkzeug.middleware.dispatcher import DispatcherMiddleware
 
-from checkIn import db_session, User, UserLocation, Location, Type, Training, Machine, Quiz, Question, Option
+from model import User, UserLocation, Location, Type, Training, Machine, Quiz, Question, Option, init_db
 
 # app setup
 app = Flask(__name__, static_url_path='/static', static_folder='static')  # create the application instance :)
@@ -28,6 +28,8 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 # application
 Bootstrap(app)
 FontAwesome(app)
+
+db_session = init_db(app.config['DB'])
 
 @app.before_request
 def before_request():
