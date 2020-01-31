@@ -1,7 +1,7 @@
 # imports
 import os
 from flask import Flask, request, session, g, redirect, url_for, render_template, abort, flash, get_flashed_messages, \
-	jsonify, send_from_directory
+	jsonify, send_from_directory, Markup
 from flask_bootstrap import Bootstrap
 from flask_fontawesome import FontAwesome
 import sqlalchemy as sa
@@ -123,7 +123,7 @@ def quiz(training_id):
 	elif request.method == 'POST':
 		quiz_max_score = 0.0
 		quiz_current_score = 0.0
-		# print(request.form)
+		wrong_questions = []
 		for question in questions:
 			quiz_max_score += 1
 			question_current_score = 0
@@ -141,12 +141,22 @@ def quiz(training_id):
 					question_max_score += 1
 			if question_max_score == question_current_score:
 				quiz_current_score += 1.0
+			else:
+				wrong_questions.append(str(question.prompt))
 		quiz_percent = ((quiz_current_score / quiz_max_score) * 100)
 		training.quiz_score = quiz_percent
 		training.quiz_taken = sa.func.now()
 		db.commit()
-		flash(("Score: %s/%s (%s%%)" % (
-			quiz_current_score, quiz_max_score, ((quiz_current_score / quiz_max_score) * 100))), 'info')
+		if quiz_percent == 100.00:
+			flash(("Score: %s/%s (%s%%)" % (quiz_current_score, quiz_max_score, quiz_percent)), 'info')
+		else:
+			message = str("Score: %s/%s (%s%%)" % (quiz_current_score, quiz_max_score, quiz_percent)) + str("<br>Incorrect response to:<ul>")
+			for each in wrong_questions:
+				message += "<li>"
+				message += str(each)
+				message += "</li>"
+			message += "</ul>"
+			flash(Markup(message), 'warning')
 		return redirect(url_for('index'))
 	else:
 		flash("There was an error with your request. Please try again or see Idea Shop staff if the issue persists.", 'danger')
