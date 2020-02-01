@@ -1,19 +1,15 @@
 # imports
 import os
-from flask import Flask, request, session, g, redirect, url_for, render_template, abort, flash, get_flashed_messages, \
-	jsonify, send_from_directory, Markup
+from flask import Flask, request, session, redirect, url_for, render_template, flash, send_from_directory, Markup
 from flask_bootstrap import Bootstrap
 from flask_fontawesome import FontAwesome
 import sqlalchemy as sa
-from sqlalchemy.orm import relationship, scoped_session, sessionmaker, joinedload
-from sqlalchemy.ext.declarative import declarative_base
-from typing import Optional, Tuple, List, Callable, Union
 from multidict import MultiDict
 from werkzeug.utils import secure_filename
 from werkzeug.exceptions import NotFound
 from werkzeug.middleware.dispatcher import DispatcherMiddleware
 
-from model import User, UserLocation, Location, Type, Training, Machine, Quiz, Question, Option, init_db
+from model import User, UserLocation, Type, Training, Machine, Quiz, Question, Option, init_db
 
 # app setup
 app = Flask(__name__, static_url_path='/static', static_folder='static')  # create the application instance :)
