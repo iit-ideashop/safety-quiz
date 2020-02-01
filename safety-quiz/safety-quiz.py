@@ -8,6 +8,7 @@ from multidict import MultiDict
 from werkzeug.utils import secure_filename
 from werkzeug.exceptions import NotFound
 from werkzeug.middleware.dispatcher import DispatcherMiddleware
+import random
 
 from model import User, UserLocation, Type, Training, Machine, Quiz, Question, Option, init_db
 
@@ -113,6 +114,7 @@ def quiz(training_id):
 		return redirect(url_for('index'))
 	else:
 		questions = training.machine.quiz.questions
+		random.shuffle(questions)
 
 	if request.method == 'GET':
 		return render_template('quiz.html', training=training, questions=questions)
