@@ -141,9 +141,12 @@ def quiz(training_id):
 				quiz_current_score += 1.0
 			else:
 				wrong_questions.append(str(question.prompt))
-		quiz_percent = ((quiz_current_score / quiz_max_score) * 100)
+		quiz_percent = round(((quiz_current_score / quiz_max_score) * 100),2)
 		training.quiz_score = quiz_percent
-		training.quiz_taken = sa.func.now()
+		training.quiz_date = sa.func.now()
+		if training.quiz_attempts:
+			training.quiz_attempts += 1
+		else: training.quiz_attempts = 1
 		db.commit()
 		if quiz_percent == 100.00:
 			flash(("Score: %s/%s (%s%%)" % (quiz_current_score, quiz_max_score, quiz_percent)), 'info')

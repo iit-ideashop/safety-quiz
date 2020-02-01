@@ -36,7 +36,7 @@
                             {% endif %}
                         {% endif %}
                     </td>
-                    <td>{{ each.quiz_taken }}</td>
+                    <td>{{ each.quiz_date }}</td>
                     <td>
                         {% if each.quiz_available() %}
                         <a class="btn btn-primary btn-sm" href="{{ url_for('quiz', training_id=each.id)}}" role="button">
