@@ -1,5 +1,6 @@
 # imports
 import os
+from datetime import datetime
 from flask import Flask, request, session, redirect, url_for, render_template, flash, send_from_directory, Markup
 from flask_bootstrap import Bootstrap
 from flask_fontawesome import FontAwesome
@@ -35,6 +36,15 @@ def before_request():
 		return redirect(url_for('login'))
 
 
+@app.errorhandler(Exception)
+def error_handler(e):
+	app.logger.error(e, exc_info=True)
+	flash(Markup('<b>An error occurred.</b> Please contact <a href="mailto:ideashop@iit.edu">ideashop@iit.edu</a> and include the '
+	      'current time ' + str(datetime.now().strftime('%x %X')) +
+		  ' as well as a brief description of what you were doing.'), 'danger')
+	return redirect(url_for('index'))
+
+
 @app.route('/')
 def index():
 	db = db_session()
@@ -51,13 +61,13 @@ def upload_file():
 	if request.method == 'POST':
 		# check if the post request has the file part
 		if 'file' not in request.files:
-			flash('No file part')
+			flash('No file part', 'danger')
 			return redirect(url_for('index'))
 		file = request.files['file']
 		# if user does not select file, browser also
 		# submit an empty part without filename
 		if file.filename == '':
-			flash('No selected file')
+			flash('No selected file', 'danger')
 			return redirect(url_for('index'))
 		if file and allowed_file(file.filename):
 			filename = secure_filename(file.filename)
@@ -296,6 +306,6 @@ def no_app(environ, start_response):
 # main
 if __name__ == '__main__':
 	app.wsgi_app = DispatcherMiddleware(no_app, {'/safety': app.wsgi_app})
-	app.run(host='0.0.0.0', debug=True, port=app.config['PORT'])
 	app.jinja_env.auto_reload = True
 	app.config['TEMPLATES_AUTO_RELOAD'] = True
+	app.run(host='0.0.0.0', debug=True, port=app.config['PORT'])
