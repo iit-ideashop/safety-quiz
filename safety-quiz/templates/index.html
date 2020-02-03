@@ -1,6 +1,9 @@
 {% extends 'layout.html' %}
 {% block page %}
 <h3>Hello {{session['email'] }}</h3>
+<div class="alert alert-info">
+    If you are having trouble completing the quizzes or do not remember the correct answer, check out this page on our wiki: <a href="https://wiki.ideashop.iit.edu/index.php?title=Safety_Quizzes">https://wiki.ideashop.iit.edu/index.php?title=Safety_Quizzes</a>
+</div>
 <div class="card" style="margin: 1em 0em;">
     {% if trainings %}
         <div class="card-header">
