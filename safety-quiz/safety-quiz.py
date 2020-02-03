@@ -10,7 +10,7 @@ from werkzeug.exceptions import NotFound
 from werkzeug.middleware.dispatcher import DispatcherMiddleware
 import random
 
-from model import User, UserLocation, Type, Training, Machine, Quiz, Question, Option, init_db
+from model import User, UserLocation, Type, Training, Machine, Quiz, Question, Option, MissedQuestion, init_db
 
 # app setup
 app = Flask(__name__, static_url_path='/static', static_folder='static')  # create the application instance :)
@@ -140,6 +140,7 @@ def quiz(training_id):
 			if question_max_score == question_current_score:
 				quiz_current_score += 1.0
 			else:
+				db.add(MissedQuestion(question_id=question.id,training_id=training.id))
 				wrong_questions.append(str(question.prompt))
 		quiz_percent = round(((quiz_current_score / quiz_max_score) * 100),2)
 		training.quiz_score = quiz_percent
