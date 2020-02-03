@@ -86,6 +86,9 @@ def login():
 			session['sid'] = user.sid
 			session['email'] = user.email
 			user_level_list = db.query(Type.level).outerjoin(UserLocation).filter(UserLocation.sid == session['sid']).all()
+			if not user_level_list:
+				flash("No User Agreement on file. Please see Idea Shop staff.", 'danger')
+				return render_template('login.html')
 			user_max_level = max([item for t in user_level_list for item in t])
 			if user_max_level == 100:
 				session['admin'] = user_max_level
