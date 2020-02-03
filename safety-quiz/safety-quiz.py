@@ -87,7 +87,7 @@ def login():
 			session['email'] = user.email
 			user_level_list = db.query(Type.level).outerjoin(UserLocation).filter(UserLocation.sid == session['sid']).all()
 			user_max_level = max([item for t in user_level_list for item in t])
-			if user_max_level > 75:
+			if user_max_level == 100:
 				session['admin'] = user_max_level
 			else:
 				session['admin'] = None
