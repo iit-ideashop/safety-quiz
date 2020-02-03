@@ -308,4 +308,4 @@ if __name__ == '__main__':
 	app.wsgi_app = DispatcherMiddleware(no_app, {'/safety': app.wsgi_app})
 	app.jinja_env.auto_reload = True
 	app.config['TEMPLATES_AUTO_RELOAD'] = True
-	app.run(host='0.0.0.0', debug=True, port=app.config['PORT'])
+	app.run(host='0.0.0.0', debug=bool(app.config['DEBUG']), port=app.config['PORT'])
