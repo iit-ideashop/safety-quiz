@@ -1,5 +1,10 @@
 {% extends 'layout.html' %}
 {% block page %}
+{% if training.quiz_attempts > 9 %}
+<div class="alert alert-warning">
+    Attempting to brute force a safety quiz via a guess and check method is a violation of the <a href="https://wiki.ideashop.iit.edu/index.php?title=User_Agreement">Idea Shop User Agreement</a> and will result in invalidation of your safety training.
+</div>
+{% endif %}
 <h1>{{training.machine.quiz.name}} Quiz</h1>
 <form method="post" href="{{url_for('quiz',training_id=training.id)}}">
 {% for question in questions %}
