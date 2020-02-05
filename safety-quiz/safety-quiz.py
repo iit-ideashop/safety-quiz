@@ -10,6 +10,7 @@ from werkzeug.utils import secure_filename
 from werkzeug.exceptions import NotFound
 from werkzeug.middleware.dispatcher import DispatcherMiddleware
 import random
+import numpy
 
 from model import User, UserLocation, Type, Training, Machine, Quiz, Question, Option, MissedQuestion, init_db
 
@@ -130,7 +131,11 @@ def quiz(training_id):
 		random.shuffle(questions)
 
 	if request.method == 'GET':
-		return render_template('quiz.html', training=training, questions=questions)
+		quiz_stats = [i[0] for i in db.query(Training.quiz_attempts).filter(Training.quiz_attempts > 0).all()]
+		if training.quiz_attempts and training.quiz_attempts >= min((numpy.mean(quiz_stats)+(2*numpy.std(quiz_stats)),8)):
+			warning = True
+		else: warning = False
+		return render_template('quiz.html', training=training, questions=questions, warning=warning)
 	elif request.method == 'POST':
 		quiz_max_score = 0.0
 		quiz_current_score = 0.0
