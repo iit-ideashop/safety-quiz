@@ -118,6 +118,27 @@ def logout():
 	session.clear()
 	return redirect(url_for('index'))
 
+@app.route('/quiz/override/<training_id>', methods=['GET','POST'])
+def override(training_id):
+	if request.method == 'POST':
+		quiz(training_id)
+	db = db_session()
+	training = db.query(Training).filter(Training.id == training_id).one_or_none()
+	if not (training and training.machine and training.machine.quiz and training.machine.quiz.questions):
+		flash("There was an error with your request. Please try again or see Idea Shop staff if the issue persists.", 'danger')
+		return redirect(url_for('index'))
+	else:
+		questions = training.machine.quiz.questions
+		random.shuffle(questions)
+	quiz_stats = [i[0] for i in db.query(Training.quiz_attempts).filter(Training.quiz_attempts > 0).all()]
+	if training.quiz_attempts and training.quiz_attempts < min((numpy.mean(quiz_stats) + (3.5 * numpy.std(quiz_stats)), 12)):
+		remaining_attempts = min(numpy.mean(quiz_stats) + (3.5 * numpy.std(quiz_stats)), 12) - training.quiz_attempts
+		flash("Override mode: %s attempts remaining." % remaining_attempts, 'danger')
+		return render_template('quiz.html', training=training, questions=questions, warning=True)
+	else:
+		flash("You have reached the maximum number of override attempts on the %s quiz without passing. Please see Idea Shop staff for assistance." % (training.machine.name), 'danger')
+		return redirect(url_for('index'))
+
 
 @app.route('/quiz/<training_id>', methods=['GET', 'POST'])
 def quiz(training_id):
