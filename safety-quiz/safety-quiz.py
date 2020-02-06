@@ -41,7 +41,7 @@ def before_request():
 def error_handler(e):
 	app.logger.error(e, exc_info=True)
 	flash(Markup('<b>An error occurred.</b> Please contact <a href="mailto:ideashop@iit.edu">ideashop@iit.edu</a> and include the '
-	      'current time ' + str(datetime.now().strftime('%x %X')) +
+		  'current time ' + str(datetime.now().strftime('%x %X')) +
 		  ' as well as a brief description of what you were doing.'), 'danger')
 	return redirect(url_for('index'))
 
@@ -132,9 +132,17 @@ def quiz(training_id):
 
 	if request.method == 'GET':
 		quiz_stats = [i[0] for i in db.query(Training.quiz_attempts).filter(Training.quiz_attempts > 0).all()]
-		if training.quiz_attempts and training.quiz_attempts >= min((numpy.mean(quiz_stats)+(2*numpy.std(quiz_stats)),8)):
+		if training.quiz_attempts and training.quiz_attempts >= min((numpy.mean(quiz_stats)+(3*numpy.std(quiz_stats)),10)):
+			training.invalidation_date = sa.func.now()
+			training.invalidation_reason = "Quiz attempt maximum reached."
+			db.merge(training)
+			db.commit()
+			flash("You have reached the maximum number of attempts on the %s quiz without passing and your training has been invalidated. Please see Idea Shop staff for assistance." % (training.machine.name), 'danger')
+			return redirect(url_for('index'))
+		if training.quiz_attempts and training.quiz_attempts >= min((numpy.mean(quiz_stats)+(1.5*numpy.std(quiz_stats)),6)):
 			warning = True
-		else: warning = False
+		else:
+			warning = False
 		return render_template('quiz.html', training=training, questions=questions, warning=warning)
 	elif request.method == 'POST':
 		quiz_max_score = 0.0
