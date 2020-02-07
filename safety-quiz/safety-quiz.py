@@ -120,10 +120,12 @@ def logout():
 
 @app.route('/quiz/override/<training_id>', methods=['GET','POST'])
 def override(training_id):
-	if request.method == 'POST':
-		quiz(training_id)
 	db = db_session()
 	training = db.query(Training).filter(Training.id == training_id).one_or_none()
+	if request.method == 'POST':
+		quiz(training_id)
+		if int(training.quiz_score) == 100:
+			return redirect(url_for('index'))
 	if not (training and training.machine and training.machine.quiz and training.machine.quiz.questions):
 		flash("There was an error with your request. Please try again or see Idea Shop staff if the issue persists.", 'danger')
 		return redirect(url_for('index'))
