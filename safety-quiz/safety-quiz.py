@@ -10,7 +10,6 @@ from werkzeug.utils import secure_filename
 from werkzeug.exceptions import NotFound
 from werkzeug.middleware.dispatcher import DispatcherMiddleware
 import random
-import numpy
 
 from model import User, UserLocation, Type, Training, Machine, Quiz, Question, Option, MissedQuestion, init_db
 
@@ -153,16 +152,16 @@ def quiz(training_id):
 		questions = training.machine.quiz.questions
 		random.shuffle(questions)
 
+	quiz_stats = db.query(sa.func.stddev(Training.quiz_attempts).label('stddev'), sa.func.avg(Training.quiz_attempts).label('avg')) \
+		.filter(Training.quiz_attempts > 0) \
+		.filter(Training.machine_id == training.machine_id) \
+		.one()
+
 	if request.method == 'GET':
-		quiz_stats = [i[0] for i in db.query(Training.quiz_attempts).filter(Training.quiz_attempts > 0).all()]
-		if training.quiz_attempts and training.quiz_attempts >= min((numpy.mean(quiz_stats)+(3*numpy.std(quiz_stats)),10)):
-			training.invalidation_date = sa.func.now()
-			training.invalidation_reason = "Quiz attempt maximum reached."
-			db.merge(training)
-			db.commit()
+		if training.quiz_attempts and training.quiz_attempts >= min(float(quiz_stats.avg) + (3 * quiz_stats.stddev), 10):
 			flash("You have reached the maximum number of attempts on the %s quiz without passing and your training has been invalidated. Please see Idea Shop staff for assistance." % (training.machine.name), 'danger')
 			return redirect(url_for('index'))
-		if training.quiz_attempts and training.quiz_attempts >= min((numpy.mean(quiz_stats)+(1.5*numpy.std(quiz_stats)),6)):
+		if training.quiz_attempts and training.quiz_attempts >= min(float(quiz_stats.avg) + (1.5 * quiz_stats.stddev), 6):
 			warning = True
 		else:
 			warning = False
@@ -194,9 +193,18 @@ def quiz(training_id):
 		quiz_percent = round(((quiz_current_score / quiz_max_score) * 100),2)
 		training.quiz_score = quiz_percent
 		training.quiz_date = sa.func.now()
+
 		if training.quiz_attempts:
 			training.quiz_attempts += 1
-		else: training.quiz_attempts = 1
+			if training.quiz_attempts >= min(float(quiz_stats.avg) + (3 * quiz_stats.stddev), 10):
+				training.invalidation_date = sa.func.now()
+				training.invalidation_reason = "Quiz attempt maximum reached."
+				flash(
+					"You have reached the maximum number of attempts on the %s quiz without passing and your training has been invalidated. Please see Idea Shop staff for assistance." % (
+						training.machine.name), 'danger')
+
+		else:
+			training.quiz_attempts = 1
 		db.commit()
 		if quiz_percent == 100.00:
 			flash(("Score: %s/%s (%s%%)" % (quiz_current_score, quiz_max_score, quiz_percent)), 'info')
