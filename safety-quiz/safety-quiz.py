@@ -131,9 +131,15 @@ def override(training_id):
 	else:
 		questions = training.machine.quiz.questions
 		random.shuffle(questions)
-	quiz_stats = [i[0] for i in db.query(Training.quiz_attempts).filter(Training.quiz_attempts > 0).all()]
-	if training.quiz_attempts and training.quiz_attempts < min((numpy.mean(quiz_stats) + (3.5 * numpy.std(quiz_stats)), 12)):
-		remaining_attempts = min(numpy.mean(quiz_stats) + (3.5 * numpy.std(quiz_stats)), 12) - training.quiz_attempts
+
+	quiz_stats = db.query(sa.func.stddev(Training.quiz_attempts).label('stddev'),
+	                      sa.func.avg(Training.quiz_attempts).label('avg')) \
+		.filter(Training.quiz_attempts > 0) \
+		.filter(Training.machine_id == training.machine_id) \
+		.one()
+
+	if training.quiz_attempts and training.quiz_attempts < min(float(quiz_stats.avg) + (3.5 * quiz_stats.stddev), 12):
+		remaining_attempts = min(float(quiz_stats.avg) + (3.5 * quiz_stats.stddev), 12) - training.quiz_attempts
 		flash("Override mode: %s attempts remaining." % remaining_attempts, 'danger')
 		return render_template('quiz.html', training=training, questions=questions, warning=True)
 	else:
