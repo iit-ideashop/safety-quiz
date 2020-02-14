@@ -138,8 +138,8 @@ def override(training_id):
 		.filter(Training.machine_id == training.machine_id) \
 		.one()
 
-	if training.quiz_attempts and training.quiz_attempts < min(float(quiz_stats.avg) + (3.5 * quiz_stats.stddev), 12):
-		remaining_attempts = min(float(quiz_stats.avg) + (3.5 * quiz_stats.stddev), 12) - training.quiz_attempts
+	if training.quiz_attempts and training.quiz_attempts < max(float(quiz_stats.avg) + (3.5 * quiz_stats.stddev), 12):
+		remaining_attempts = max(float(quiz_stats.avg) + (3.5 * quiz_stats.stddev), 12) - training.quiz_attempts
 		flash("Override mode: %s attempts remaining." % remaining_attempts, 'danger')
 		return render_template('quiz.html', training=training, questions=questions, warning=True)
 	else:
@@ -164,10 +164,10 @@ def quiz(training_id):
 		.one()
 
 	if request.method == 'GET':
-		if training.quiz_attempts and training.quiz_attempts >= min(float(quiz_stats.avg) + (3 * quiz_stats.stddev), 10):
+		if training.quiz_attempts and training.quiz_attempts >= max(float(quiz_stats.avg) + (3 * quiz_stats.stddev), 10):
 			flash("You have reached the maximum number of attempts on the %s quiz without passing and your training has been invalidated. Please see Idea Shop staff for assistance." % (training.machine.name), 'danger')
 			return redirect(url_for('index'))
-		if training.quiz_attempts and training.quiz_attempts >= min(float(quiz_stats.avg) + (1.5 * quiz_stats.stddev), 6):
+		if training.quiz_attempts and training.quiz_attempts >= max(float(quiz_stats.avg) + (1.5 * quiz_stats.stddev), 6):
 			warning = True
 		else:
 			warning = False
@@ -202,7 +202,7 @@ def quiz(training_id):
 
 		if training.quiz_attempts:
 			training.quiz_attempts += 1
-			if training.quiz_attempts >= min(float(quiz_stats.avg) + (3 * quiz_stats.stddev), 10):
+			if wrong_questions and training.quiz_attempts >= max(float(quiz_stats.avg) + (3 * quiz_stats.stddev), 10):
 				training.invalidation_date = sa.func.now()
 				training.invalidation_reason = "Quiz attempt maximum reached."
 				flash(
