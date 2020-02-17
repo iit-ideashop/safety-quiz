@@ -202,7 +202,7 @@ def quiz(training_id):
 
 		if training.quiz_attempts:
 			training.quiz_attempts += 1
-			if wrong_questions and training.quiz_attempts >= max(float(quiz_stats.avg) + (3 * quiz_stats.stddev), 10):
+			if quiz_percent != 100.00 and training.quiz_attempts >= max(float(quiz_stats.avg) + (3 * quiz_stats.stddev), 10):
 				training.invalidation_date = sa.func.now()
 				training.invalidation_reason = "Quiz attempt maximum reached."
 				flash(
