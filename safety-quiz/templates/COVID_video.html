@@ -1,0 +1,198 @@
+{% extends 'layout.html' %}
+{%  block head %}
+    {{ super() }}
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+{%  endblock %}
+{% block page %}
+    <!-- 1. The <iframe> (and video player) will replace this <div> tag. -->
+    <div style="text-align: center;">
+        <div id="player"></div>
+    </div>
+    <div>
+        <h3>Video Instructions</h3>
+        Pausing the video will stop this timer.
+        Leaving this window will pause the timer.
+        Fast forwarding through the video is not permitted.
+        <h1><div style="text-align: center" id="countdown">00:10</div></h1>
+    </div>
+{% endblock %}
+{%  block scripts %}
+    {{ super() }}
+    <script>
+      var tag = document.createElement('script');
+
+      tag.src = "https://www.youtube.com/iframe_api";
+      var firstScriptTag = document.getElementsByTagName('script')[0];
+      firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+      var player;
+      function onYouTubeIframeAPIReady() {
+        player = new YT.Player('player', {
+            width: '75%',
+            height: '500px',
+            videoId: '',
+            events: {
+                'onStateChange': onPlayerStateChange
+            }
+        });
+      }
+
+      function onPlayerStateChange(event) {
+          if (event.data == YT.PlayerState.PAUSED) {
+            CountDown.Pause();
+          }
+          if (event.data == YT.PlayerState.PLAYING) {
+              if (CountDown.IsStarted() == false) {
+                  CountDown.Start(31000);
+              }
+              else {
+                  CountDown.Resume();
+              }
+          }
+          if (event.data == YT.PlayerState.ENDED) {
+                CountDown.Pause();
+                var secondsRemaining = CountDown.TimeRemaining();
+                if (secondsRemaining > 10) {
+                    alert("It looks like you may have tried to speed through the video. Please refresh the page to restart this online training.");
+                }
+                else {
+                    var form = document.createElement('form');
+                    document.body.appendChild(form);
+                    form.method = 'post';
+                    form.action = "http://127.0.0.1:5000/safety/COVID";
+                    var input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = 'sid';
+                    input.value = 20313392;
+                    form.appendChild(input);
+                    form.submit();
+                }
+          }
+      }
+
+      function stopVideo() {
+        player.stopVideo();
+      }
+
+      // Set the name of the hidden property and the change event for visibility
+      var hidden, visibilityChange;
+      if (typeof document.hidden !== "undefined") { // Opera 12.10 and Firefox 18 and later support
+          hidden = "hidden";
+          visibilityChange = "visibilitychange";
+      } else if (typeof document.msHidden !== "undefined") {
+          hidden = "msHidden";
+          visibilityChange = "msvisibilitychange";
+      } else if (typeof document.webkitHidden !== "undefined") {
+          hidden = "webkitHidden";
+          visibilityChange = "webkitvisibilitychange";
+      }
+
+      var videoElement = document.getElementById("player");
+
+      // If the page is hidden, pause the video;
+      // if the page is shown, play the video
+      function handleVisibilityChange() {
+          if (document[hidden]) {
+              player.pauseVideo();
+          } else {
+          }
+      }
+
+      // Warn if the browser doesn't support addEventListener or the Page Visibility API
+      if (typeof document.addEventListener === "undefined" || hidden === undefined) {
+          console.log("This demo requires a browser, such as Google Chrome or Firefox, that supports the Page Visibility API.");
+      } else {
+          // Handle page visibility change
+          document.addEventListener(visibilityChange, handleVisibilityChange, false);
+
+          // When the video pauses, set the title.
+          // This shows the paused
+          videoElement.addEventListener("pause", function(){
+              document.title = 'Paused';
+          }, false);
+
+          // When the video plays, set the title.
+          videoElement.addEventListener("play", function(){
+              document.title = 'Playing';
+          }, false);
+
+      }
+
+      //timer
+      var CountDown = (function ($) {
+          // Length ms
+          var TimeOut = 10000;
+          // Interval ms
+          var TimeGap = 1000;
+
+          var CurrentTime = ( new Date() ).getTime();
+          var EndTime = ( new Date() ).getTime() + TimeOut;
+
+          var GuiTimer = $('#countdown');
+
+          var Started = false;
+          var Running = true;
+
+          var UpdateTimer = function() {
+              // Run till timeout
+              if( CurrentTime + TimeGap < EndTime ) {
+                  setTimeout( UpdateTimer, TimeGap );
+              }
+              // Countdown if running
+              if( Running ) {
+                  CurrentTime += TimeGap;
+                  if( CurrentTime >= EndTime ) {
+                      GuiTimer.css('color','red');
+                  }
+              }
+              // Update Gui
+              var Time = new Date();
+              Time.setTime( EndTime - CurrentTime );
+              var Minutes = Time.getMinutes();
+              var Seconds = Time.getSeconds();
+
+              GuiTimer.html(
+                  (Minutes < 10 ? '0' : '') + Minutes
+                  + ':'
+                  + (Seconds < 10 ? '0' : '') + Seconds );
+          };
+
+          var Pause = function() {
+              Running = false;
+          };
+
+          var Resume = function() {
+              Running = true;
+          };
+
+          var Start = function( Timeout ) {
+              TimeOut = Timeout;
+              CurrentTime = ( new Date() ).getTime();
+              EndTime = ( new Date() ).getTime() + TimeOut;
+              Started = true;
+              UpdateTimer();
+          };
+
+          var IsStarted = function() {
+              return Started;
+          };
+
+          var TimeRemaining = function() {
+                var Time = new Date();
+                Time.setTime( EndTime - CurrentTime );
+                var secondsRemaining = (Time.getMinutes()*60)+(Time.getSeconds())
+                console.log(secondsRemaining);
+                return secondsRemaining;
+          }
+
+          return {
+              Pause: Pause,
+              Resume: Resume,
+              Start: Start,
+              IsStarted: IsStarted,
+              TimeRemaining, TimeRemaining
+          };
+      })(jQuery);
+
+    </script>
+{% endblock %}
