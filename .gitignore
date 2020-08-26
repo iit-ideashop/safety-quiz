@@ -115,3 +115,4 @@ venv.bak/
 # JetBrains IDEs
 .idea/*
 !.idea/codeStyles
+/safety-quiz/client_secret.json
