@@ -47,7 +47,7 @@ CLIENT_SECRETS_FILE = "client_secret.json"
 
 # This OAuth 2.0 access scope allows for full read/write access to the
 # authenticated user's account and requires requests to use an SSL connection.
-SCOPES = ["https://www.googleapis.com/auth/userinfo.email",'openid']
+SCOPES = ["https://www.googleapis.com/auth/userinfo.email", "https://www.googleapis.com/auth/userinfo.profile", 'openid']
 API_SERVICE_NAME = 'oauth2'
 API_VERSION = 'v2'
 
