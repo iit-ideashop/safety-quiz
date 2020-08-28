@@ -1,7 +1,7 @@
 # imports
 import os
-from datetime import datetime
-from flask import Flask, request, session, redirect, url_for, render_template, flash, send_from_directory, Markup
+import datetime
+from flask import Flask, request, session, redirect, url_for, render_template, flash, send_from_directory, Markup, jsonify
 from flask_bootstrap import Bootstrap
 from flask_fontawesome import FontAwesome
 import sqlalchemy as sa
@@ -11,10 +11,17 @@ from werkzeug.exceptions import NotFound
 from werkzeug.middleware.dispatcher import DispatcherMiddleware
 import random
 
+from typing import Union, Callable, Tuple, Optional
+
+import sqlalchemy as sa
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import scoped_session, sessionmaker, relationship
+_base_reservation = declarative_base()
+
 from model import User, UserLocation, Type, Training, Machine, Quiz, Question, Option, MissedQuestion, init_db
 
 # app setup
-app = Flask(__name__, static_url_path='/static', static_folder='static')  # create the application instance :)
+app = Flask(__name__, static_url_path='/safety/static', static_folder='static')  # create the application instance :)
 app.config.from_object(__name__)
 app.config.from_pyfile('config.cfg')
 app.config.from_envvar('FLASKR_SETTINGS', silent=True)
@@ -28,6 +35,51 @@ Bootstrap(app)
 FontAwesome(app)
 
 db_session = init_db(app.config['DB'])
+
+##added for reservations TODO clean this up and move into a model
+
+# Just for type-hinting, if you know a better way please fix
+class HasRemoveMethod:
+	def remove(self):
+		pass
+
+def init_reservation_db(connection_string: str) -> Union[Callable[[], sa.orm.Session], HasRemoveMethod]:
+	global engine
+	engine = sa.create_engine(connection_string, pool_size=50, max_overflow=150, pool_recycle=3600, encoding='utf-8')
+	db_session = scoped_session(sessionmaker(bind=engine))
+	_base_reservation.metadata.create_all(engine)
+	db = db_session()
+	db.close()
+	return db_session
+
+
+db_reservations = init_reservation_db(app.config['DB_RESERVATION'])
+
+class ReservationType(_base_reservation):
+	__tablename__ = 'reservation_types'
+	id = sa.Column(sa.Integer, primary_key=True, autoincrement=True)
+	name = sa.Column(sa.VARCHAR(100), nullable=False)
+	quantity = sa.Column(sa.Integer, nullable=False, default=1)
+	capacity = sa.Column(sa.Integer, nullable=False, default=1)
+
+	reservations = relationship("Reservations", lazy='joined')
+
+	def __repr__(self):
+		return self.name
+
+class Reservations(_base_reservation):
+	__tablename__ = 'reservations'
+	id = sa.Column(sa.Integer, primary_key=True, autoincrement=True)
+	start = sa.Column(sa.DateTime, nullable=False)
+	end = sa.Column(sa.DateTime, nullable=False)
+	sid = sa.Column(sa.Integer, nullable=False)
+	type_id = sa.Column(sa.Integer, sa.ForeignKey('reservation_types.id'), nullable=False)
+	parent_id = sa.Column(sa.Integer, sa.ForeignKey('reservations.id'), nullable=True)
+
+	type = relationship('ReservationType')
+
+	def __repr__(self):
+		return "%s has a %s reservation from %s to %s" % (self.sid, self.type.name, self.start, self.end)
 
 @app.before_request
 def before_request():
@@ -351,7 +403,91 @@ def add_object(object_type):
 		db.commit()
 		return {'id': new.id}
 
+@app.route('/reservations', methods=['GET','POST'])
+def reservations():
+	if request.method == 'GET':
+		db = db_session()
+		temp = db.query(UserLocation).filter_by(sid=session['sid']).filter_by(location_id=2).one_or_none().get_missing_trainings(db)
+		if (9 in [each[0].id for each in temp]) and (27 in [each[0].id for each in temp]):
+			return '''Can't make a reservation!'''
+		user = db.query(User).filter_by(sid=session['sid']).one_or_none()
+		db.close()
+		reservation_types = db_reservations().query(ReservationType).order_by(ReservationType.id.asc()).all()
+		return render_template('reservations.html', reservation_types=reservation_types, user=user)
+	if request.method == 'POST':
+		print(request.form)
+		user = db_session().query(User).filter_by(sid=session['sid']).one_or_none()
+		start_time = datetime.datetime.strptime(request.form['start_time'],"%Y-%m-%d %X")
+		end_time = datetime.datetime.strptime(request.form['end_time'],"%Y-%m-%d %X")
+		db = db_reservations()
+		db.add(Reservations(type_id=int(request.form['reservation_type']),start=start_time,end=end_time,sid=user.sid))
+		db.commit()
+		return redirect(url_for('reservations'))
 
+@app.route('/reservations/api/checkEmail')
+def checkEmail():
+	db = db_session()
+	user = db.query(User).filter_by(email=request.args['email']).one_or_none()
+	if user:
+		userLocation = db.query(UserLocation).filter_by(sid=user.sid).filter_by(location_id=2).one_or_none()
+		if userLocation :
+			temp = userLocation.get_missing_trainings(db)
+			if (9 in [each[0].id for each in temp]) and (27 in [each[0].id for each in temp]):
+				return jsonify({'valid': False, 'reason': "User not cleared for reservations."})
+			else:
+				return jsonify({'valid': True, 'reason': "User cleared for reservations."})
+	return jsonify({'valid': False, 'reason': "User not cleared for reservations."})
+
+@app.route('/reservations/api/type')
+def get_type():
+	x = db_reservations().query(ReservationType).filter_by(id=int(request.args['type_id'])).one_or_none()
+	if x :
+		return jsonify({'id':x.id,'name':x.name,'quantity':x.quantity,'capacity':x.capacity})
+	else:
+		return ''''''
+
+@app.route('/reservations/api/start_times', methods=['GET'])
+def start_times():
+	db = db_reservations()
+	requested_date = datetime.datetime.strptime(request.args['date'][:15], "%a %b %d %Y").date()
+	reservation_type = db.query(ReservationType).filter_by(id=int(request.args['type_id'])).one()
+	existing_reservations = db.query(Reservations).filter(Reservations.start >= requested_date).filter(Reservations.end < requested_date+datetime.timedelta(days=1)).filter(Reservations.type_id == reservation_type.id).all()
+	open = True
+	if open:
+		open_time = datetime.datetime.combine(requested_date,datetime.time(9,0))
+		close_time = datetime.datetime.combine(requested_date,datetime.time(17,0))
+		delta_time = datetime.timedelta(hours=0,minutes=15)
+		start_times = []
+		for i in range(open_time.hour*60+open_time.minute,close_time.hour*60+close_time.minute,int(delta_time.seconds / 60)):
+			i = datetime.datetime.combine(requested_date,datetime.time(int(i/60),int(i%60)))
+			availability = reservation_type.quantity
+			for each in existing_reservations:
+				if i > (each.start - (2*delta_time)) and i < (each.end + (2*delta_time)):
+					availability -= 1
+			if availability > 0:
+				start_times.append(i)
+		return jsonify([{'date': str(x.date()), 'time': str(x.time())} for x in start_times])
+
+@app.route('/reservations/api/end_times', methods=['GET'])
+def end_times():
+	db = db_reservations()
+	reservation_type = db.query(ReservationType).filter_by(id = int(request.args['type_id'])).one()
+	start_time = datetime.datetime.strptime(request.args['start_time'],"%Y-%m-%d %X")
+	existing_reservations = db.query(Reservations).filter(Reservations.start >= start_time).filter(Reservations.end < start_time.date() + datetime.timedelta(days=1)).filter(Reservations.type_id == reservation_type.id).all()
+	close_time = datetime.datetime.combine(start_time.date(), datetime.time(17, 0))
+	delta_time = datetime.timedelta(hours=0, minutes=15)
+	max_reservation_minutes = 180
+	end_times = []
+	for i in range(((start_time+delta_time).hour * 60) + (start_time+delta_time).minute, min((close_time.hour * 60) + close_time.minute,((start_time+delta_time).hour * 60) + (start_time+delta_time).minute + max_reservation_minutes), int(delta_time.seconds / 60)):
+		i = datetime.datetime.combine(start_time.date(), datetime.time(int(i / 60), int(i % 60)))
+		availability = reservation_type.quantity
+		for each in existing_reservations:
+			if i > (each.start - (2*delta_time)):
+				availability -= 1
+		if availability > 0:
+			end_times.append(i)
+		else: break
+	return jsonify([{'date': str(x.date()), 'time': str(x.time())} for x in end_times])
 # app routes end
 
 @app.teardown_appcontext
