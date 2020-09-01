@@ -46,13 +46,13 @@ class CalendarPicker {
 
         // Hard-coded list of all days.
         this.listOfAllDaysAsText = [
+            'Sun',
             'Mon',
             'Tue',
             'Wed',
             'Thu',
             'Fri',
-            'Sat',
-            'Sun'
+            'Sat'
         ];
 
         // Hard-coded list of all months.
@@ -228,10 +228,10 @@ class CalendarPicker {
         let firstDayOfMonth = arrayOfDays[0].getDay();
 
         // Converting Sunday (0 when using getDay()) to 7 to make it easier to work with.
-        firstDayOfMonth = firstDayOfMonth === 0 ? 7 : firstDayOfMonth;
+        firstDayOfMonth = firstDayOfMonth === 0 ? 0 : firstDayOfMonth;
 
-        if (1 < firstDayOfMonth) {
-            arrayOfDays = Array(firstDayOfMonth - 1).fill(false, 0).concat(arrayOfDays);
+        if (0 <= firstDayOfMonth) {
+            arrayOfDays = Array(firstDayOfMonth).fill(false, 0).concat(arrayOfDays);
         }
 
         arrayOfDays.forEach(date => {
