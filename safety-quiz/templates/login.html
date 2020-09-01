@@ -4,7 +4,10 @@
     <div class="card-header">
         Login
     </div>
-    <div class="card-body">
+    <div class="card-body" {% if legacy == True %} hidden {% endif %}>
+        <a class="btn btn-lg btn-success" href="{{ url_for( 'login_google') }}">Click here to login with Google.</a>
+    </div>
+    <div class="card-body" {% if legacy == False %} hidden {%  endif %}>
         <form action="{{ url_for('login') }}" method="post">
             <div class="form-group">
                 <label for="email">IIT Email</label>
@@ -14,6 +17,7 @@
                 <label for="pin">A Number -- Do not include the 'A'</label>
                 <input type="password" pattern="[0-9]*" inputmode="numeric" id="pin" name="pin" min="20000000" max="29999999" step="1" required class="form-control" />
             </div>
+            <input type="text" value="True" name="legacy" hidden>
             <input type="submit" value="Login" class="btn btn-primary"/>
         </form>
     </div>
