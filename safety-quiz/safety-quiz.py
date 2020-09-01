@@ -555,14 +555,39 @@ def reservations():
         reservation_types = db_reservations().query(ReservationType).order_by(ReservationType.id.asc()).all()
         return render_template('reservations.html', reservation_types=reservation_types, user=user)
     if request.method == 'POST':
-        print(request.form)
         user = db_session().query(User).filter_by(sid=session['sid']).one_or_none()
         start_time = datetime.datetime.strptime(request.form['start_time'],"%Y-%m-%d %X")
         end_time = datetime.datetime.strptime(request.form['end_time'],"%Y-%m-%d %X")
         db = db_reservations()
-        db.add(Reservations(type_id=int(request.form['reservation_type']),start=start_time,end=end_time,sid=user.sid))
+        reservation_type = db.query(ReservationType).filter_by(id=int(request.form['reservation_type'])).one_or_none()
+        parent = Reservations(type_id=reservation_type.id, start=start_time, end=end_time, sid=user.sid)
+        db.add(parent)
+        db.flush()
+        flash("Created %s reservation for %s, %s - %s" % (reservation_type.name, user.name, parent.start, parent.end),'success')
+        for each in [x for x in list(request.form.keys()) if 'user' in x and request.form[x] != '']:
+            response = confirmAllowed(request.form[each])
+            if response['valid'] is True:
+                db.add(Reservations(type_id=int(request.form['reservation_type']),start=start_time,end=end_time,sid=user.sid,parent_id=parent.id))
+                db.flush()
+                flash("Created %s reservation for %s, %s - %s" % (reservation_type.name, response['user'].name, parent.start, parent.end),'success')
         db.commit()
         return redirect(url_for('reservations'))
+
+def confirmAllowed(email):
+    db = db_session()
+    user = db.query(User).filter_by(email=email).one_or_none()
+    if user:
+        userLocation = db.query(UserLocation).filter_by(sid=user.sid).filter_by(location_id=2).one_or_none()
+        if userLocation :
+            temp = userLocation.get_missing_trainings(db)
+            if (9 in [each[0].id for each in temp]) and (27 in [each[0].id for each in temp]):
+                flash("User %s is not cleared for reservations." % email, 'danger')
+                return {'valid': False,'user': user}
+            else:
+                return {'valid': True, 'user': user}
+    else:
+        flash("User %s does not exist and cannot join reservations." % email, 'danger')
+        return {'valid': False, 'user': None}
 
 @app.route('/reservations/api/checkEmail')
 def checkEmail():
@@ -591,7 +616,7 @@ def start_times():
     db = db_reservations()
     requested_date = datetime.datetime.strptime(request.args['date'][:15], "%a %b %d %Y").date()
     reservation_type = db.query(ReservationType).filter_by(id=int(request.args['type_id'])).one()
-    existing_reservations = db.query(Reservations).filter(Reservations.start >= requested_date).filter(Reservations.end < requested_date+datetime.timedelta(days=1)).filter(Reservations.type_id == reservation_type.id).all()
+    existing_reservations = db.query(Reservations).filter(Reservations.start >= requested_date).filter(Reservations.end < requested_date+datetime.timedelta(days=1)).filter(Reservations.type_id == reservation_type.id).filter(Reservations.parent_id == None).all()
     open = True
     if open:
         open_time = datetime.datetime.combine(requested_date,datetime.time(9,0))
@@ -613,7 +638,7 @@ def end_times():
     db = db_reservations()
     reservation_type = db.query(ReservationType).filter_by(id = int(request.args['type_id'])).one()
     start_time = datetime.datetime.strptime(request.args['start_time'],"%Y-%m-%d %X")
-    existing_reservations = db.query(Reservations).filter(Reservations.start >= start_time).filter(Reservations.end < start_time.date() + datetime.timedelta(days=1)).filter(Reservations.type_id == reservation_type.id).all()
+    existing_reservations = db.query(Reservations).filter(Reservations.start >= start_time).filter(Reservations.end < start_time.date() + datetime.timedelta(days=1)).filter(Reservations.type_id == reservation_type.id).filter(Reservations.parent_id == None).all()
     close_time = datetime.datetime.combine(start_time.date(), datetime.time(17, 0))
     delta_time = datetime.timedelta(hours=0, minutes=15)
     max_reservation_minutes = 180
