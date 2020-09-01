@@ -178,10 +178,10 @@ def oauth2callback():
 
     flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(
         CLIENT_SECRETS_FILE, scopes=SCOPES, state=state)
-    flow.redirect_uri = url_for('oauth2callback', _external=True)
+    flow.redirect_uri = url_for('oauth2callback', _external=True, _scheme='https')
 
     # Use the authorization server's response to fetch the OAuth 2.0 tokens.
-    authorization_response = request.url
+    authorization_response = request.url.replace('http://','https://',1)
     flow.fetch_token(authorization_response=authorization_response)
 
     # Store credentials in the session.
@@ -276,7 +276,7 @@ def authorize():
     # for the OAuth 2.0 client, which you configured in the API Console. If this
     # value doesn't match an authorized URI, you will get a 'redirect_uri_mismatch'
     # error.
-    flow.redirect_uri = url_for('oauth2callback', _external=True)
+    flow.redirect_uri = url_for('oauth2callback', _external=True, _scheme='https')
 
     authorization_url, state = flow.authorization_url(
         # Enable offline access so that you can refresh an access token without
@@ -643,7 +643,7 @@ def no_app(environ, start_response):
 
 # main
 if __name__ == '__main__':
-    os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
+    #os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
     app.wsgi_app = DispatcherMiddleware(no_app, {'/safety': app.wsgi_app})
     app.jinja_env.auto_reload = True
     app.config['TEMPLATES_AUTO_RELOAD'] = True
