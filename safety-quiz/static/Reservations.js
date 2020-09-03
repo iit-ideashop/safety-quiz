@@ -28,7 +28,9 @@ function updateReservationType(e) {
                     emailList.removeAttribute('hidden');
                     for (let i = 1; i < data['capacity']; i++) {
                         var newInput = document.createElement('div');
-                        newInput.innerHTML = '<input class="auto-email" type="email" id="user' + i + '" name="user' + i + '" value="" placeholder="Optional">' + '\n' +
+                        newInput.classList.add('extra-people','form-group','input-group','mb-auto');
+                        newInput.innerHTML = '<div class="input-group-prepend">' + '\n' + '<label class="input-group-text">IIT Email</label>' + '\n' + '</div>' + '\n' +
+                            '<input class="form-control auto-email" type="email" id="user' + i + '" name="user' + i + '" value="" placeholder="Optional">' + '\n' +
                             '<small><label for="user' + i + '" name="user' + i + '" id="user' + i + 'help" class="form-text auto-email"></label></small>';
                         emailList.appendChild(newInput);
                     }

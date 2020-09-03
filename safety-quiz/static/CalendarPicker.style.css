@@ -69,6 +69,7 @@
     transition: box-shadow 200ms, border 100ms;
     box-shadow: 1px 1px rgba(0, 0, 0, 0);
     box-sizing: inherit;
+    font-size: smaller;
 }
 
 #calendar #calendar-grid time.selected,
@@ -111,7 +112,7 @@
     cursor: pointer;
     background: transparent;
     border: 0;
-    font-size: 3em;
+    font-size: 2em;
     width: 1.6em;
     box-sizing: inherit;
     padding: 0.1em;

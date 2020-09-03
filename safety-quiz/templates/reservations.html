@@ -5,10 +5,15 @@
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="safety/static/Reservations.js"></script>
     <link rel="stylesheet" href="safety/static/CalendarPicker.style.css">
+    <style>
+        div.extra-people, small{
+            flex-basis: 100%;
+        }
+    </style>
 {% endblock %}
 {% block page %}
     <div class="row">
-    <div class="col-lg-6" style="padding:1em; border-style: solid; border-color: #0088cc; border-radius: 10px; border-width: 2px;">
+    <div class="col-lg-6" style="padding:1em; border-style: solid; border-color: #0088cc; border-radius: 10px; border-width: 2px; overflow: auto;">
         <div id="myCalendarWrapper"></div>
     </div>
     <div class="col-lg-4" style="padding-top: 1em;">
@@ -46,7 +51,7 @@
             <select class="form-control" id="end_times" name="end_time" disabled required>
                 <option selected value="">Choose...</option>
             </select>
-            <small class="form-text text-muted">Max reservation length is 3 hours.</small>
+            <small class="form-text text-muted" style="flex-basis: 100%;">Max reservation length is 3 hours.</small>
         </div>
         <button type="submit" class="btn btn-primary" style="float: right; margin-top: 1em;">Submit Reservation</button>
         </form>
