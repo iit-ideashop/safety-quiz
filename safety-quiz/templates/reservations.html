@@ -56,15 +56,15 @@
         <button type="submit" class="btn btn-primary" style="float: right; margin-top: 1em;">Submit Reservation</button>
         </form>
     </div>
+    </div>
 {% endblock %}
 {%  block scripts %}
     {{ super() }}
     <script>
-        const nextYear = new Date().getFullYear() + 1;
         const myCalender = new CalendarPicker('#myCalendarWrapper', {
             // If max < min or min > max then the only available day will be today.
             min: new Date(),
-            max: new Date(nextYear, 10) // NOTE: new Date(nextYear, 10) is "Sun Nov 01 <nextYear>"
+            max: new Date("November 20, 2020") // NOTE: new Date(nextYear, 10) is "Sun Nov 01 <nextYear>"
         });
 
         const currentDateElement = document.getElementById('current-date');
