@@ -52,7 +52,7 @@ API_SERVICE_NAME = 'oauth2'
 API_VERSION = 'v2'
 
 
-##added for reservations TODO clean this up and move into a model
+#TODO clean this up and move into a model
 
 # Just for type-hinting, if you know a better way please fix
 class HasRemoveMethod:
@@ -96,6 +96,7 @@ class Reservations(_base_reservation):
 
     def __repr__(self):
         return "%s has a %s reservation from %s to %s" % (self.sid, self.type.name, self.start, self.end)
+#End TODO
 
 @app.before_request
 def before_request():
@@ -180,10 +181,10 @@ def oauth2callback():
 
     flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(
         CLIENT_SECRETS_FILE, scopes=SCOPES, state=state)
-    flow.redirect_uri = url_for('oauth2callback', _external=True, _scheme='https')
+    flow.redirect_uri = url_for('oauth2callback', _external=True, _scheme='https') #if insecure dev change scheme to 'http'
 
     # Use the authorization server's response to fetch the OAuth 2.0 tokens.
-    authorization_response = request.url.replace('http://','https://',1)
+    authorization_response = request.url.replace('http://','https://',1) #if insecure dev remove .replace('http://','https://',1)
     flow.fetch_token(authorization_response=authorization_response)
 
     # Store credentials in the session.
@@ -219,6 +220,7 @@ def login():
             session['email'] = user.email
             user_level_list = db.query(Type.level).outerjoin(UserLocation).filter(UserLocation.sid == session['sid']).all()
             if not user_level_list:
+                #TODO instead create UserLocation objects that are type_level = 0 and UserAgreement = null then continue login
                 flash("No User Agreement on file. Please see Idea Shop staff.", 'danger')
                 return render_template('login.html', legacy=False)
             user_max_level = max([item for t in user_level_list for item in t])
@@ -228,6 +230,7 @@ def login():
                 session['admin'] = None
             return redirect(url_for('index'))
         else :
+            #TODO instead create registration page to create user object. make sure to verify sid and email are unique in DB
             flash("User not found. Please contact Idea Shop staff for assistance.", 'danger')
             return redirect(url_for('login', legacy=False))
 
@@ -256,6 +259,7 @@ def login_google():
         session['email'] = user.email
         user_level_list = db.query(Type.level).outerjoin(UserLocation).filter(UserLocation.sid == session['sid']).all()
         if not user_level_list:
+            #TODO instead create registration page to create user object. make sure to verify sid and email are unique in DB
             flash("No User Agreement on file. Please see Idea Shop staff.", 'danger')
             return render_template('login.html', legacy=False)
         user_max_level = max([item for t in user_level_list for item in t])
@@ -265,6 +269,9 @@ def login_google():
             session['admin'] = None
         return redirect(url_for('index'))
     else:
+        #TODO if email contains '.iit.edu' register
+            #TODO create registration page to create user object. make sure to verify sid and email are unique in DB
+        #TODO else:
         flash("User not found. Be sure to log in with your Illinois Tech Google Account. If you continue to encounter this error, please contact Idea Shop staff for assistance.", 'danger')
         return render_template('login.html', legacy=False)
 
@@ -278,7 +285,7 @@ def authorize():
     # for the OAuth 2.0 client, which you configured in the API Console. If this
     # value doesn't match an authorized URI, you will get a 'redirect_uri_mismatch'
     # error.
-    flow.redirect_uri = url_for('oauth2callback', _external=True, _scheme='https')
+    flow.redirect_uri = url_for('oauth2callback', _external=True, _scheme='https') #if insecure dev change scheme to 'http'
 
     authorization_url, state = flow.authorization_url(
         # Enable offline access so that you can refresh an access token without
@@ -671,7 +678,7 @@ def no_app(environ, start_response):
 
 # main
 if __name__ == '__main__':
-    #os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
+    #os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1' #if insecure dev uncomment
     app.wsgi_app = DispatcherMiddleware(no_app, {'/safety': app.wsgi_app})
     app.jinja_env.auto_reload = True
     app.config['TEMPLATES_AUTO_RELOAD'] = True
