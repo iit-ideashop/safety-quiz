@@ -550,12 +550,13 @@ def reservations():
     if request.method == 'GET':
         db = db_session()
         temp = db.query(UserLocation).filter_by(sid=session['sid']).filter_by(location_id=2).one_or_none().get_missing_trainings(db)
-        if (9 in [each[0].id for each in temp]) and (27 in [each[0].id for each in temp]):
-            return '''Can't make a reservation!'''
+        if (9 in [each[0].id for each in temp]):
+            flash("You are not cleared to make reservations at this time. Please chcek the status of your safety trainings or contact Idea Shop staff for assistance.",'warning')
+            return render_template('layout.html')
         user = db.query(User).filter_by(sid=session['sid']).one_or_none()
         db.close()
         reservation_types = db_reservations().query(ReservationType).order_by(ReservationType.id.asc()).all()
-        return render_template('reservations.html', reservation_types=reservation_types, user=user)
+        return render_template('reservations.html', reservation_types=reservation_types, user=user, openDate=datetime.date(2020, 9, 8))
     if request.method == 'POST':
         user = db_session().query(User).filter_by(sid=session['sid']).one_or_none()
         start_time = datetime.datetime.strptime(request.form['start_time'],"%Y-%m-%d %X")
