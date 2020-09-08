@@ -17,7 +17,6 @@ import requests
 
 from typing import Union, Callable, Tuple, Optional
 
-import sqlalchemy as sa
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import scoped_session, sessionmaker, relationship
 _base_reservation = declarative_base()
@@ -121,7 +120,7 @@ def error_handler(e):
 def index():
     db = db_session()
     trainings = db.query(Training).outerjoin(Machine).filter(Training.trainee_id == session['sid']).filter(Training.invalidation_date == None).filter(Machine.location_id.in_((2,3))).order_by(Training.date).all()
-    if session['admin']:
+    if session['admin'] >= 85:
         quizzes = db.query(Machine).filter(Machine.quiz_id != None).order_by(Machine.quiz_id).all()
         return render_template('admin/index.html', trainings=trainings, quizzes=quizzes)
     else:
@@ -224,7 +223,7 @@ def login():
                 flash("No User Agreement on file. Please see Idea Shop staff.", 'danger')
                 return render_template('login.html', legacy=False)
             user_max_level = max([item for t in user_level_list for item in t])
-            if user_max_level == 100:
+            if user_max_level > 0:
                 session['admin'] = user_max_level
             else:
                 session['admin'] = None
@@ -263,7 +262,7 @@ def login_google():
             flash("No User Agreement on file. Please see Idea Shop staff.", 'danger')
             return render_template('login.html', legacy=False)
         user_max_level = max([item for t in user_level_list for item in t])
-        if user_max_level == 100:
+        if user_max_level > 0:
             session['admin'] = user_max_level
         else:
             session['admin'] = None
@@ -663,6 +662,16 @@ def end_times():
             end_times.append(i)
         else: break
     return jsonify([{'date': str(x.date()), 'time': str(x.time())} for x in end_times])
+
+@app.route('/reservations/view')
+def view_reservations():
+    db = db_reservations()
+    start = datetime.datetime.combine(datetime.datetime.now().date(),datetime.time(0,0,0))
+    end = datetime.datetime.combine(datetime.datetime.now().date(),datetime.time(23,59,59))
+    reservations = db.query(Reservations).filter(Reservations.start > start).filter(Reservations.end < end).order_by(Reservations.start.asc()).all()
+    print(reservations)
+    return render_template('view_reservations.html', reservations=reservations)
+
 # app routes end
 
 @app.teardown_appcontext

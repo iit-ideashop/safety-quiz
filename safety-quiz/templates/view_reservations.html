@@ -1,0 +1,13 @@
+{% extends 'layout.html' %}
+{% block page %}
+    <h2>Reservations for today.</h2>
+    {% if reservations == [] %}
+        <h4>There are currently no reservations.</h4>
+    {% else %}
+        <ul>
+        {% for each in reservations %}
+            <li><strong>{{ each.start.time() }} :</strong> {{ each.sid }} reservation for {{ each.type.name }} ending at {{ each.end.time() }}</li>
+        {% endfor %}
+        </ul>
+    {% endif %}
+{% endblock %}
