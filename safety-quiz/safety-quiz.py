@@ -15,18 +15,13 @@ import google_auth_oauthlib.flow
 import googleapiclient.discovery
 import requests
 
-from typing import Union, Callable, Tuple, Optional
-
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import scoped_session, sessionmaker, relationship
-_base_reservation = declarative_base()
-
 from model import User, UserLocation, Type, Training, Machine, Quiz, Question, Option, MissedQuestion, init_db
+from reservation import ReservationType, Reservations, HasRemoveMethod, init_reservation_db
 
 # app setup
 app = Flask(__name__, static_url_path='/safety/static', static_folder='static')  # create the application instance :)
 app.config.from_object(__name__)
-app.config.from_pyfile('config.cfg')
+app.config.from_pyfile('config.cfg.dev')
 app.config.from_envvar('FLASKR_SETTINGS', silent=True)
 
 UPLOAD_FOLDER = 'static/images'
@@ -38,7 +33,7 @@ Bootstrap(app)
 FontAwesome(app)
 
 db_session = init_db(app.config['DB'])
-
+db_reservations = init_reservation_db(app.config['DB_RESERVATION'])
 
 # This variable specifies the name of a file that contains the OAuth 2.0
 # information for this application, including its client_id and client_secret.
@@ -49,53 +44,6 @@ CLIENT_SECRETS_FILE = "client_secret.json"
 SCOPES = ["https://www.googleapis.com/auth/userinfo.email", "https://www.googleapis.com/auth/userinfo.profile", 'openid']
 API_SERVICE_NAME = 'oauth2'
 API_VERSION = 'v2'
-
-
-#TODO clean this up and move into a model
-
-# Just for type-hinting, if you know a better way please fix
-class HasRemoveMethod:
-    def remove(self):
-        pass
-
-def init_reservation_db(connection_string: str) -> Union[Callable[[], sa.orm.Session], HasRemoveMethod]:
-    global engine
-    engine = sa.create_engine(connection_string, pool_size=50, max_overflow=150, pool_recycle=3600, encoding='utf-8')
-    db_session = scoped_session(sessionmaker(bind=engine))
-    _base_reservation.metadata.create_all(engine)
-    db = db_session()
-    db.close()
-    return db_session
-
-
-db_reservations = init_reservation_db(app.config['DB_RESERVATION'])
-
-class ReservationType(_base_reservation):
-    __tablename__ = 'reservation_types'
-    id = sa.Column(sa.Integer, primary_key=True, autoincrement=True)
-    name = sa.Column(sa.VARCHAR(100), nullable=False)
-    quantity = sa.Column(sa.Integer, nullable=False, default=1)
-    capacity = sa.Column(sa.Integer, nullable=False, default=1)
-
-    reservations = relationship("Reservations", lazy='joined')
-
-    def __repr__(self):
-        return self.name
-
-class Reservations(_base_reservation):
-    __tablename__ = 'reservations'
-    id = sa.Column(sa.Integer, primary_key=True, autoincrement=True)
-    start = sa.Column(sa.DateTime, nullable=False)
-    end = sa.Column(sa.DateTime, nullable=False)
-    sid = sa.Column(sa.Integer, nullable=False)
-    type_id = sa.Column(sa.Integer, sa.ForeignKey('reservation_types.id'), nullable=False)
-    parent_id = sa.Column(sa.Integer, sa.ForeignKey('reservations.id'), nullable=True)
-
-    type = relationship('ReservationType')
-
-    def __repr__(self):
-        return "%s has a %s reservation from %s to %s" % (self.sid, self.type.name, self.start, self.end)
-#End TODO
 
 @app.before_request
 def before_request():
@@ -230,6 +178,7 @@ def login():
             return redirect(url_for('index'))
         else :
             #TODO instead create registration page to create user object. make sure to verify sid and email are unique in DB
+            #return render_template('registration.html')
             flash("User not found. Please contact Idea Shop staff for assistance.", 'danger')
             return redirect(url_for('login', legacy=False))
 
@@ -560,8 +509,8 @@ def reservations():
             flash("You are not cleared to make reservations at this time. Please chcek the status of your safety trainings or contact Idea Shop staff for assistance.",'warning')
             return render_template('layout.html')
         user = db.query(User).filter_by(sid=session['sid']).one_or_none()
-        db.close()
         reservation_types = db_reservations().query(ReservationType).order_by(ReservationType.id.asc()).all()
+        db.close()
         return render_template('reservations.html', reservation_types=reservation_types, user=user, openDate=datetime.date(2020, 9, 8))
     if request.method == 'POST':
         user = db_session().query(User).filter_by(sid=session['sid']).one_or_none()
