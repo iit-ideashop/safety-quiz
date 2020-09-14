@@ -4,3 +4,7 @@ flask_fontawesome
 flask_mail
 sqlalchemy
 multidict
+pymysql
+google-auth
+google-auth-httplib2
+google-api-python-client
