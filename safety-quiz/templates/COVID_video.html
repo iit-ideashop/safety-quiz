@@ -13,7 +13,7 @@
         Pausing the video will stop this timer.
         Leaving this window will pause the timer.
         Fast forwarding through the video is not permitted.
-        <h1><div style="text-align: center" id="countdown">00:10</div></h1>
+        <h1><div style="text-align: center" id="countdown">Time</div>&nbsp;Remaining</h1>
     </div>
 {% endblock %}
 {%  block scripts %}
@@ -30,7 +30,7 @@
         player = new YT.Player('player', {
             width: '75%',
             height: '500px',
-            videoId: '',
+            videoId: '{{ youtube_id }}',
             events: {
                 'onStateChange': onPlayerStateChange
             }
@@ -43,7 +43,7 @@
           }
           if (event.data == YT.PlayerState.PLAYING) {
               if (CountDown.IsStarted() == false) {
-                  CountDown.Start(31000);
+                  CountDown.Start({{ video_time_seconds*1000 }});
               }
               else {
                   CountDown.Resume();
@@ -59,11 +59,11 @@
                     var form = document.createElement('form');
                     document.body.appendChild(form);
                     form.method = 'post';
-                    form.action = "http://127.0.0.1:5000/safety/COVID";
+                    form.action = "{{ url_for('COVID') }}";
                     var input = document.createElement('input');
                     input.type = 'hidden';
                     input.name = 'sid';
-                    input.value = 20313392;
+                    input.value = {{ session['sid'] }};
                     form.appendChild(input);
                     form.submit();
                 }

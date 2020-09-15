@@ -21,7 +21,7 @@ from reservation import ReservationType, Reservations, HasRemoveMethod, init_res
 # app setup
 app = Flask(__name__, static_url_path='/safety/static', static_folder='static')  # create the application instance :)
 app.config.from_object(__name__)
-app.config.from_pyfile('config.cfg.dev')
+app.config.from_pyfile('config.cfg')
 app.config.from_envvar('FLASKR_SETTINGS', silent=True)
 
 UPLOAD_FOLDER = 'static/images'
@@ -77,17 +77,17 @@ def index():
 @app.route('/COVID',methods=['GET', 'POST'])
 def COVID():
     if request.method == 'GET':
-        flash("Video safety training is not currently available. Please check back on September 14th, 2020.", 'warning')
-        return render_template('layout.html')
-        #return render_template('COVID_video.html')
+        #flash("Video safety training is not currently available. Please check back on September 14th, 2020.", 'warning')
+        #return render_template('layout.html')
+        return render_template('COVID_video.html', youtube_id=app.config['COVID_YOUTUBE_ID'], video_time_seconds=int(app.config['COVID_VIDEO_SECONDS']))
     elif request.method == 'POST':
         db = db_session()
         print(request.form['sid'])
         db.add(Training(trainee_id=int(request.form['sid']), trainer_id=20000000, machine_id=9, date=sa.func.now()))
         db.commit()
         flash("Thank you for participating in the Assembly Area Fall 2020 COVID training. Your verification quiz will be available on this site in one week. \
-            You can re-watch the video at any time by visiting https://wiki.ideashop.iit.edu/index.php?title=COVID-19_%26_Remote_File_Submissions",'success')
-        return redirect(url_for('index'))
+            You can re-watch the video at any time by visiting https://wiki.ideashop.iit.edu/index.php?title=Safety_Training",'success')
+        return render_template('layout.html')
 
 @app.route('/admin/upload', methods=['GET', 'POST'])
 def upload_file():
