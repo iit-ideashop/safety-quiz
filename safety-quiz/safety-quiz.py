@@ -15,7 +15,7 @@ import google_auth_oauthlib.flow
 import googleapiclient.discovery
 import requests
 
-from model import User, UserLocation, Type, Training, Machine, Quiz, Question, Option, MissedQuestion, init_db
+from model import User, UserLocation, Type, Training, Machine, Quiz, Question, Option, MissedQuestion, init_db, Major, College
 from reservation import ReservationType, Reservations, HasRemoveMethod, init_reservation_db
 
 # app setup
@@ -48,7 +48,7 @@ API_VERSION = 'v2'
 @app.before_request
 def before_request():
     if 'sid' not in session \
-            and request.endpoint not in ['login', 'login_google', 'authorize', 'oauth2callback']:
+            and request.endpoint not in ['login', 'login_google', 'authorize', 'oauth2callback', 'register', 'check_sid', 'logout']:
         return redirect(url_for('login'))
 
 
@@ -68,7 +68,7 @@ def error_handler(e):
 def index():
     db = db_session()
     trainings = db.query(Training).outerjoin(Machine).filter(Training.trainee_id == session['sid']).filter(Training.invalidation_date == None).filter(Machine.location_id.in_((2,3))).order_by(Training.date).all()
-    if session['admin'] >= 85:
+    if session['admin'] and session['admin'] >= 85:
         quizzes = db.query(Machine).filter(Machine.quiz_id != None).order_by(Machine.quiz_id).all()
         return render_template('admin/index.html', trainings=trainings, quizzes=quizzes)
     else:
@@ -207,9 +207,13 @@ def login_google():
         session['email'] = user.email
         user_level_list = db.query(Type.level).outerjoin(UserLocation).filter(UserLocation.sid == session['sid']).all()
         if not user_level_list:
-            #TODO instead create registration page to create user object. make sure to verify sid and email are unique in DB
-            flash("No User Agreement on file. Please see Idea Shop staff.", 'danger')
-            return render_template('login.html', legacy=False)
+            db.add(UserLocation(sid=user.sid, location_id=2, type_id=2))
+            db.add(UserLocation(sid=user.sid, location_id=3, type_id=2))
+            db.commit()
+            user_level_list = db.query(Type.level).outerjoin(UserLocation).filter(UserLocation.sid == session['sid']).all()
+            if not user_level_list:
+                flash("Error with automatic UserLocation creation.", 'danger')
+                return redirect(url_for('index'))
         user_max_level = max([item for t in user_level_list for item in t])
         if user_max_level > 0:
             session['admin'] = user_max_level
@@ -217,11 +221,13 @@ def login_google():
             session['admin'] = None
         return redirect(url_for('index'))
     else:
-        #TODO if email contains '.iit.edu' register
-            #TODO create registration page to create user object. make sure to verify sid and email are unique in DB
-        #TODO else:
-        flash("User not found. Be sure to log in with your Illinois Tech Google Account. If you continue to encounter this error, please contact Idea Shop staff for assistance.", 'danger')
-        return render_template('login.html', legacy=False)
+        if 'iit.edu' in gSuite['email']:
+            flash("Please register before continuing.", 'warning')
+            print(gSuite)
+            return redirect(url_for('register', email=gSuite['email'], name=gSuite['name']))
+        else:
+            flash("User not found. Be sure to log in with your Illinois Tech Google Account. If you continue to encounter this error, please contact Idea Shop staff for assistance.", 'danger')
+            return render_template('login.html', legacy=False)
 
 @app.route('/authorize')
 def authorize():
@@ -246,6 +252,42 @@ def authorize():
     session['state'] = state
 
     return redirect(authorization_url)
+
+@app.route('/register', methods=['GET','POST'])
+def register():
+    if request.method == 'GET' and ({'email', 'name'}.issubset([x for x in request.args.keys()])):
+        db = db_session()
+        majors = db.query(Major).order_by(Major.name.asc()).all()
+        colleges = db.query(College).order_by(College.name.asc()).all()
+        statuses = ['undergraduate', 'graduate', 'continuing_education', 'employee']
+        return render_template('register.html', email=request.args['email'], name=request.args['name'], majors=majors, colleges=colleges, statuses=statuses)
+    elif request.method == 'POST' and {'sid', 'name', 'email', 'major', 'college', 'status'}.issubset([x for x in request.form.keys()]):
+        db = db_session()
+        major = db.query(Major).filter_by(id=int(request.form['major'])).one_or_none()
+        college = db.query(College).filter_by(id=int(request.form['college'])).one_or_none()
+        if college and major:
+            user = User(sid=int(request.form['sid']), name=request.form['name'], email=request.form['email'], major_id=major.id, college_id=college.id, status=request.form['status'])
+        else:
+            user = User(sid=int(request.form['sid']), name=request.form['name'], email=request.form['email'], status=request.form['status'])
+        db.add(user)
+        db.add(UserLocation(sid=user.sid,location_id=2,type_id=2))
+        db.add(UserLocation(sid=user.sid,location_id=3,type_id=2))
+        db.commit()
+        flash("Registered user %s." % user.name, 'success')
+        return redirect(url_for('login_google'))
+    else:
+        flash("Error.",'danger')
+        return render_template('layout.html')
+
+
+@app.route('/register/api/checkSID')
+def check_sid():
+    db = db_session()
+    user = db.query(User).filter_by(sid=request.args['sid']).one_or_none()
+    if user:
+        return jsonify({'sid': user.sid, 'exists': True})
+    else:
+        return jsonify({'sid': None, 'exists': False})
 
 
 @app.route('/logout')
