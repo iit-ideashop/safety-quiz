@@ -601,12 +601,14 @@ def checkEmail():
     user = db.query(User).filter_by(email=request.args['email']).one_or_none()
     if user:
         userLocation = db.query(UserLocation).filter_by(sid=user.sid).filter_by(location_id=2).one_or_none()
-        if userLocation :
+        if userLocation:
             temp = userLocation.get_missing_trainings(db)
             if (9 in [each[0].id for each in temp]):
                 return jsonify({'valid': False, 'reason': "User not cleared for reservations."})
             else:
                 return jsonify({'valid': True, 'reason': "User cleared for reservations."})
+        else:
+            return jsonify({'valid': False, 'reason': "User not cleared for reservations."})
     return jsonify({'valid': False, 'reason': "User does not exist."})
 
 @app.route('/reservations/api/type')
