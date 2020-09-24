@@ -211,9 +211,16 @@ def login_google():
             db.add(UserLocation(sid=user.sid, location_id=3, type_id=2))
             db.commit()
             user_level_list = db.query(Type.level).outerjoin(UserLocation).filter(UserLocation.sid == session['sid']).all()
-            if not user_level_list:
-                flash("Error with automatic UserLocation creation.", 'danger')
-                return redirect(url_for('index'))
+        elif not {2, 3}.issubset([x for y in db.query(UserLocation.location_id).filter_by(sid=user.sid).all() for x in y]):
+            if 2 not in [x for y in db.query(UserLocation.location_id).filter_by(sid=user.sid).all() for x in y]:
+                db.add(UserLocation(sid=user.sid, location_id=2, type_id=2))
+            elif 3 not in [x for y in db.query(UserLocation.location_id).filter_by(sid=user.sid).all() for x in y]:
+                db.add(UserLocation(sid=user.sid, location_id=3, type_id=2))
+            db.commit()
+            user_level_list = db.query(Type.level).outerjoin(UserLocation).filter(UserLocation.sid == session['sid']).all()
+        if not user_level_list:
+            flash("Error with automatic UserLocation creation.", 'danger')
+            return redirect(url_for('index'))
         user_max_level = max([item for t in user_level_list for item in t])
         if user_max_level > 0:
             session['admin'] = user_max_level
@@ -223,7 +230,6 @@ def login_google():
     else:
         if 'iit.edu' in gSuite['email']:
             flash("Please register before continuing.", 'warning')
-            print(gSuite)
             return redirect(url_for('register', email=gSuite['email'], name=gSuite['name']))
         else:
             flash("User not found. Be sure to log in with your Illinois Tech Google Account. If you continue to encounter this error, please contact Idea Shop staff for assistance.", 'danger')
@@ -580,7 +586,7 @@ def confirmAllowed(email):
         userLocation = db.query(UserLocation).filter_by(sid=user.sid).filter_by(location_id=2).one_or_none()
         if userLocation :
             temp = userLocation.get_missing_trainings(db)
-            if (9 in [each[0].id for each in temp]) and (27 in [each[0].id for each in temp]):
+            if (9 in [each[0].id for each in temp]):
                 flash("User %s is not cleared for reservations." % email, 'danger')
                 return {'valid': False,'user': user}
             else:
@@ -597,7 +603,7 @@ def checkEmail():
         userLocation = db.query(UserLocation).filter_by(sid=user.sid).filter_by(location_id=2).one_or_none()
         if userLocation :
             temp = userLocation.get_missing_trainings(db)
-            if (9 in [each[0].id for each in temp]) and (27 in [each[0].id for each in temp]):
+            if (9 in [each[0].id for each in temp]):
                 return jsonify({'valid': False, 'reason': "User not cleared for reservations."})
             else:
                 return jsonify({'valid': True, 'reason': "User cleared for reservations."})
@@ -660,7 +666,6 @@ def view_reservations():
     start = datetime.datetime.combine(datetime.datetime.now().date(),datetime.time(0,0,0))
     end = datetime.datetime.combine(datetime.datetime.now().date(),datetime.time(23,59,59))
     reservations = db.query(Reservations).filter(Reservations.start > start).filter(Reservations.end < end).order_by(Reservations.start.asc()).all()
-    print(reservations)
     return render_template('view_reservations.html', reservations=reservations)
 
 # app routes end
