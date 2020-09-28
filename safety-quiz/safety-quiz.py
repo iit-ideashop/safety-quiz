@@ -168,8 +168,8 @@ def login():
             session['email'] = user.email
             user_level_list = db.query(Type.level).outerjoin(UserLocation).filter(UserLocation.sid == session['sid']).all()
             if not user_level_list:
-                db.add(UserLocation(sid=user.sid, location_id=2, type_id=0, waiverSigned=''))
-                db.add(UserLocation(sid=user.sid, location_id=3, type_id=0), waiverSigned='')
+                db.add(UserLocation(sid=user.sid, location_id=2, type_id=0, waiverSigned=None))
+                db.add(UserLocation(sid=user.sid, location_id=3, type_id=0, waiverSigned=None))
             user_max_level = max([item for t in user_level_list for item in t])
             if user_max_level > 0:
                 session['admin'] = user_max_level
