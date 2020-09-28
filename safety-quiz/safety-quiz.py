@@ -571,7 +571,7 @@ def reservations():
         for each in [x for x in list(request.form.keys()) if 'user' in x and request.form[x] != '']:
             response = confirmAllowed(request.form[each])
             if response['valid'] is True:
-                db.add(Reservations(type_id=int(request.form['reservation_type']),start=start_time,end=end_time,sid=user.sid,parent_id=parent.id))
+                db.add(Reservations(type_id=int(request.form['reservation_type']), start=start_time, end=end_time, sid=response['user'].sid, parent_id=parent.id))
                 db.flush()
                 flash("Created %s reservation for %s, %s - %s" % (reservation_type.name, response['user'].name, parent.start, parent.end),'success')
         db.commit()
