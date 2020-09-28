@@ -63,7 +63,6 @@ def error_handler(e):
           ' as well as a brief description of what you were doing.'), 'danger')
     return redirect(url_for('index'))
 
-
 @app.route('/')
 def index():
     db = db_session()
@@ -160,6 +159,8 @@ def login():
         db = db_session()
         user = db.query(User).filter_by(sid=request.form['pin']).one_or_none()
         if user:
+            # TODO instead create registration page to create user object. make sure to verify sid and email are unique in DB
+            # return redirect(url_for('register', email=session['email']))
             if user.email != request.form['email']:
                 flash("User not found. Please contact Idea Shop staff for assistance.", 'danger')
                 return render_template('login.html', legacy=False)
@@ -167,18 +168,15 @@ def login():
             session['email'] = user.email
             user_level_list = db.query(Type.level).outerjoin(UserLocation).filter(UserLocation.sid == session['sid']).all()
             if not user_level_list:
-                #TODO instead create UserLocation objects that are type_level = 0 and UserAgreement = null then continue login
-                flash("No User Agreement on file. Please see Idea Shop staff.", 'danger')
-                return render_template('login.html', legacy=False)
+                db.add(UserLocation(sid=user.sid, location_id=2, type_id=0, waiverSigned=''))
+                db.add(UserLocation(sid=user.sid, location_id=3, type_id=0), waiverSigned='')
             user_max_level = max([item for t in user_level_list for item in t])
             if user_max_level > 0:
                 session['admin'] = user_max_level
             else:
                 session['admin'] = None
             return redirect(url_for('index'))
-        else :
-            #TODO instead create registration page to create user object. make sure to verify sid and email are unique in DB
-            #return render_template('registration.html')
+        else:
             flash("User not found. Please contact Idea Shop staff for assistance.", 'danger')
             return redirect(url_for('login', legacy=False))
 
