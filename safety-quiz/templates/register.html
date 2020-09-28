@@ -69,12 +69,10 @@
                         if (data['exists'] === false) {
                             sid_warning.setAttribute('hidden', true);
                             sid_warning.textContent = "";
-                            $(':input[type="submit"]').prop('disabled',false);
                         } else if (data['exists'] === true) {
                             sid_warning.removeAttribute('hidden');
                             let label = document.getElementById('sid_warning');
                             label.textContent = 'User for CWID: A' + data['sid'] + ' already exists. Cannot register new user with existing CWID.';
-                            $(':input[type="submit"]').prop('disabled',true);
                         }
                     }
                 });
