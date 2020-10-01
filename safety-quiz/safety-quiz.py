@@ -159,10 +159,8 @@ def login():
         db = db_session()
         user = db.query(User).filter_by(sid=request.form['pin']).one_or_none()
         if user:
-            # TODO instead create registration page to create user object. make sure to verify sid and email are unique in DB
-            # return redirect(url_for('register', email=session['email']))
             if user.email != request.form['email']:
-                flash("User not found. Please contact Idea Shop staff for assistance.", 'danger')
+                flash("Account Register with . Please contact Idea Shop staff for assistance.", 'danger')
                 return render_template('login.html', legacy=False)
             session['sid'] = user.sid
             session['email'] = user.email
@@ -177,8 +175,13 @@ def login():
                 session['admin'] = None
             return redirect(url_for('index'))
         else:
-            flash("User not found. Please contact Idea Shop staff for assistance.", 'danger')
-            return redirect(url_for('login', legacy=False))
+            user = db.query(User).filter_by(email=request.form['email']).one_or_none()
+            if user:
+                flash("Email linked with an account. Please contact Idea Shop staff for assistance.", 'danger')
+                return render_template('login.html', legacy=False)
+            else:
+                flash("Please register before continuing.", 'warning')
+                return redirect(url_for('register', email=request.form['email'], name=""))
 
 @app.route('/login_google', methods=['GET'])
 def login_google():
