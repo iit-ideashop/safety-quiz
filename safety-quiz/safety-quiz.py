@@ -166,8 +166,8 @@ def login():
             session['email'] = user.email
             user_level_list = db.query(Type.level).outerjoin(UserLocation).filter(UserLocation.sid == session['sid']).all()
             if not user_level_list:
-                db.add(UserLocation(sid=user.sid, location_id=2, type_id=0, waiverSigned=''))
-                db.add(UserLocation(sid=user.sid, location_id=3, type_id=0), waiverSigned='')
+                db.add(UserLocation(sid=user.sid, location_id=2, type_id=0, waiverSigned=None))
+                db.add(UserLocation(sid=user.sid, location_id=3, type_id=0, waiverSigned=None))
             user_max_level = max([item for t in user_level_list for item in t])
             if user_max_level > 0:
                 session['admin'] = user_max_level
@@ -574,7 +574,7 @@ def reservations():
         for each in [x for x in list(request.form.keys()) if 'user' in x and request.form[x] != '']:
             response = confirmAllowed(request.form[each])
             if response['valid'] is True:
-                db.add(Reservations(type_id=int(request.form['reservation_type']),start=start_time,end=end_time,sid=user.sid,parent_id=parent.id))
+                db.add(Reservations(type_id=int(request.form['reservation_type']), start=start_time, end=end_time, sid=response['user'].sid, parent_id=parent.id))
                 db.flush()
                 flash("Created %s reservation for %s, %s - %s" % (reservation_type.name, response['user'].name, parent.start, parent.end),'success')
         db.commit()
