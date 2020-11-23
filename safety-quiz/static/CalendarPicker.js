@@ -179,7 +179,7 @@ class CalendarPicker {
      */
     _insertNavigationButtons = () => {
         // Ugly long string, but at least the svg is pretty.
-        const arrowSvg = '<svg enable-background="new 0 0 386.257 386.257" viewBox="0 0 386.257 386.257" xmlns="http://www.w3.org/2000/svg"><path d="m0 96.879 193.129 192.5 193.128-192.5z"/></svg>';
+        const arrowSvg = '<svg enable-background="new 0 0 386.257 386.257" viewBox="0 0 386.257 386.257"><path d="m0 96.879 193.129 192.5 193.128-192.5z"/></svg>';
 
         this.previousMonthArrow.innerHTML = arrowSvg;
         this.nextMonthArrow.innerHTML = arrowSvg;
@@ -246,6 +246,9 @@ class CalendarPicker {
                 dateElement.classList.add('disabled');
             }
             else if (["Sun", "Sat"].includes(Day)) {
+                dateElement.classList.add('disabled');
+            }
+            else if (["2020-11-25","2020-11-26","2020-11-27"].indexOf(date.toISOString().substr(0,10)) > -1) {
                 dateElement.classList.add('disabled');
             }
             else {
