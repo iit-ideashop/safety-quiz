@@ -552,6 +552,10 @@ def add_object(object_type):
 @app.route('/reservations', methods=['GET','POST'])
 def reservations():
     if request.method == 'GET':
+        ##temp disable reservations since users can still reserve time for current day even if in disbaled range
+        if app.config['ALLOW_RESERVATIONS'] != 'True':
+            flash("Reservations are currently unavailable and will resume for the Spring 2021 semester.",'warning')
+            return render_template('layout.html')
         db = db_session()
         temp = db.query(UserLocation).filter_by(sid=session['sid']).filter_by(location_id=2).one_or_none().get_missing_trainings(db)
         if (9 in [each[0].id for each in temp]):
