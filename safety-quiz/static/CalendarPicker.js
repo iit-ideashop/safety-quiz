@@ -233,6 +233,10 @@ class CalendarPicker {
         if (0 <= firstDayOfMonth) {
             arrayOfDays = Array(firstDayOfMonth).fill(false, 0).concat(arrayOfDays);
         }
+        console.log(arrayOfDays);
+        $.getJSON('reservations/api/windows',{days:arrayOfDays}, function (data) {
+            console.log(data);
+        });
 
         arrayOfDays.forEach(date => {
             const dateElement = document.createElement(date ? this.calendarDayElementType : 'span');

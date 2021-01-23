@@ -32,6 +32,14 @@ class ReservationType(_base_reservation):
     def __repr__(self):
         return self.name
 
+class ReservationWindow(_base_reservation):
+    __tablename__ = 'reservation_windows'
+    start = sa.Column(sa.DateTime, nullable=False, primary_key=True)
+    end = sa.Column(sa.DateTime, nullable=False, primary_key=True)
+
+    def __repr__(self):
+        return ("Reservation window %s -> %s" % (self.start,self.end))
+
 class Reservations(_base_reservation):
     __tablename__ = 'reservations'
     id = sa.Column(sa.Integer, primary_key=True, autoincrement=True)
