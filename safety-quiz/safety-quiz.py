@@ -564,7 +564,7 @@ def reservations():
         user = db.query(User).filter_by(sid=session['sid']).one_or_none()
         reservation_types = db_reservations().query(ReservationType).order_by(ReservationType.id.asc()).all()
         db.close()
-        return render_template('reservations.html', reservation_types=reservation_types, user=user, openDate=datetime.date(2020, 9, 8))
+        return render_template('reservations.html', reservation_types=reservation_types, user=user, openDate=datetime.date(2020, 9, 8), dateWindows=get_window())
     if request.method == 'POST':
         user = db_session().query(User).filter_by(sid=session['sid']).one_or_none()
         start_time = datetime.datetime.strptime(request.form['start_time'],"%Y-%m-%d %X")
@@ -669,20 +669,9 @@ def end_times():
 
 @app.route('/reservations/api/windows', methods=['GET'])
 def get_window():
-    if not request.args:
-        return jsonify({'status': 'Error', 'response': 'Invalid Arguments'})
-    date_range = []
-    for each in request.args:
-        if request.args[each] != 'false':
-            date_range.append(datetime.datetime.strptime(request.args[each], "%a %b %d %Y %H:%M:%S %Z%z (Central Standard Time)"))
     db = db_reservations()
-    windows = []
-    for each in date_range:
-        for x in db.query(ReservationWindow).filter(ReservationWindow.start >= each.date()).filter(ReservationWindow.end < (each + datetime.timedelta(days=1)).date()).all():
-            windows.append(x)
-    print(windows)
-    return jsonify([{'date': x.start.date(), 'start':x.start, 'end': x.end} for x in windows])
-
+    temp = db.query(ReservationWindow).filter(ReservationWindow.start >= datetime.datetime.today().date()).all()
+    return [x.start.strftime('%m %d %Y') for x in temp]
 
 @app.route('/reservations/view')
 def view_reservations():

@@ -26,7 +26,7 @@
             <div class="input-group-prepend">
                 <label class="input-group-text">Reservation Type</label>
             </div>
-            <select class="form-control" id="reservation_type" name="reservation_type" required>
+            <select class="form-control" id="reservation_type" name="reservation_type" disabled required>
                 <option selected value="">Choose...</option>
                 {%  for each in reservation_types %}
                 <option value={{ each.id }}>{{ each.name }}</option>
@@ -61,11 +61,19 @@
 {%  block scripts %}
     {{ super() }}
     <script>
+        const dateWindows = [
+            {% for each in dateWindows %}
+                {% if loop.index0 == 0 %}
+                    new Date("{{ each }}").toDateString()
+                {% else %}
+                    , new Date("{{ each }}").toDateString()
+                {% endif %}
+            {% endfor %}];
         const myCalender = new CalendarPicker('#myCalendarWrapper', {
             // If max < min or min > max then the only available day will be today.
             //TODO Change min and max to be passed as template arguments
             min:  new Date() > new Date(Number({{ openDate.year }}),Number({{ openDate.month }})-1,Number({{ openDate.day }})) ? new Date() : new Date(Number({{ openDate.year }}),Number({{ openDate.month }})-1,Number({{ openDate.day }})),
-            max: new Date("December 12, 2020") // NOTE: new Date(nextYear, 10) is "Sun Nov 01 <nextYear>"
+            max: new Date("May 8,2021") // NOTE: new Date(nextYear, 10) is "Sun Nov 01 <nextYear>"
 
         });
         const currentDateElement = document.getElementById('current-date');

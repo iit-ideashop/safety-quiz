@@ -82,7 +82,7 @@ class CalendarPicker {
 
         this._insertHeaderIntoCalendarWrapper();
         this._insertCalendarGridDaysHeader();
-        this._insertDaysIntoGrid();
+        this._insertDaysIntoGrid()
         this._insertNavigationButtons();
         this._insertCalendarIntoWrapper();
 
@@ -221,6 +221,7 @@ class CalendarPicker {
      * in case the month for example starts on a Thursday.
      * Also disables the days that are not within the provided.
      */
+
     _insertDaysIntoGrid = () => {
         this.calendarGrid.innerHTML = '';
 
@@ -233,12 +234,7 @@ class CalendarPicker {
         if (0 <= firstDayOfMonth) {
             arrayOfDays = Array(firstDayOfMonth).fill(false, 0).concat(arrayOfDays);
         }
-        console.log(arrayOfDays);
-        $.getJSON('reservations/api/windows',{days:arrayOfDays}, function (data) {
-            console.log(data);
-        });
-
-        arrayOfDays.forEach(date => {
+         arrayOfDays.forEach(date => {
             const dateElement = document.createElement(date ? this.calendarDayElementType : 'span');
             const [Day, Month, Date, Year] = date.toString().split(' ');
 
@@ -249,10 +245,7 @@ class CalendarPicker {
             if (dateIsBetweenAllowedRange) {
                 dateElement.classList.add('disabled');
             }
-            else if (["Sun", "Sat"].includes(Day)) {
-                dateElement.classList.add('disabled');
-            }
-            else if (["2020-11-25","2020-11-26","2020-11-27"].indexOf(date.toISOString().substr(0,10)) > -1) {
+            else if (!dateWindows.includes(date.toDateString())) {
                 dateElement.classList.add('disabled');
             }
             else {
@@ -265,7 +258,7 @@ class CalendarPicker {
         })
 
         this.calendarElement.appendChild(this.calendarGrid);
-        this.activeDateElement.classList.add('selected');
+        //this.activeDateElement.classList.add('selected');
     }
 
     /**

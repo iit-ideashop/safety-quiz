@@ -2,7 +2,8 @@
 
 function updateDate(e) {
     //reset select boxes when date changes in myCalendar
-    $('#reservation_type').val('');
+    $('#reservation_type').removeAttr('disabled').val('');
+    $('#current-datestring').removeAttr('hidden');
     $('#start_times').attr('disabled', true).val('');
     $('#end_times').attr('disabled', true).val('');
     $('#extra-people').attr('hidden', true);
@@ -105,5 +106,8 @@ $(function() {
     $('#reservation_type').val('').change(updateReservationType);
     $('#start_times').val('').change(updateReservationStart);
     $(document).on('change',"input[type='email']",checkEmail);
-    $('document').ready(updateDate());
+    $('document').ready(
+        $('#current-datestring').attr('hidden','true'),
+        $('#reservation_type').attr('disabled','true')
+    );
 });
