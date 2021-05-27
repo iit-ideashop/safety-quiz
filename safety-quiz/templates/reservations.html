@@ -73,7 +73,7 @@
             // If max < min or min > max then the only available day will be today.
             //TODO Change min and max to be passed as template arguments
             min:  new Date() > new Date(Number({{ openDate.year }}),Number({{ openDate.month }})-1,Number({{ openDate.day }})) ? new Date() : new Date(Number({{ openDate.year }}),Number({{ openDate.month }})-1,Number({{ openDate.day }})),
-            max: new Date("May 8,2021") // NOTE: new Date(nextYear, 10) is "Sun Nov 01 <nextYear>"
+            max: new Date("May 14,2021") // NOTE: new Date(nextYear, 10) is "Sun Nov 01 <nextYear>"
 
         });
         const currentDateElement = document.getElementById('current-date');
