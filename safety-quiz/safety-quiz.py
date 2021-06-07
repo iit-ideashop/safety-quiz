@@ -15,8 +15,10 @@ import google_auth_oauthlib.flow
 import googleapiclient.discovery
 import requests
 
-from model import User, UserLocation, Type, Training, Machine, Quiz, Question, Option, MissedQuestion, init_db, Major, College, HawkCard
+from checkIn.model import User, UserLocation, Type, Training, Machine, Quiz, Question, Option, MissedQuestion, init_db, Major, College, HawkCard
 from reservation import ReservationType, ReservationWindow, Reservations, HasRemoveMethod, init_reservation_db
+
+from covid import covid_blueprint
 
 # app setup
 app = Flask(__name__, static_url_path='/safety/static', static_folder='static')  # create the application instance :)
@@ -46,7 +48,7 @@ API_SERVICE_NAME = 'oauth2'
 API_VERSION = 'v2'
 
 @app.before_request
-def before_request():
+def before_request(): # KEEP THIS
     if 'sid' not in session \
             and request.endpoint not in ['login', 'login_google', 'authorize', 'oauth2callback', 'register', 'check_sid',
                                          'logout', 'get_machine_access']:
@@ -55,7 +57,7 @@ def before_request():
 
 
 @app.errorhandler(Exception)
-def error_handler(e):
+def error_handler(e): # KEEP THIS
     app.logger.error(e, exc_info=True)
     if type(e) == Warning and 'google' in str(e):
         flash('Looks like something went wrong with Google Login. Please try this legacy login instead.', 'danger')
@@ -75,20 +77,7 @@ def index():
     else:
         return render_template('index.html', trainings=trainings)
 
-@app.route('/COVID',methods=['GET', 'POST'])
-def COVID():
-    if request.method == 'GET':
-        #flash("Video safety training is not currently available. Please check back on September 14th, 2020.", 'warning')
-        #return render_template('layout.html')
-        return render_template('COVID_video.html', youtube_id=app.config['COVID_YOUTUBE_ID'], video_time_seconds=int(app.config['COVID_VIDEO_SECONDS']))
-    elif request.method == 'POST':
-        db = db_session()
-        print(request.form['sid'])
-        db.add(Training(trainee_id=int(request.form['sid']), trainer_id=20000000, machine_id=9, date=sa.func.now()))
-        db.commit()
-        flash("Thank you for participating in the Assembly Area Fall 2020 COVID training. Your verification quiz will be available on this site in one week. \
-            You can re-watch the video at any time by visiting https://wiki.ideashop.iit.edu/index.php?title=Safety_Training",'success')
-        return render_template('layout.html')
+
 
 @app.route('/admin/upload', methods=['GET', 'POST'])
 def upload_file():
@@ -711,6 +700,9 @@ def close_db(error):
 def no_app(environ, start_response):
     return NotFound()(environ, start_response)
 
+# Blueprint registration
+
+app.register_blueprint(covid_blueprint)
 
 # main
 if __name__ == '__main__':
