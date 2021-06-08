@@ -1,0 +1,62 @@
+{% extends 'layout.html' %}
+{% block page %}
+<h3>Hello {{session['email'] }}</h3>
+<div class="alert alert-info">
+    If you are having trouble completing the quizzes or do not remember the correct answer, check out this page on our wiki: <a href="https://wiki.ideashop.iit.edu/index.php?title=Safety_Quizzes">https://wiki.ideashop.iit.edu/index.php?title=Safety_Quizzes</a>
+</div>
+<div class="card" style="margin: 1em 0em;">
+    {% if trainings %}
+    
+        <div class="container-fluid">
+            <div class="row flex-row">
+                {% for each in range(1, training_count + 1 ) %}
+                    <div class="card" style="margin:2mm">
+                        {% if (trainings[each-1].machine.location.name == "Maker Space")%}
+                            <!-- add custom image for makerspace -->
+                        {% elif (trainings[each-1].machine.location.name == "Assembly Area")%}
+                            <!-- add custom image for AA -->
+                        {% endif %}
+
+                        <h4 class="card-header"> {{ trainings[each-1].machine.quiz.name }}</h4>
+                        <div class="card-body">
+                            <h5 class="card-title">Location: {{ trainings[each-1].machine.location.name  }}</h5>
+                            <p class="card-subtitle">Last Taken Date: {{ trainings[each-1].quiz_date }}</p>
+                        <div class="row flex-row">
+                            {% if trainings[each-1].quiz_available() %}
+                                <a class="btn btn-primary" style="margin: 2mm" href="{{ url_for('quiz', training_id=each.id)}}" role="button">
+                                Take the Quiz </a>
+                            {% elif trainings[each-1].quiz_passed() %}
+                                <a class="btn btn-primary disabled" style="margin: 2mm"><h5>Passed</h5></a>
+                            {% else %}
+                                Available soon
+                            {% endif %}
+                            <a class="btn btn-outline-info" style="margin: 2mm" href="http://wiki.ideashop.iit.edu" target="_blank" role="button"><h5>About this training</h5></a>
+                        </div>
+
+                        </div>
+
+                    </div>
+{#                    {% if not (each % 3) %}         <!--used to create strict, 3-wide row -->#}
+{#                        </div>#}
+{#                        <div class="row flex-row flex-nowrap">#}
+{#                    {% endif %}#}
+
+                {% endfor %}
+
+            </div>
+
+
+        </div>
+    {% else %}
+        <div class="card-header">
+            No quizzes available
+        </div>
+        <div class="card-body">
+            <p>You don't have any quizzes assigned for now. We typically assign a review quiz one week after
+                safety training. You will receive an email at your IIT email address once it's assigned.</p>
+        </div>
+    {% endif %}
+</div>
+{% block admin %}
+{% endblock %}
+{% endblock %}
