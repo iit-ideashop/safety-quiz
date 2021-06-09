@@ -28,14 +28,29 @@
         <h3 class="card-header">Shop Status</h3>
         <div class="card-body">
             <h5>We are currently closed</h5>
-            <h5>Current Shop User Count:</h5>
-            <h5>Our schedule for tomorrow is: </h4>
+            <h5>Current Shop User Count: 7</h5>
+            <h5>Our schedule for tomorrow is: 9:00 AM - 5:00 PM</h4>
         </div>
 
     </div>
     <div class="card" style="margin: 4mm">
         <h3 class="card-header">Machine Status</h3>
-        <div class="row flex-row">
+        <div class="row flex-row card-spaced-2">
+            <div class="card card-spaced-2">
+                <h4 class="card-header">Belt Sander</h4>
+                <p class="card-body">Status: Online</p>
+                <p class="card-body">Last Updated: {{ current_time }}</p>
+            </div>
+            <div class="card card-spaced-2">
+                <h4 class="card-header">Epilog Helix</h4>
+                <p class="card-body">Status: In Use</p>
+                <p class="card-body">Last Updated: {{ current_time }}</p>
+            </div>
+            <div class="card card-spaced-2">
+                <h4 class="card-header">Epilog Fusion Pro</h4>
+                <p class="card-body">Status: Offline</p>
+                <p class="card-body">Last Updated: {{ current_time }}</p>
+            </div>
             <!-- Put code to automatically get machine status. Update Machine Status from energizer devices -->
         </div>
     </div>
