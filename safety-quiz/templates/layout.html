@@ -13,7 +13,7 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarNavAltMarkup" >
             <div class="navbar-nav"  {% if not session['sid'] %} hidden="true" {% endif %}>
-                <a class="nav-item nav-link" href="{{ url_for('index') }}">Safety Quizzes</a>
+                <a class="nav-item nav-link" href="{{ url_for('new_training_interface') }}">Safety Quizzes</a>
                 <a class="nav-item nav-link" href="{{ url_for('reservations') }}">Make a Reservation</a>
                 <a class="nav-item nav-link" href="{{ url_for('COVID') }}">Fall 2020 Video Training</a>
             {% if session['admin'] %}

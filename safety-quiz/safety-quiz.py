@@ -84,6 +84,10 @@ def new_training_interface():
     training_count = len(trainings)
     return render_template('new_trainings.html', trainings=trainings, quizzes=quizzes, training_count = training_count)
 
+@app.route('/welcome')
+def welcome():
+    current_time=str(datetime.datetime.now().strftime('%x %X'))
+    return render_template('welcome.html', current_time = current_time)
 
 @app.route('/COVID',methods=['GET', 'POST'])
 def COVID():
