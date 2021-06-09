@@ -68,26 +68,30 @@ def error_handler(e):
 @app.route('/')
 def index():
     db = db_session()
+    user_profile = db.query(User).filter_by(sid=session['sid']).one_or_none()
     trainings = db.query(Training).outerjoin(Machine).filter(Training.trainee_id == session['sid']).filter(Training.invalidation_date == None).filter(Machine.location_id.in_((2,3))).order_by(Training.date).all()
     if session['admin'] and session['admin'] >= 85:
         quizzes = db.query(Machine).filter(Machine.quiz_id != None).order_by(Machine.quiz_id).all()
         return render_template('admin/index.html', trainings=trainings, quizzes=quizzes)
     else:
-        return render_template('index.html', trainings=trainings)
+        return render_template('index.html', trainings=trainings, user_profile=user_profile)
 
 @app.route('/new_trainings')
 def new_training_interface():
-    db=db_session()
+    db = db_session()
+    user_profile = db.query(User).filter_by(sid=session['sid']).one_or_none()
     trainings = db.query(Training).outerjoin(Machine).filter(Training.trainee_id == session['sid']).filter(\
     Training.invalidation_date == None).filter(Machine.location_id.in_((2, 3))).order_by(Training.date).all()
     quizzes = db.query(Machine).filter(Machine.quiz_id != None).order_by(Machine.quiz_id).all()
     training_count = len(trainings)
-    return render_template('new_trainings.html', trainings=trainings, quizzes=quizzes, training_count = training_count)
+    return render_template('new_trainings.html', trainings=trainings, quizzes=quizzes, training_count = training_count, user_profile = user_profile)
 
 @app.route('/welcome')
 def welcome():
+    db = db_session()
+    user_profile = db.query(User).filter_by(sid=session['sid']).one_or_none()
     current_time=str(datetime.datetime.now().strftime('%x %X'))
-    return render_template('welcome.html', current_time = current_time)
+    return render_template('welcome.html', current_time = current_time, user_profile = user_profile)
 
 @app.route('/COVID',methods=['GET', 'POST'])
 def COVID():
