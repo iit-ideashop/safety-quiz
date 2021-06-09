@@ -1,6 +1,6 @@
 {% extends 'layout.html' %}
 {% block page %}
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
+
 <h3>Hello {{session['email'] }}</h3>
 <div class="alert alert-info">
     <h3 class="badge badge-secondary">New!</h3> If you are having trouble completing the quizzes or do not remember the correct answer, check out this page on our wiki: <a href="https://wiki.ideashop.iit.edu/index.php?title=Safety_Quizzes">https://wiki.ideashop.iit.edu/index.php?title=Safety_Quizzes</a>
@@ -10,23 +10,23 @@
     
         <div class="container-fluid">
             <div class="row flex-row justify-content-center">
-                {% for each in range(1, training_count + 1 ) %}
+                {% for each in trainings %}
                     <div class="card" style="margin:2mm">
-                        {% if (trainings[each-1].machine.location.name == "Maker Space")%}
+                        {% if (each.machine.location.name == "Maker Space")%}
                             <!-- add custom image for makerspace -->
-                        {% elif (trainings[each-1].machine.location.name == "Assembly Area")%}
+                        {% elif (each.machine.location.name == "Assembly Area")%}
                             <!-- add custom image for AA -->
                         {% endif %}
 
-                        <h4 class="card-header"> {{ trainings[each-1].machine.quiz.name }}</h4>
+                        <h4 class="card-header"> {{ each.machine.quiz.name }}</h4>
                         <div class="card-body">
-                            <h5 class="card-title">Location: {{ trainings[each-1].machine.location.name  }}</h5>
-                            <p class="card-subtitle">Last Taken Date: {{ trainings[each-1].quiz_date }}</p>
+                            <h5 class="card-title">Location: {{ each.machine.location.name  }}</h5>
+                            <p class="card-subtitle">Last Taken Date: {{ each.quiz_date }}</p>
                         <div class="row flex-row">
-                            {% if trainings[each-1].quiz_available() %}
+                            {% if each.quiz_available() %}
                                 <a class="btn btn-primary" style="margin: 2mm" href="{{ url_for('quiz', training_id=each.id)}}" role="button">
                                 Take the Quiz </a><h3 class="badge badge-secondary">New!</h3>
-                            {% elif trainings[each-1].quiz_passed() %}
+                            {% elif each.quiz_passed() %}
                                 <a class="btn btn-primary disabled" style="margin: 2mm"><h5>Passed<i class="bi bi-check"></i></h5></a>
                             {% else %}
                                 Available soon
