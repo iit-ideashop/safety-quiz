@@ -15,7 +15,7 @@ import google_auth_oauthlib.flow
 import googleapiclient.discovery
 import requests
 
-from model import User, UserLocation, Type, Training, Machine, Quiz, Question, Option, MissedQuestion, init_db, Major, College, HawkCard
+from model import User, UserLocation, Access, Location, Type, Training, Machine, Quiz, Question, Option, MissedQuestion, init_db, Major, College, HawkCard
 from reservation import ReservationType, ReservationWindow, Reservations, HasRemoveMethod, init_reservation_db
 
 # app setup
@@ -68,6 +68,7 @@ def error_handler(e):
 @app.route('/')
 def index():
     db = db_session()
+
     user_profile = db.query(User).filter_by(sid=session['sid']).one_or_none()
     trainings = db.query(Training).outerjoin(Machine).filter(Training.trainee_id == session['sid']).filter(Training.invalidation_date == None).filter(Machine.location_id.in_((2,3))).order_by(Training.date).all()
     if session['admin'] and session['admin'] >= 85:
@@ -89,9 +90,22 @@ def new_training_interface():
 @app.route('/welcome')
 def welcome():
     db = db_session()
+
+    user_count=db.query(Location.id,Location.name, Location.staff_ratio).all()
+
+    in_lab = [len(db.query(Access)\
+        .filter_by(timeOut=None) \
+        .filter_by(location_id=1)
+        .all()), len(db.query(Access)\
+        .filter_by(timeOut=None) \
+        .filter_by(location_id=2)
+        .all())]
+
+
+
     user_profile = db.query(User).filter_by(sid=session['sid']).one_or_none()
     current_time=str(datetime.datetime.now().strftime('%x %X'))
-    return render_template('welcome.html', current_time = current_time, user_profile = user_profile)
+    return render_template('welcome.html', current_time = current_time, user_profile = user_profile, user_count = user_count, in_lab = in_lab)
 
 @app.route('/COVID',methods=['GET', 'POST'])
 def COVID():
