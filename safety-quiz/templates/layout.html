@@ -20,10 +20,23 @@
             {% if session['admin'] %}
                 <a class="nav-item nav-link" href="{{ url_for('view_reservations') }}">View Reservations</a>
             {%  endif %}
+
             </div>
             <div class="navbar-nav ml-auto">
                 {% if session['sid'] %}
-                    <a class="nav-link" href="{{ url_for('logout') }}">Log Out &nbsp;<i class="fas fa-sign-out-alt"></i></a>
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            {% if user_profile %}
+                                {{ user_profile.name }}
+
+                            {% else %}
+                                User Profile
+                            {% endif %}
+                        </button>
+                        <div class="dropdown-menu">
+                            <a class="dropdown-item" href="{{ url_for('logout') }}"> Log Out <i class="fas fa-sign-out-alt"></i></a>
+                        </div>
+                    </div>
                 {% endif %}
             </div>
         </div>
