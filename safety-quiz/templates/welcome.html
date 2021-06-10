@@ -30,7 +30,7 @@
             <h5>We are currently closed</h5>
             <h5>Current Shop Utility</h5>
             {% for i in range(1,3) %}
-                <div class="card" >
+                <div class="card card-spaced-4" >
                     <h5 class="card-header">{{ user_count[i].name }}</h5>
                     <p class="card-text"> Current Users: {{ in_lab[i-1] }} </p>
                     <p class="card-text"> Student to Worker ratio: {{ user_count[i].staff_ratio }}</p>
@@ -45,20 +45,20 @@
         <div class="row flex-row card-spaced-2">
             <div class="card card-spaced-2">
                 <h4 class="card-header">Belt Sander</h4>
-                <p class="card-body">Status: Online</p>
+                <p class="card-body">Status: <button class="btn btn-success active" aria-pressed="true">Online</button></p>
                 <p class="card-body">Last Updated: {{ current_time }}</p>
             </div>
             <div class="card card-spaced-2">
                 <h4 class="card-header">Epilog Helix</h4>
-                <p class="card-body">Status: In Use</p>
+                <p class="card-body">Status: <button class="btn btn-warning active" aria-pressed="true">In Use</button></p>
                 <p class="card-body">Last Updated: {{ current_time }}</p>
             </div>
             <div class="card card-spaced-2">
                 <h4 class="card-header">Epilog Fusion Pro</h4>
-                <p class="card-body">Status: Offline</p>
+                <p class="card-body">Status: <button class="btn btn-danger active" aria-pressed="true">Offline</button></p>
                 <p class="card-body">Last Updated: {{ current_time }}</p>
             </div>
-            <!-- Put code to automatically get machine status. Update Machine Status from energizer devices -->
+            <!-- automatically parse machine status data. Update Machine Status from energizer devices -->
         </div>
     </div>
     <div class="card" style="margin: 4mm">
