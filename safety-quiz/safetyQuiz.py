@@ -3,7 +3,7 @@ import os
 import datetime
 
 import flask
-from flask import Flask, request, session, redirect, url_for, render_template, flash, send_from_directory, Markup, jsonify
+from flask import Flask, request, session, redirect, url_for, render_template, flash, send_from_directory, Markup, jsonify, g
 from flask_bootstrap import Bootstrap
 from flask_fontawesome import FontAwesome
 import sqlalchemy as sa
@@ -21,17 +21,15 @@ from flask import current_app
 from checkIn.model import User, UserLocation, Type, Training, Machine, Quiz, Question, Option, MissedQuestion, init_db, Major, College, HawkCard
 from reservation import ReservationType, ReservationWindow, Reservations, HasRemoveMethod, init_reservation_db
 
-from covid import covid_blueprint # blueprintname.route not app.route
+from covid import covid
+# blueprintname.route not app.route
 from nightly import nightly_blueprint
 
 # app setup
 app = Flask(__name__, static_url_path='/safety/static', static_folder='static')  # create the application instance :)
-app.app_context().push()
-app.app_context()
 app.config.from_object(__name__)
 app.config.from_pyfile('config.cfg')
 app.config.from_envvar('FLASKR_SETTINGS', silent=True)
-app.current_app.app_context()
 UPLOAD_FOLDER = 'static/images'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
@@ -55,6 +53,7 @@ API_VERSION = 'v2'
 
 @app.before_request
 def before_request(): # KEEP THIS
+    g.db_session = init_db(app.config['DB'])
     if 'sid' not in session \
             and request.endpoint not in ['login', 'login_google', 'authorize', 'oauth2callback', 'register', 'check_sid',
                                          'logout', 'get_machine_access']:
@@ -707,8 +706,7 @@ def no_app(environ, start_response):
 
 # Blueprint registration
 
-app.register_blueprint(covid_blueprint)
-app.register_blueprint(nightly_blueprint)
+app.register_blueprint(covid)
 
 # main
 if __name__ == '__main__':

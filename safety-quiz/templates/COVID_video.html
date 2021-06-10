@@ -59,7 +59,7 @@
                     var form = document.createElement('form');
                     document.body.appendChild(form);
                     form.method = 'post';
-                    form.action = "{{ url_for('COVID') }}";
+                    form.action = "{{ url_for('covid.COVID') }}";
                     var input = document.createElement('input');
                     input.type = 'hidden';
                     input.name = 'sid';

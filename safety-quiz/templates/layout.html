@@ -14,7 +14,7 @@
             <div class="navbar-nav"  {% if not session['sid'] %} hidden="true" {% endif %}>
                 <a class="nav-item nav-link" href="{{ url_for('index') }}">Safety Quizzes</a>
                 <a class="nav-item nav-link" href="{{ url_for('reservations') }}">Make a Reservation</a>
-                <a class="nav-item nav-link" href="{{ url_for('COVID') }}">Fall 2020 Video Training</a>
+                <a class="nav-item nav-link" href="{{ url_for('covid.COVID') }}">Fall 2020 Video Training</a>
             {% if session['admin'] %}
                 <a class="nav-item nav-link" href="{{ url_for('view_reservations') }}">View Reservations</a>
             {%  endif %}
