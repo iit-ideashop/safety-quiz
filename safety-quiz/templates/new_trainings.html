@@ -18,30 +18,56 @@
                             <!-- add custom image for AA -->
                         {% endif %}
 
-                        <h4 class="card-header"> {{ each.machine.quiz.name }}</h4>
+                        <h4 class="card-header">
+                            {{ each.machine.quiz.name }}
+                            <button type="button" class="btn-secondary btn-sm float-right" data-toggle="modal" data-target="#{{ each.machine.quiz.name }}Modal">Show Details</button>
+                        </h4>
                         <div class="card-body">
                             <h5 class="card-title">Location: {{ each.machine.location.name  }}</h5>
                             <p class="card-subtitle">Last Taken Date: {{ each.quiz_date }}</p>
-                        <div class="row flex-row">
+
                             {% if each.quiz_available() %}
                                 <a class="btn btn-primary" style="margin: 2mm" href="{{ url_for('quiz', training_id=each.id)}}" role="button">
                                 Take the Quiz </a><h3 class="badge badge-secondary">New!</h3>
                             {% elif each.quiz_passed() %}
-                                <a class="btn btn-primary disabled" style="margin: 2mm"><h5>Passed<i class="bi bi-check"></i></h5></a>
+                                <a class="btn btn-sm btn-info active" style="margin: 2mm"><h5>Passed</h5></a>
                             {% else %}
                                 Available soon
                             {% endif %}
-                            <a class="btn btn-outline-info" style="margin: 2mm" href="http://wiki.ideashop.iit.edu" target="_blank" role="button"><h5>About this training</h5></a>
-                        </div>
+                            <a class="btn btn-sm btn-info active" style="margin: 2mm" href="http://wiki.ideashop.iit.edu" target="_blank" role="button"><h5>About this training</h5></a>
+
+
 
                         </div>
 
                     </div>
-{#                    {% if not (each % 3) %}         <!--used to create strict, 3-wide row -->#}
-{#                        </div>#}
-{#                        <div class="row flex-row flex-nowrap">#}
-{#                    {% endif %}#}
+                {% endfor %}
 
+                <!-- Generate Modals for each training quiz -->
+                {% for each in trainings %}
+                    {% if each.quiz_passed() %}
+                        <div class="modal fade" id="{{ each.machine.quiz.name }}Modal" tabindex="-1" role="dialog" aria-labelledby="{{ each.machine.quiz.name }}Modal" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="{{ each.machine.quiz.name }}ModalLabel">{{ each.machine.quiz.name }} Details</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p>Date Taken: {{ each.quiz_date }}</p>
+                                        <p>Quiz Score: {{ each.quiz_score }}</p>
+                                        <p>Attempt Count: {{ each.quiz_attempts }}</p>
+                                        <p>Trained by: {{ each.trainer.name }}</p>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
                 {% endfor %}
 
             </div>
