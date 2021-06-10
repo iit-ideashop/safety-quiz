@@ -23,7 +23,7 @@ from reservation import ReservationType, ReservationWindow, Reservations, HasRem
 
 from covid import covid
 # blueprintname.route not app.route
-from nightly import nightly_blueprint
+from nightly import nightly
 
 # app setup
 app = Flask(__name__, static_url_path='/safety/static', static_folder='static')  # create the application instance :)
@@ -115,7 +115,7 @@ def uploaded_file(filename):
 
 
 @app.route('/oauth2callback')
-def oauth2callback():
+def oauth2callback(): # AUTH
     # Specify the state when creating the flow in the callback so that it can
     # verified in the authorization server response.
     state = session['state']
@@ -135,7 +135,7 @@ def oauth2callback():
     session['credentials'] = credentials_to_dict(credentials)
     return redirect(url_for('login_google'))
 
-def credentials_to_dict(credentials):
+def credentials_to_dict(credentials): # AUTH
     return {'token': credentials.token,
             'refresh_token': credentials.refresh_token,
             'token_uri': credentials.token_uri,
@@ -144,7 +144,7 @@ def credentials_to_dict(credentials):
             'scopes': credentials.scopes}
 
 @app.route('/login', methods=['GET','POST'])
-def login():
+def login(): # AUTH
     if request.method == 'GET' :
         if 'legacy' in request.args and bool(request.args['legacy']) is True:
             return render_template('login.html', legacy=True)
@@ -179,7 +179,7 @@ def login():
                 return redirect(url_for('register', email=request.form['email'], name=""))
 
 @app.route('/login_google', methods=['GET'])
-def login_google():
+def login_google(): # AUTH
     if 'credentials' not in session:
         return redirect('authorize')
 
@@ -232,7 +232,7 @@ def login_google():
             return render_template('login.html', legacy=False)
 
 @app.route('/authorize')
-def authorize():
+def authorize(): # AUTH
     # Create flow instance to manage the OAuth 2.0 Authorization Grant Flow steps.
     flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(
         CLIENT_SECRETS_FILE, scopes=SCOPES)
@@ -707,6 +707,7 @@ def no_app(environ, start_response):
 # Blueprint registration
 
 app.register_blueprint(covid)
+app.register_blueprint(nightly)
 
 # main
 if __name__ == '__main__':
