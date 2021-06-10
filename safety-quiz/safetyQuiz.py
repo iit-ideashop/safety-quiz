@@ -1,6 +1,8 @@
 # imports
 import os
 import datetime
+
+import flask
 from flask import Flask, request, session, redirect, url_for, render_template, flash, send_from_directory, Markup, jsonify
 from flask_bootstrap import Bootstrap
 from flask_fontawesome import FontAwesome
@@ -14,18 +16,22 @@ import google.oauth2.credentials
 import google_auth_oauthlib.flow
 import googleapiclient.discovery
 import requests
+from flask import current_app
 
 from checkIn.model import User, UserLocation, Type, Training, Machine, Quiz, Question, Option, MissedQuestion, init_db, Major, College, HawkCard
 from reservation import ReservationType, ReservationWindow, Reservations, HasRemoveMethod, init_reservation_db
 
-from covid import covid_blueprint
+from covid import covid_blueprint # blueprintname.route not app.route
+from nightly import nightly_blueprint
 
 # app setup
 app = Flask(__name__, static_url_path='/safety/static', static_folder='static')  # create the application instance :)
+app.app_context().push()
+app.app_context()
 app.config.from_object(__name__)
 app.config.from_pyfile('config.cfg')
 app.config.from_envvar('FLASKR_SETTINGS', silent=True)
-
+app.current_app.app_context()
 UPLOAD_FOLDER = 'static/images'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
@@ -76,7 +82,6 @@ def index():
         return render_template('admin/index.html', trainings=trainings, quizzes=quizzes)
     else:
         return render_template('index.html', trainings=trainings)
-
 
 
 @app.route('/admin/upload', methods=['GET', 'POST'])
@@ -703,6 +708,7 @@ def no_app(environ, start_response):
 # Blueprint registration
 
 app.register_blueprint(covid_blueprint)
+app.register_blueprint(nightly_blueprint)
 
 # main
 if __name__ == '__main__':
