@@ -709,7 +709,7 @@ def no_app(environ, start_response):
 
 app.register_blueprint(covid)
 app.register_blueprint(nightly)
-app.register_blueprint(auth)
+#app.register_blueprint(auth)
 
 # main
 if __name__ == '__main__':
