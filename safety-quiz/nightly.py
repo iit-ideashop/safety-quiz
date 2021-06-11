@@ -1,7 +1,7 @@
 #To run nightly to send quiz notifications to users.
 #imports
 import flask
-from flask import Flask, render_template, g
+from flask import Flask, render_template
 from flask_mail import Mail, Message
 from checkIn.model import db_session, User, Training, Machine, init_db
 from datetime import datetime, date, timedelta
@@ -14,7 +14,7 @@ app = Flask(__name__)
 
 #app.config.from_object('config')
 app.config.from_pyfile('config.cfg')
-#db_session = init_db(app.config['DB'])
+db_session = init_db(app.config['DB'])
 
 app.config.update(dict(MAIL_SERVER = '10.0.8.18'),MAIL_DEFAULT_SENDER = "ideashop@iit.edu")
 
@@ -22,7 +22,7 @@ mail = Mail(app)
 
 @nightly.route('/new_quiz')
 def new_quiz():
-    db = g.db_session()
+    db = db_session()
     sid = '20313392'
     trainings = db.query(Training).filter_by(trainee_id=sid).filter_by(quiz_notification_sent=None).all()
     new_quizzes = []

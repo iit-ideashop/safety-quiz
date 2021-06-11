@@ -21,8 +21,9 @@ from flask import current_app
 from checkIn.model import User, UserLocation, Type, Training, Machine, Quiz, Question, Option, MissedQuestion, init_db, Major, College, HawkCard
 from reservation import ReservationType, ReservationWindow, Reservations, HasRemoveMethod, init_reservation_db
 
-from covid import covid
 # blueprintname.route not app.route
+from covid import covid
+from auth import auth
 from nightly import nightly
 
 # app setup
@@ -708,6 +709,7 @@ def no_app(environ, start_response):
 
 app.register_blueprint(covid)
 app.register_blueprint(nightly)
+app.register_blueprint(auth)
 
 # main
 if __name__ == '__main__':
