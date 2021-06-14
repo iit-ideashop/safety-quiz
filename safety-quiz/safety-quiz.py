@@ -49,9 +49,10 @@ API_VERSION = 'v2'
 def before_request():
     if 'sid' not in session \
             and request.endpoint not in ['login', 'login_google', 'authorize', 'oauth2callback', 'register', 'check_sid',
-                                         'logout', 'get_machine_access']:
+                                         'logout', 'get_machine_access','welcome','shop_status']:
         print(request.endpoint)
         return redirect(url_for('login'))
+
 
 
 @app.errorhandler(Exception)
@@ -65,27 +66,29 @@ def error_handler(e):
           ' as well as a brief description of what you were doing.'), 'danger')
     return redirect(url_for('index'))
 
+
+
 @app.route('/')
 def index():
     db = db_session()
 
-    user_profile = db.query(User).filter_by(sid=session['sid']).one_or_none()
+
     trainings = db.query(Training).outerjoin(Machine).filter(Training.trainee_id == session['sid']).filter(Training.invalidation_date == None).filter(Machine.location_id.in_((2,3))).order_by(Training.date).all()
     if session['admin'] and session['admin'] >= 85:
         quizzes = db.query(Machine).filter(Machine.quiz_id != None).order_by(Machine.quiz_id).all()
         return render_template('admin/index.html', trainings=trainings, quizzes=quizzes)
     else:
-        return render_template('index.html', trainings=trainings, user_profile=user_profile)
+        return render_template('index.html', trainings=trainings)
 
 @app.route('/new_trainings')
 def new_training_interface():
     db = db_session()
-    user_profile = db.query(User).filter_by(sid=session['sid']).one_or_none()
+
     trainings = db.query(Training).outerjoin(Machine).filter(Training.trainee_id == session['sid']).filter(\
     Training.invalidation_date == None).filter(Machine.location_id.in_((2, 3))).order_by(Training.date).all()
     quizzes = db.query(Machine).filter(Machine.quiz_id != None).order_by(Machine.quiz_id).all()
     training_count = len(trainings)
-    return render_template('new_trainings.html', trainings=trainings, quizzes=quizzes, training_count = training_count, user_profile = user_profile)
+    return render_template('new_trainings.html', trainings=trainings, quizzes=quizzes, training_count = training_count)
 
 @app.route('/welcome')
 def welcome():
@@ -103,9 +106,28 @@ def welcome():
 
 
 
-    user_profile = db.query(User).filter_by(sid=session['sid']).one_or_none()
+
     current_time=str(datetime.datetime.now().strftime('%x %X'))
-    return render_template('welcome.html', current_time = current_time, user_profile = user_profile, user_count = user_count, in_lab = in_lab)
+    return render_template('welcome.html', current_time = current_time, user_count = user_count, in_lab = in_lab)
+
+@app.route('/shop_status', methods=['GET','POST'])
+def shop_status():
+    db = db_session()
+    user_count = db.query(Location.id, Location.name, Location.staff_ratio).all()
+
+    in_lab = [len(db.query(Access) \
+                  .filter_by(timeOut=None) \
+                  .filter_by(location_id=1)
+                  .all()), len(db.query(Access) \
+                  .filter_by(timeOut=None) \
+                  .filter_by(location_id=2)
+                  .all())]
+
+    if request.method =='GET':
+        return render_template('shop_status.html', user_count=user_count, in_lab=in_lab)
+    elif request.method == 'POST':
+        response = app.make_response('<h1>Not yet implemented!</h1>'), 418
+        return response
 
 @app.route('/COVID',methods=['GET', 'POST'])
 def COVID():
@@ -198,6 +220,8 @@ def login():
                 return render_template('login.html', legacy=False)
             session['sid'] = user.sid
             session['email'] = user.email
+            session['name'] = user.name
+            session['major']= user.major.name
             user_level_list = db.query(Type.level).outerjoin(UserLocation).filter(UserLocation.sid == session['sid']).all()
             if not user_level_list:
                 db.add(UserLocation(sid=user.sid, location_id=2, type_id=0, waiverSigned=None))
