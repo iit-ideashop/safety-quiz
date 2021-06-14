@@ -24,7 +24,6 @@ from reservation import ReservationType, ReservationWindow, Reservations, HasRem
 # blueprintname.route not app.route
 from covid import covid
 from auth import auth
-from nightly import nightly
 
 # app setup
 app = Flask(__name__, static_url_path='/safety/static', static_folder='static')  # create the application instance :)
@@ -708,8 +707,8 @@ def no_app(environ, start_response):
 # Blueprint registration
 
 app.register_blueprint(covid)
-app.register_blueprint(nightly)
-#app.register_blueprint(auth)
+#app.register_blueprint(nightly)
+app.register_blueprint(auth)
 
 # main
 if __name__ == '__main__':

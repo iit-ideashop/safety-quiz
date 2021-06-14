@@ -23,7 +23,7 @@ SCOPES = ["https://www.googleapis.com/auth/userinfo.email", "https://www.googlea
 API_SERVICE_NAME = 'oauth2'
 API_VERSION = 'v2'
 
-auth = Blueprint('covid', __name__)
+auth = Blueprint('auth', __name__)
 
 @auth.route('/oauth2callback')
 def oauth2callback(): # AUTH
@@ -107,7 +107,7 @@ def login_google(): # AUTH
     #              credentials in a persistent database instead.
     session['credentials'] = credentials_to_dict(credentials)
 
-    db = db_session()
+    db = g.db_session()
     user = db.query(User).filter_by(email=gSuite['email']).one_or_none()
     if user:
         session['sid'] = user.sid
