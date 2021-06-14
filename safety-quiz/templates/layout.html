@@ -13,37 +13,40 @@
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNavAltMarkup" >
-            <div class="navbar-nav"  {% if not session['sid'] %} hidden="true" {% endif %}>
-                <a class="nav-item nav-link" href="{{ url_for('new_training_interface') }}">Safety Quizzes</a>
-                <a class="nav-item nav-link" href="{{ url_for('reservations') }}">Make a Reservation</a>
-                <a class="nav-item nav-link" href="{{ url_for('COVID') }}">Fall 2020 Video Training</a>
+            <div class="navbar-nav">
+                <a class="nav-item nav-link" href="{{ url_for('new_training_interface') }}" {% if not session['sid'] %} hidden="true" {% endif %}>Safety Quizzes</a>
+                <a class="nav-item nav-link" href="{{ url_for('reservations') }}" {% if not session['sid'] %} hidden="true" {% endif %}>Make a Reservation</a>
+                <a class="nav-item nav-link" href="{{ url_for('COVID') }}" {% if not session['sid'] %} hidden="true" {% endif %}>Fall 2020 Video Training</a>
             {% if session['admin'] %}
-                <a class="nav-item nav-link" href="{{ url_for('view_reservations') }}">View Reservations</a>
+                <a class="nav-item nav-link" href="{{ url_for('view_reservations') }}" {% if not session['sid'] %} hidden="true" {% endif %}>View Reservations</a>
             {%  endif %}
-
+                <a class="nav-item nav-link" href="{{ url_for('shop_status') }}">Shop Status</a>
+                <a class="nav-item nav-link" href="https://wiki.ideashop.iit.edu">Idea Shop Wiki</a>
             </div>
             <div class="navbar-nav nav-item ml-auto">
                 {% if session['sid'] %}
                     <div class="btn-group">
                         <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            {% if user_profile %}
-                                {{ user_profile.name }}
-
-                            {% else %}
-                                User Profile
+                            {% if session['name'] %}
+                                {{ session['name'] }}
                             {% endif %}
                         </button>
                         <div class="dropdown-menu">
-                            <div class="card" >
-                                <img class="card-img-top" src="https://www.stockvault.net/data/2018/08/28/254043/preview16.jpg">
-                                <h5 class="card-text">Hello, {{ user_profile.name }}</h5>
-                                <p class="card-text flex-nowrap">{{ user_profile.major }}</p>
+                            <div class="card">
+                                <h5 class="card-text">Hello, {{ session['name'] }}</h5>
+                                <p class="card-text flex-nowrap">{{ session['major'] }}</p>
                             </div>
                             <div class="dropdown-divider"></div>
                             <a class="dropdown-item" href="{{ url_for('logout') }}"> Log Out <i class="fas fa-sign-out-alt"></i></a>
                         </div>
                     </div>
+                {% else %}
+                    <div class="navbar-nav nav-item ml-auto">
+                            <a class="nav-item nav-link" href="{{ url_for('login') }}"> Log In <i class="bi bi-box-arrow-in-left"></i></a>
+
+
                 {% endif %}
+
             </div>
         </div>
     </nav>

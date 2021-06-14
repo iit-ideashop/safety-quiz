@@ -1,7 +1,7 @@
 {% extends 'layout.html' %}
 {% block page %}
 
-    <h3>Hello <button type="button" class="btn btn-outline-info btn-lg" disabled>{{session['email'] }}</button>, welcome to the Idea Shop Portal!</h3>
+    <h3>Hello, welcome to the Idea Shop Portal!</h3>
 
     <div id="mainCarouselControls" class="carousel slide" data-ride="carousel">
       <div class="carousel-inner">
@@ -24,46 +24,7 @@
         <span class="sr-only">Next</span>
       </a>
     </div>
-    <div class="card" style="margin: 4mm">
-        <h3 class="card-header">Shop Status</h3>
-        <div class="card-body">
-            <h5>We are currently closed</h5>
-            <h5>Current Shop Utility</h5>
-            {% for i in range(1,3) %}
-                <div class="card card-spaced-4" >
-                    <h5 class="card-header">{{ user_count[i].name }}</h5>
-                    <p class="card-text"> Current Users: {{ in_lab[i-1] }} </p>
-                    <p class="card-text"> Student to Worker ratio: {{ user_count[i].staff_ratio }}</p>
-                </div>
-            {% endfor %}
-            <h5>Our schedule for tomorrow is: 9:00 AM - 5:00 PM</h4>
-        </div>
 
-    </div>
-    <div class="card" style="margin: 4mm">
-        <h3 class="card-header">Machine Status</h3>
-        <div class="row flex-row card-spaced-2">
-            <div class="card card-spaced-2">
-                <h4 class="card-header">Belt Sander</h4>
-                <p class="card-body">Status: <button class="btn btn-success active" aria-pressed="true">Online</button></p>
-                <p class="card-body">Last Updated: {{ current_time }}</p>
-            </div>
-            <div class="card card-spaced-2">
-                <h4 class="card-header">Epilog Helix</h4>
-                <p class="card-body">Status: <button class="btn btn-warning active" aria-pressed="true">In Use</button></p>
-                <p class="card-body">Last Updated: {{ current_time }}</p>
-            </div>
-            <div class="card card-spaced-2">
-                <h4 class="card-header">Epilog Fusion Pro</h4>
-                <p class="card-body">Status: <button class="btn btn-danger active" aria-pressed="true">Offline</button></p>
-                <p class="card-body">Last Updated: {{ current_time }}</p>
-            </div>
-            <!-- automatically parse machine status data. Update Machine Status from energizer devices -->
-        </div>
-    </div>
-    <div class="card" style="margin: 4mm">
-        <h3 class="card-header">Historical User Activity Graph</h3>
-    </div>
 
     <p>Current time: {{ current_time }}</p>
 
