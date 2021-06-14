@@ -25,6 +25,7 @@ API_VERSION = 'v2'
 
 auth = Blueprint('auth', __name__)
 
+
 @auth.route('/oauth2callback')
 def oauth2callback(): # AUTH
     # Specify the state when creating the flow in the callback so that it can
