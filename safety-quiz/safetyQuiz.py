@@ -55,7 +55,7 @@ API_VERSION = 'v2'
 def before_request(): # KEEP THIS
     g.db_session = init_db(app.config['DB'])
     if 'sid' not in session \
-            and request.endpoint not in ['login', 'login_google', 'authorize', 'oauth2callback', 'register', 'check_sid',
+            and request.endpoint not in ['auth.login', 'auth.login_google', 'auth.authorize', 'auth.oauth2callback', 'register', 'check_sid',
                                          'logout', 'get_machine_access']:
         print(request.endpoint)
         return redirect(url_for('auth.login'))
@@ -159,7 +159,7 @@ def logout():
 
 def revoke():
   if 'credentials' not in session:
-    return ('You need to <a href="/authorize">authorize</a> before ' +
+    return ('You need to <a href="/auth.authorize">authorize</a> before ' +
             'testing the code to revoke credentials.')
 
   credentials = google.oauth2.credentials.Credentials(
