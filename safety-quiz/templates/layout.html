@@ -6,6 +6,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
     <link rel="stylesheet" href="safety/static/custom_styles.css">
 {% endblock %}
+
 {% block navbar %}
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <a class="navbar-brand" href="{{ url_for('welcome') }}">Idea Shop Portal</a>
@@ -16,7 +17,7 @@
             <div class="navbar-nav">
                 <a class="nav-item nav-link" href="{{ url_for('new_training_interface') }}" {% if not session['sid'] %} hidden="true" {% endif %}>Safety Quizzes</a>
                 <a class="nav-item nav-link" href="{{ url_for('reservations') }}" {% if not session['sid'] %} hidden="true" {% endif %}>Make a Reservation</a>
-                <a class="nav-item nav-link" href="{{ url_for('COVID') }}" {% if not session['sid'] %} hidden="true" {% endif %}>Fall 2020 Video Training</a>
+                <a class="nav-item nav-link" href="{{ url_for('covid.COVID') }}" {% if not session['sid'] %} hidden="true" {% endif %}>Fall 2020 Video Training</a>
             {% if session['admin'] %}
                 <a class="nav-item nav-link" href="{{ url_for('view_reservations') }}" {% if not session['sid'] %} hidden="true" {% endif %}>View Reservations</a>
             {%  endif %}
@@ -42,7 +43,7 @@
                     </div>
                 {% else %}
                     <div class="navbar-nav nav-item ml-auto">
-                            <a class="nav-item nav-link" href="{{ url_for('login') }}"> Log In <i class="bi bi-box-arrow-in-left"></i></a>
+                            <a class="nav-item nav-link" href="{{ url_for('auth.login') }}"> Log In <i class="bi bi-box-arrow-in-left"></i></a>
 
 
                 {% endif %}
