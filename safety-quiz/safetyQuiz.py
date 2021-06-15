@@ -1,7 +1,9 @@
 # imports
 import os
 import datetime
-from flask import Flask, request, session, redirect, url_for, render_template, flash, send_from_directory, Markup, jsonify
+
+import flask
+from flask import Flask, request, session, redirect, url_for, render_template, flash, send_from_directory, Markup, jsonify, g
 from flask_bootstrap import Bootstrap
 from flask_fontawesome import FontAwesome
 import sqlalchemy as sa
@@ -14,16 +16,20 @@ import google.oauth2.credentials
 import google_auth_oauthlib.flow
 import googleapiclient.discovery
 import requests
+from flask import current_app
 
-from model import User, UserLocation, Type, Training, Machine, Quiz, Question, Option, MissedQuestion, init_db, Major, College, HawkCard
+from checkIn.model import User, UserLocation, Type, Training, Machine, Quiz, Question, Option, MissedQuestion, init_db, Major, College, HawkCard
 from reservation import ReservationType, ReservationWindow, Reservations, HasRemoveMethod, init_reservation_db
+
+# blueprintname.route not app.route
+from covid import covid
+from auth import auth
 
 # app setup
 app = Flask(__name__, static_url_path='/safety/static', static_folder='static')  # create the application instance :)
 app.config.from_object(__name__)
 app.config.from_pyfile('config.cfg')
 app.config.from_envvar('FLASKR_SETTINGS', silent=True)
-
 UPLOAD_FOLDER = 'static/images'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
@@ -46,20 +52,21 @@ API_SERVICE_NAME = 'oauth2'
 API_VERSION = 'v2'
 
 @app.before_request
-def before_request():
+def before_request(): # KEEP THIS
+    g.db_session = init_db(app.config['DB'])
     if 'sid' not in session \
-            and request.endpoint not in ['login', 'login_google', 'authorize', 'oauth2callback', 'register', 'check_sid',
+            and request.endpoint not in ['auth.login', 'auth.login_google', 'auth.authorize', 'auth.oauth2callback', 'register', 'check_sid',
                                          'logout', 'get_machine_access']:
         print(request.endpoint)
-        return redirect(url_for('login'))
+        return redirect(url_for('auth.login'))
 
 
 @app.errorhandler(Exception)
-def error_handler(e):
+def error_handler(e): # KEEP THIS
     app.logger.error(e, exc_info=True)
     if type(e) == Warning and 'google' in str(e):
         flash('Looks like something went wrong with Google Login. Please try this legacy login instead.', 'danger')
-        return redirect(url_for('login', legacy=True))
+        return redirect(url_for('auth.login', legacy=True))
     flash(Markup('<b>An error occurred.</b> Please contact <a href="mailto:ideashop@iit.edu">ideashop@iit.edu</a> and include the '
           'current time ' + str(datetime.datetime.now().strftime('%x %X')) +
           ' as well as a brief description of what you were doing.'), 'danger')
@@ -75,20 +82,6 @@ def index():
     else:
         return render_template('index.html', trainings=trainings)
 
-@app.route('/COVID',methods=['GET', 'POST'])
-def COVID():
-    if request.method == 'GET':
-        #flash("Video safety training is not currently available. Please check back on September 14th, 2020.", 'warning')
-        #return render_template('layout.html')
-        return render_template('COVID_video.html', youtube_id=app.config['COVID_YOUTUBE_ID'], video_time_seconds=int(app.config['COVID_VIDEO_SECONDS']))
-    elif request.method == 'POST':
-        db = db_session()
-        print(request.form['sid'])
-        db.add(Training(trainee_id=int(request.form['sid']), trainer_id=20000000, machine_id=9, date=sa.func.now()))
-        db.commit()
-        flash("Thank you for participating in the Assembly Area Fall 2020 COVID training. Your verification quiz will be available on this site in one week. \
-            You can re-watch the video at any time by visiting https://wiki.ideashop.iit.edu/index.php?title=Safety_Training",'success')
-        return render_template('layout.html')
 
 @app.route('/admin/upload', methods=['GET', 'POST'])
 def upload_file():
@@ -120,148 +113,6 @@ def uploaded_file(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER'],
                                filename)
 
-
-@app.route('/oauth2callback')
-def oauth2callback():
-    # Specify the state when creating the flow in the callback so that it can
-    # verified in the authorization server response.
-    state = session['state']
-
-    flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(
-        CLIENT_SECRETS_FILE, scopes=SCOPES, state=state)
-    flow.redirect_uri = url_for('oauth2callback', _external=True, _scheme='https') #if insecure dev change scheme to 'http'
-
-    # Use the authorization server's response to fetch the OAuth 2.0 tokens.
-    authorization_response = request.url.replace('http://','https://',1) #if insecure dev remove .replace('http://','https://',1)
-    flow.fetch_token(authorization_response=authorization_response)
-
-    # Store credentials in the session.
-    # ACTION ITEM: In a production app, you likely want to save these
-    #              credentials in a persistent database instead.
-    credentials = flow.credentials
-    session['credentials'] = credentials_to_dict(credentials)
-    return redirect(url_for('login_google'))
-
-def credentials_to_dict(credentials):
-    return {'token': credentials.token,
-            'refresh_token': credentials.refresh_token,
-            'token_uri': credentials.token_uri,
-            'client_id': credentials.client_id,
-            'client_secret': credentials.client_secret,
-            'scopes': credentials.scopes}
-
-@app.route('/login', methods=['GET','POST'])
-def login():
-    if request.method == 'GET' :
-        if 'legacy' in request.args and bool(request.args['legacy']) is True:
-            return render_template('login.html', legacy=True)
-        else :
-            return render_template('login.html', legacy=False)
-    if request.method == 'POST':
-        db = db_session()
-        user = db.query(User).filter_by(sid=request.form['pin']).one_or_none()
-        if user:
-            if user.email != request.form['email']:
-                flash("Account Register with . Please contact Idea Shop staff for assistance.", 'danger')
-                return render_template('login.html', legacy=False)
-            session['sid'] = user.sid
-            session['email'] = user.email
-            user_level_list = db.query(Type.level).outerjoin(UserLocation).filter(UserLocation.sid == session['sid']).all()
-            if not user_level_list:
-                db.add(UserLocation(sid=user.sid, location_id=2, type_id=0, waiverSigned=None))
-                db.add(UserLocation(sid=user.sid, location_id=3, type_id=0, waiverSigned=None))
-            user_max_level = max([item for t in user_level_list for item in t])
-            if user_max_level > 0:
-                session['admin'] = user_max_level
-            else:
-                session['admin'] = None
-            return redirect(url_for('index'))
-        else:
-            user = db.query(User).filter_by(email=request.form['email']).one_or_none()
-            if user:
-                flash("Email linked with an account. Please contact Idea Shop staff for assistance.", 'danger')
-                return render_template('login.html', legacy=False)
-            else:
-                flash("Please register before continuing.", 'warning')
-                return redirect(url_for('register', email=request.form['email'], name=""))
-
-@app.route('/login_google', methods=['GET'])
-def login_google():
-    if 'credentials' not in session:
-        return redirect('authorize')
-
-    # Load credentials from the session.
-    credentials = google.oauth2.credentials.Credentials(
-        **session['credentials'])
-
-    profile = googleapiclient.discovery.build(API_SERVICE_NAME, API_VERSION, credentials=credentials)
-
-    gSuite = profile.userinfo().get().execute()
-
-    # Save credentials back to session in case access token was refreshed.
-    # ACTION ITEM: In a production app, you likely want to save these
-    #              credentials in a persistent database instead.
-    session['credentials'] = credentials_to_dict(credentials)
-
-    db = db_session()
-    user = db.query(User).filter_by(email=gSuite['email']).one_or_none()
-    if user:
-        session['sid'] = user.sid
-        session['email'] = user.email
-        user_level_list = db.query(Type.level).outerjoin(UserLocation).filter(UserLocation.sid == session['sid']).all()
-        if not user_level_list:
-            db.add(UserLocation(sid=user.sid, location_id=2, type_id=2))
-            db.add(UserLocation(sid=user.sid, location_id=3, type_id=2))
-            db.commit()
-            user_level_list = db.query(Type.level).outerjoin(UserLocation).filter(UserLocation.sid == session['sid']).all()
-        elif not {2, 3}.issubset([x for y in db.query(UserLocation.location_id).filter_by(sid=user.sid).all() for x in y]):
-            if 2 not in [x for y in db.query(UserLocation.location_id).filter_by(sid=user.sid).all() for x in y]:
-                db.add(UserLocation(sid=user.sid, location_id=2, type_id=2))
-            elif 3 not in [x for y in db.query(UserLocation.location_id).filter_by(sid=user.sid).all() for x in y]:
-                db.add(UserLocation(sid=user.sid, location_id=3, type_id=2))
-            db.commit()
-            user_level_list = db.query(Type.level).outerjoin(UserLocation).filter(UserLocation.sid == session['sid']).all()
-        if not user_level_list:
-            flash("Error with automatic UserLocation creation.", 'danger')
-            return redirect(url_for('index'))
-        user_max_level = max([item for t in user_level_list for item in t])
-        if user_max_level > 0:
-            session['admin'] = user_max_level
-        else:
-            session['admin'] = None
-        return redirect(url_for('index'))
-    else:
-        if 'iit.edu' in gSuite['email']:
-            flash("Please register before continuing.", 'warning')
-            return redirect(url_for('register', email=gSuite['email'], name=gSuite['name']))
-        else:
-            flash("User not found. Be sure to log in with your Illinois Tech Google Account. If you continue to encounter this error, please contact Idea Shop staff for assistance.", 'danger')
-            return render_template('login.html', legacy=False)
-
-@app.route('/authorize')
-def authorize():
-    # Create flow instance to manage the OAuth 2.0 Authorization Grant Flow steps.
-    flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(
-        CLIENT_SECRETS_FILE, scopes=SCOPES)
-
-    # The URI created here must exactly match one of the authorized redirect URIs
-    # for the OAuth 2.0 client, which you configured in the API Console. If this
-    # value doesn't match an authorized URI, you will get a 'redirect_uri_mismatch'
-    # error.
-    flow.redirect_uri = url_for('oauth2callback', _external=True, _scheme='https') #if insecure dev change scheme to 'http'
-
-    authorization_url, state = flow.authorization_url(
-        # Enable offline access so that you can refresh an access token without
-        # re-prompting the user for permission. Recommended for web server apps.
-        access_type='offline',
-        # Enable incremental authorization. Recommended as a best practice.
-        include_granted_scopes='true')
-
-    # Store the state so the callback can verify the auth server response.
-    session['state'] = state
-
-    return redirect(authorization_url)
-
 @app.route('/register', methods=['GET','POST'])
 def register():
     if request.method == 'GET' and ({'email', 'name'}.issubset([x for x in request.args.keys()])):
@@ -283,7 +134,7 @@ def register():
         db.add(UserLocation(sid=user.sid,location_id=3,type_id=2))
         db.commit()
         flash("Registered user %s." % user.name, 'success')
-        return redirect(url_for('login_google'))
+        return redirect(url_for('auth.login_google'))
     else:
         flash("Error.",'danger')
         return render_template('layout.html')
@@ -304,11 +155,11 @@ def logout():
     revoke()
     clear_credentials()
     session.clear()
-    return redirect(url_for('login'))
+    return redirect(url_for('auth.login'))
 
 def revoke():
   if 'credentials' not in session:
-    return ('You need to <a href="/authorize">authorize</a> before ' +
+    return ('You need to <a href="/auth.authorize">authorize</a> before ' +
             'testing the code to revoke credentials.')
 
   credentials = google.oauth2.credentials.Credentials(
@@ -711,6 +562,11 @@ def close_db(error):
 def no_app(environ, start_response):
     return NotFound()(environ, start_response)
 
+# Blueprint registration
+
+app.register_blueprint(covid)
+#app.register_blueprint(nightly)
+app.register_blueprint(auth)
 
 # main
 if __name__ == '__main__':
