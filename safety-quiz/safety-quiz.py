@@ -54,6 +54,12 @@ def before_request():
         return redirect(url_for('login'))
 
 
+@app.context_processor
+def utility_processor():
+    def current_time():
+        current_time = str(datetime.datetime.now().strftime('%x %X'))
+        return current_time
+    return dict(current_time=current_time)
 
 @app.errorhandler(Exception)
 def error_handler(e):
@@ -78,7 +84,7 @@ def index():
         quizzes = db.query(Machine).filter(Machine.quiz_id != None).order_by(Machine.quiz_id).all()
         return render_template('admin/index.html', trainings=trainings, quizzes=quizzes)
     else:
-        return render_template('index.html', trainings=trainings)
+        return render_template('welcome.html', trainings=trainings)
 
 @app.route('/new_trainings')
 def new_training_interface():
