@@ -18,7 +18,7 @@ import googleapiclient.discovery
 import requests
 from flask import current_app
 
-from checkIn.model import User, UserLocation, Access, Location, Type, Training, Machine, Quiz, Question, Option, MissedQuestion, init_db, Major, College, HawkCard
+from model import User, UserLocation, Access, Location, Type, Training, Machine, Quiz, Question, Option, MissedQuestion, init_db, Major, College, HawkCard
 from reservation import ReservationType, ReservationWindow, Reservations, HasRemoveMethod, init_reservation_db
 
 # blueprintname.route not app.route
@@ -65,8 +65,8 @@ def before_request(): # KEEP THIS
 @app.context_processor
 def utility_processor():
     def current_time():
-        current_time = str(datetime.datetime.now().strftime('%x %X'))
-        return current_time
+
+        return datetime.datetime.now().strftime('%x %X')
     return dict(current_time=current_time)
 
 @app.errorhandler(Exception)
@@ -117,8 +117,7 @@ def welcome():
 
 
 
-    current_time=str(datetime.datetime.now().strftime('%x %X'))
-    return render_template('welcome.html', current_time = current_time, user_count = user_count, in_lab = in_lab)
+    return render_template('welcome.html', user_count = user_count, in_lab = in_lab)
 
 @app.route('/shop_status', methods=['GET','POST'])
 def shop_status():
