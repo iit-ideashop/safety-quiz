@@ -2,11 +2,16 @@
 #imports
 from flask import Flask, render_template
 from flask_mail import Mail, Message
-from model import db_session, User, Training, Machine, init_db
+from checkIn.model import db_session, User, Training, Machine, init_db
 from datetime import datetime, date, timedelta
+from flask import Blueprint
 
+#nightly = Blueprint('nightly', __name__)
+
+#app = flask.current_app
 app = Flask(__name__)
 
+app.config.from_object('config')
 app.config.from_pyfile('config.cfg')
 db_session = init_db(app.config['DB'])
 

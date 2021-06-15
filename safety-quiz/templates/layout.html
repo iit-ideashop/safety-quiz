@@ -23,7 +23,7 @@
                 <a class="nav-item nav-link" href="{{ url_for('shop_status') }}">Shop Status</a>
                 <a class="nav-item nav-link" href="https://wiki.ideashop.iit.edu">Idea Shop Wiki</a>
             </div>
-            <div class="navbar-nav nav-item ml-auto">
+            <div class="navbar-nav ml-auto">
                 {% if session['sid'] %}
                     <div class="btn-group">
                         <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -46,7 +46,6 @@
 
 
                 {% endif %}
-
             </div>
         </div>
     </nav>
