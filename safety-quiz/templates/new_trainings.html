@@ -5,47 +5,121 @@
 <div class="alert alert-info">
     <h3 class="badge badge-secondary">New!</h3> If you are having trouble completing the quizzes or do not remember the correct answer, check out this page on our wiki: <a href="https://wiki.ideashop.iit.edu/index.php?title=Safety_Quizzes">https://wiki.ideashop.iit.edu/index.php?title=Safety_Quizzes</a>
 </div>
+
+    <div class="alert alert-info">
+        <p>You must receive 100% on a quiz in order to pass the training</p>
+    </div>
 <div class="card" style="margin: 1em 0em;">
+    <h3 class="card-header">Safety Trainings & Quizzes</h3>
     {% if trainings %}
     
         <div class="container-fluid">
-            <div class="row flex-row justify-content-center">
-                {% for each in trainings %}
-                    <div class="card" style="margin:2mm">
-                        {% if (each.machine.location.name == "Maker Space")%}
-                            <!-- add custom image for makerspace -->
-                        {% elif (each.machine.location.name == "Assembly Area")%}
-                            <!-- add custom image for AA -->
-                        {% endif %}
-
+            <div class="justify-content-center">
+                    <div class="card card-spaced-2">
                         <h4 class="card-header">
-                            {{ each.machine.quiz.name }}
-                            <button type="button" class="btn-secondary btn-sm float-right" data-toggle="modal" data-target="#{{ each.machine.quiz.name }}Modal">Show Details</button>
+                            <a class="collapsed d-block" data-toggle="collapse" href="#collapse-available" aria-expanded="true" aria-controls="collapse-available" id="heading-available">
+                                Available Trainings
+                                <i class="fa fa-chevron-down float-right"></i>
+                            </a>
                         </h4>
-                        <div class="card-body">
-                            <h5 class="card-title">Location: {{ each.machine.location.name  }}</h5>
-                            <p class="card-subtitle">Last Taken Date: {{ each.quiz_date }}</p>
+                        <div id="collapse-available" class="collapse show" aria-labelledby="heading-available">
+                        {% set available_count = 0 %}
+                            {% for each in trainings %}
+                                {% if each.quiz_available() %}
+                                    {% set available_count = available_count + 1 %}
+                                    <div class="card card-spaced-2">
+                                        <h5 class="card-header">{{ each.machine.quiz.name  }}</h5>
+                                        <div class="card-body">
+                                            <h5 class="card-title">Location: {{ each.machine.location.name  }}</h5>
+                                            <p class="card-subtitle">Last Taken Date: None</p>
 
-                            {% if each.quiz_available() %}
-                                <a class="btn btn-primary" style="margin: 2mm" href="{{ url_for('quiz', training_id=each.id)}}" role="button">
-                                Take the Quiz </a><h3 class="badge badge-secondary">New!</h3>
-                            {% elif each.quiz_passed() %}
-                                <a class="btn btn-sm btn-info active" style="margin: 2mm"><h5>Passed</h5></a>
-                            {% else %}
-                                Available soon
+                                            <a class="btn btn-primary" style="margin: 2mm" href="{{ url_for('quiz', training_id=each.id)}}" role="button">
+                                            Take the Quiz </a><h3 class="badge badge-secondary">New!</h3>
+
+                                            <a class="btn btn-sm btn-info active" style="margin: 2mm" href="http://wiki.ideashop.iit.edu" target="_blank" role="button"><h5>About this training</h5></a>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                            {% if available_count == 0 %}
+                                <h5>Nothing to see here! If you just completed a video, please check back in a week to see your quiz</h5>
                             {% endif %}
-                            <a class="btn btn-sm btn-info active" style="margin: 2mm" href="http://wiki.ideashop.iit.edu" target="_blank" role="button"><h5>About this training</h5></a>
-
-
 
                         </div>
+                </div>
+                    <div class="card card-spaced-2">
+                        <h4 class="card-header">
+                            <a class="collapsed d-block" data-toggle="collapse" href="#collapse-completed" aria-expanded="true" aria-controls="collapse-completed" id="heading-completed">
+                                Completed Trainings
+                                <i class="fa fa-chevron-down float-right"></i>
+                            </a>
+                        </h4>
 
+                    <div id="collapse-completed" class="collapse" aria-labelledby="heading-collapsed">
+                    {% for each in trainings %}
+                        {% if each.quiz_passed() %}
+                            <div class="card card-spaced-2">
+                                <h5 class="card-header">Topic: {{ each.machine.quiz.name }}</h5>
+                                <div class="card-body">
+                                    <h5 class="card-title">Location: {{ each.machine.location.name  }}</h5>
+                                    <div class="progress" style="margin: 2mm">
+                                        <div class="progress-bar
+                                        {% if each.quiz_score <= 75.0 %}
+                                        bg-danger
+                                        {% elif each.quiz_score < 100.0 %}
+                                        bg-warning
+                                        {% else %}
+                                        bg-success
+                                        {% endif %}
+                                        " role="progressbar" style="width: {{ each.quiz_score }}%">Best Score: {{ each.quiz_score }}%</div>
+                                    </div>
+                                    <button type="button" class="btn-secondary btn-sm float-right" data-toggle="modal" data-target="#{{ each.machine.quiz.name }}Modal">Show Details</button>
+                                    <a class="btn btn-sm btn-info active" style="margin: 2mm" href="http://wiki.ideashop.iit.edu" target="_blank" role="button"><h5>About this training</h5></a>
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
                     </div>
-                {% endfor %}
+                    </div>
+
+{#                    {% for each in trainings %}#}
+{#                    <div class="card" style="margin:2mm">#}
+{#                        {% if (each.machine.location.name == "Maker Space")%}#}
+{#                            <!-- add custom image for makerspace -->#}
+{#                        {% elif (each.machine.location.name == "Assembly Area")%}#}
+{#                            <!-- add custom image for AA -->#}
+{#                        {% endif %}#}
+{##}
+{#                        <h4 class="card-header">#}
+{#                            {{ each.machine.quiz.name }}#}
+{#                            {%  if (each.quiz_available() or each.quiz_passed()) %}#}
+{#                            <button type="button" class="btn-secondary btn-sm float-right" data-toggle="modal" data-target="#{{ each.machine.quiz.name }}Modal">Show Details</button>#}
+{#                            {% endif %}#}
+{#                        </h4>#}
+{#                        <div class="card-body">#}
+{#                            <h5 class="card-title">Location: {{ each.machine.location.name  }}</h5>#}
+{#                            <p class="card-subtitle">Last Taken Date: {{ each.quiz_date }}</p>#}
+{##}
+{#                            {% if each.quiz_available() %}#}
+{#                                <a class="btn btn-primary" style="margin: 2mm" href="{{ url_for('quiz', training_id=each.id)}}" role="button">#}
+{#                                Take the Quiz </a><h3 class="badge badge-secondary">New!</h3>#}
+{#                            {% elif each.quiz_passed() %}#}
+{#                                <a class="btn btn-sm btn-info active" style="margin: 2mm"><h5>Passed</h5></a>#}
+{#                            {% else %}#}
+{#                                Available soon#}
+{#                            {% endif %}#}
+{#                            <a class="btn btn-sm btn-info active" style="margin: 2mm" href="http://wiki.ideashop.iit.edu" target="_blank" role="button"><h5>About this training</h5></a>#}
+{##}
+{##}
+{##}
+{#                        </div>#}
+{##}
+{#                    </div>#}
+{#                {% endfor %}#}
 
                 <!-- Generate Modals for each training quiz -->
                 {% for each in trainings %}
-                    {% if each.quiz_passed() %}
+                    {% if (each.quiz_available or each.quiz_passed()) %}
                         <div class="modal fade" id="{{ each.machine.quiz.name }}Modal" tabindex="-1" role="dialog" aria-labelledby="{{ each.machine.quiz.name }}Modal" aria-hidden="true">
                             <div class="modal-dialog" role="document">
                                 <div class="modal-content">
