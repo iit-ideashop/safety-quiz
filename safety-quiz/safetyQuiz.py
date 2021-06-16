@@ -83,7 +83,7 @@ def index():
         return render_template('index.html', trainings=trainings)
 
 
-@app.route('/admin/upload', methods=['GET', 'POST'])
+@app.route('/admin/upload', methods=['GET', 'POST']) # KEEP THIS
 def upload_file():
     if request.method == 'POST':
         # check if the post request has the file part
@@ -103,12 +103,12 @@ def upload_file():
                                     filename=filename))
 
 
-def allowed_file(filename):
+def allowed_file(filename): # KEEP THIS
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
-@app.route('/uploads/<filename>')
+@app.route('/uploads/<filename>') # KEEP THIS
 def uploaded_file(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER'],
                                filename)
@@ -149,36 +149,6 @@ def check_sid():
     else:
         return jsonify({'sid': None, 'exists': False})
 
-
-@app.route('/logout')
-def logout():
-    revoke()
-    clear_credentials()
-    session.clear()
-    return redirect(url_for('auth.login'))
-
-def revoke():
-  if 'credentials' not in session:
-    return ('You need to <a href="/auth.authorize">authorize</a> before ' +
-            'testing the code to revoke credentials.')
-
-  credentials = google.oauth2.credentials.Credentials(
-    **session['credentials'])
-
-  revoke = requests.post('https://oauth2.googleapis.com/revoke',
-      params={'token': credentials.token},
-      headers={'content-type': 'application/x-www-form-urlencoded'})
-
-  status_code = getattr(revoke, 'status_code')
-  if status_code == 200:
-    return('Credentials successfully revoked.')
-  else:
-    return('An error occurred.')
-
-def clear_credentials():
-    if 'credentials' in session:
-        del session['credentials']
-    return ('Credentials have been cleared.<br><br>')
 
 @app.route('/quiz/override/<training_id>', methods=['GET','POST'])
 def override(training_id):
@@ -291,7 +261,7 @@ def quiz(training_id):
         return redirect(url_for('index'))
 
 
-@app.route('/edit_quiz/<id>', methods=['GET', 'POST'])
+@app.route('/edit_quiz/<id>', methods=['GET', 'POST']) # KEEP THIS
 def edit_quiz(id):
     db = db_session()
     if session['admin']:
@@ -402,7 +372,7 @@ def add_object(object_type):
         db.commit()
         return {'id': new.id}
 
-@app.route('/reservations', methods=['GET','POST'])
+@app.route('/reservations', methods=['GET','POST']) # KEEP THIS
 def reservations():
     if request.method == 'GET':
         ##temp disable reservations since users can still reserve time for current day even if in disbaled range

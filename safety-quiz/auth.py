@@ -1,15 +1,9 @@
-import os
-import datetime
-
-import flask
+import requests
 from flask import Flask, request, session, redirect, url_for, render_template, flash, g
-from flask_bootstrap import Bootstrap
-from flask_fontawesome import FontAwesome
-import sqlalchemy as sa
 import google.oauth2.credentials
 import google_auth_oauthlib.flow
 import googleapiclient.discovery
-from flask import Blueprint, current_app
+from flask import Blueprint
 
 from checkIn.model import User, UserLocation, Type
 
@@ -24,7 +18,6 @@ API_SERVICE_NAME = 'oauth2'
 API_VERSION = 'v2'
 
 auth = Blueprint('auth', __name__)
-
 
 @auth.route('/oauth2callback')
 def oauth2callback(): # AUTH
@@ -166,3 +159,33 @@ def authorize(): # AUTH
     session['state'] = state
 
     return redirect(authorization_url)
+
+@auth.route('/logout')
+def logout():
+    revoke()
+    clear_credentials()
+    session.clear()
+    return redirect(url_for('login'))
+
+def revoke():
+  if 'credentials' not in session:
+    return ('You need to <a href="/auth.authorize">authorize</a> before ' +
+            'testing the code to revoke credentials.')
+
+  credentials = google.oauth2.credentials.Credentials(
+    **session['credentials'])
+
+  revoke = requests.post('https://oauth2.googleapis.com/revoke',
+      params={'token': credentials.token},
+      headers={'content-type': 'application/x-www-form-urlencoded'})
+
+  status_code = getattr(revoke, 'status_code')
+  if status_code == 200:
+    return('Credentials successfully revoked.')
+  else:
+    return('An error occurred.')
+
+def clear_credentials():
+    if 'credentials' in session:
+        del session['credentials']
+    return ('Credentials have been cleared.<br><br>')
