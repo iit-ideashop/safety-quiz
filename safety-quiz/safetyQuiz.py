@@ -52,7 +52,7 @@ API_SERVICE_NAME = 'oauth2'
 API_VERSION = 'v2'
 
 @app.before_request
-def before_request(): # KEEP THIS
+def before_request():
     g.db_session = init_db(app.config['DB'])
     if 'sid' not in session \
             and request.endpoint not in ['auth.login', 'auth.login_google', 'auth.authorize', 'auth.oauth2callback', 'register', 'check_sid',
@@ -62,7 +62,7 @@ def before_request(): # KEEP THIS
 
 
 @app.errorhandler(Exception)
-def error_handler(e): # KEEP THIS
+def error_handler(e):
     app.logger.error(e, exc_info=True)
     if type(e) == Warning and 'google' in str(e):
         flash('Looks like something went wrong with Google Login. Please try this legacy login instead.', 'danger')
@@ -83,7 +83,7 @@ def index():
         return render_template('index.html', trainings=trainings)
 
 
-@app.route('/admin/upload', methods=['GET', 'POST']) # KEEP THIS
+@app.route('/admin/upload', methods=['GET', 'POST'])
 def upload_file():
     if request.method == 'POST':
         # check if the post request has the file part
@@ -103,12 +103,12 @@ def upload_file():
                                     filename=filename))
 
 
-def allowed_file(filename): # KEEP THIS
+def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
-@app.route('/uploads/<filename>') # KEEP THIS
+@app.route('/uploads/<filename>')
 def uploaded_file(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER'],
                                filename)
@@ -261,7 +261,7 @@ def quiz(training_id):
         return redirect(url_for('index'))
 
 
-@app.route('/edit_quiz/<id>', methods=['GET', 'POST']) # KEEP THIS
+@app.route('/edit_quiz/<id>', methods=['GET', 'POST'])
 def edit_quiz(id):
     db = db_session()
     if session['admin']:
