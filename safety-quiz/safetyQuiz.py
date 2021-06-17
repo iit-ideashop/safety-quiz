@@ -150,6 +150,36 @@ def check_sid():
         return jsonify({'sid': None, 'exists': False})
 
 
+@app.route('/logout')
+def logout():
+    revoke()
+    clear_credentials()
+    session.clear()
+    return redirect(url_for('auth.login'))
+
+def revoke():
+  if 'credentials' not in session:
+    return ('You need to <a href="/auth.authorize">authorize</a> before ' +
+            'testing the code to revoke credentials.')
+
+  credentials = google.oauth2.credentials.Credentials(
+    **session['credentials'])
+
+  revoke = requests.post('https://oauth2.googleapis.com/revoke',
+      params={'token': credentials.token},
+      headers={'content-type': 'application/x-www-form-urlencoded'})
+
+  status_code = getattr(revoke, 'status_code')
+  if status_code == 200:
+    return('Credentials successfully revoked.')
+  else:
+    return('An error occurred.')
+
+def clear_credentials():
+    if 'credentials' in session:
+        del session['credentials']
+    return ('Credentials have been cleared.<br><br>')
+
 @app.route('/quiz/override/<training_id>', methods=['GET','POST'])
 def override(training_id):
     db = db_session()
@@ -372,7 +402,7 @@ def add_object(object_type):
         db.commit()
         return {'id': new.id}
 
-@app.route('/reservations', methods=['GET','POST']) # KEEP THIS
+@app.route('/reservations', methods=['GET','POST'])
 def reservations():
     if request.method == 'GET':
         ##temp disable reservations since users can still reserve time for current day even if in disbaled range
