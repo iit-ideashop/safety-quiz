@@ -12,7 +12,7 @@ from checkIn.model import User, UserLocation, Type, Training, Machine, Quiz, Que
 
 reservation_bp = Blueprint('reservation', __name__)
 
-#db_session = init_db(reservation_bp.config['DB'])
+#db_session = init_db(current_app.config['DB'])
 # Just for type-hinting, if you know a better way please fix
 class HasRemoveMethod:
     def remove(self):
@@ -27,7 +27,7 @@ def init_reservation_db(connection_string: str) -> Union[Callable[[], sa.orm.Ses
     db.close()
     return db_session
 
-db_reservations = init_reservation_db(reservation_bp.config['DB_RESERVATION'])
+
 
 class ReservationType(_base_reservation):
     __tablename__ = 'reservation_types'
@@ -63,12 +63,16 @@ class Reservations(_base_reservation):
     def __repr__(self):
         return "%s has a %s reservation from %s to %s" % (self.sid, self.type.name, self.start, self.end)
 
+@reservation_bp.before_request
+def before_request():
+    db_reservations = init_reservation_db(current_app.config['DB_RESERVATION'])
+    g.reservation_db = db_reservations()
 
 @reservation_bp.route('/reservations', methods=['GET','POST']) # KEEP THIS
 def reservations():
     if request.method == 'GET':
         ##temp disable reservations since users can still reserve time for current day even if in disbaled range
-        if reservation_bp.config['ALLOW_RESERVATIONS'] != 'True':
+        if current_app.config['ALLOW_RESERVATIONS'] != 'True':
             flash("Reservations are currently unavailable and will resume for the Spring 2021 semester.",'warning')
             return render_template('layout.html')
         db = g.db_session()
@@ -77,14 +81,14 @@ def reservations():
             flash("You are not cleared to make reservations at this time. Please chcek the status of your safety trainings or contact Idea Shop staff for assistance.",'warning')
             return render_template('layout.html')
         user = db.query(User).filter_by(sid=session['sid']).one_or_none()
-        reservation_types = db_reservations().query(ReservationType).order_by(ReservationType.id.asc()).all()
+        reservation_types = g.reservation_db.query(ReservationType).order_by(ReservationType.id.asc()).all()
         db.close()
         return render_template('reservations.html', reservation_types=reservation_types, user=user, openDate=datetime.date(2020, 9, 8), dateWindows=get_window())
     if request.method == 'POST':
         user = g.db_session().query(User).filter_by(sid=session['sid']).one_or_none()
         start_time = datetime.datetime.strptime(request.form['start_time'],"%Y-%m-%d %X")
         end_time = datetime.datetime.strptime(request.form['end_time'],"%Y-%m-%d %X")
-        db = db_reservations()
+        db = g.reservation_db
         reservation_type = db.query(ReservationType).filter_by(id=int(request.form['reservation_type'])).one_or_none()
         parent = Reservations(type_id=reservation_type.id, start=start_time, end=end_time, sid=user.sid)
         db.add(parent)
@@ -133,7 +137,7 @@ def checkEmail():
 
 @reservation_bp.route('/reservations/api/type')
 def get_type():
-    x = g.db_reservations().query(ReservationType).filter_by(id=int(request.args['type_id'])).one_or_none()
+    x = g.g.reservation_db.query(ReservationType).filter_by(id=int(request.args['type_id'])).one_or_none()
     if x :
         return jsonify({'id':x.id,'name':x.name,'quantity':x.quantity,'capacity':x.capacity})
     else:
@@ -141,7 +145,7 @@ def get_type():
 
 @reservation_bp.route('/reservations/api/start_times', methods=['GET'])
 def start_times():
-    db = g.db_reservations()
+    db = g.g.reservation_db
     requested_date = datetime.datetime.strptime(request.args['date'][:15], "%a %b %d %Y").date()
     reservation_type = db.query(ReservationType).filter_by(id=int(request.args['type_id'])).one()
     existing_reservations = db.query(Reservations).filter(Reservations.start >= requested_date).filter(Reservations.end < requested_date+datetime.timedelta(days=1)).filter(Reservations.type_id == reservation_type.id).filter(Reservations.parent_id == None).all()
@@ -163,7 +167,7 @@ def start_times():
 
 @reservation_bp.route('/reservations/api/end_times', methods=['GET'])
 def end_times():
-    db = db_reservations()
+    db = g.reservation_db
     reservation_type = db.query(ReservationType).filter_by(id = int(request.args['type_id'])).one()
     start_time = datetime.datetime.strptime(request.args['start_time'],"%Y-%m-%d %X")
     existing_reservations = db.query(Reservations).filter(Reservations.start >= start_time).filter(Reservations.end < start_time.date() + datetime.timedelta(days=1)).filter(Reservations.type_id == reservation_type.id).filter(Reservations.parent_id == None).all()
@@ -184,13 +188,13 @@ def end_times():
 
 @reservation_bp.route('/reservations/api/windows', methods=['GET'])
 def get_window():
-    db = db_reservations()
+    db = g.reservation_db
     temp = db.query(ReservationWindow).filter(ReservationWindow.start >= datetime.datetime.today().date()).all()
     return [x.start.strftime('%m %d %Y') for x in temp]
 
 @reservation_bp.route('/reservations/view')
 def view_reservations():
-    db = db_reservations()
+    db = g.reservation_db
     start = datetime.datetime.combine(datetime.datetime.now().date(),datetime.time(0,0,0))
     end = datetime.datetime.combine(datetime.datetime.now().date(),datetime.time(23,59,59))
     reservations = db.query(Reservations).filter(Reservations.start > start).filter(Reservations.end < end).order_by(Reservations.start.asc()).all()
