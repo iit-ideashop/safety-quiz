@@ -13,15 +13,15 @@
         <div class="collapse navbar-collapse" id="navbarNavAltMarkup" >
             <div class="navbar-nav"  {% if not session['sid'] %} hidden="true" {% endif %}>
                 <a class="nav-item nav-link" href="{{ url_for('index') }}">Safety Quizzes</a>
-                <a class="nav-item nav-link" href="{{ url_for('reservations') }}">Make a Reservation</a>
+                <a class="nav-item nav-link" href="{{ url_for('reservation.reservations') }}">Make a Reservation</a>
                 <a class="nav-item nav-link" href="{{ url_for('covid.COVID') }}">Fall 2020 Video Training</a>
             {% if session['admin'] %}
-                <a class="nav-item nav-link" href="{{ url_for('view_reservations') }}">View Reservations</a>
+                <a class="nav-item nav-link" href="{{ url_for('reservation.view_reservations') }}">View Reservations</a>
             {%  endif %}
             </div>
             <div class="navbar-nav ml-auto">
                 {% if session['sid'] %}
-                    <a class="nav-link" href="{{ url_for('logout') }}">Log Out &nbsp;<i class="fas fa-sign-out-alt"></i></a>
+                    <a class="nav-link" href="{{ url_for('auth.logout') }}">Log Out &nbsp;<i class="fas fa-sign-out-alt"></i></a>
                 {% endif %}
             </div>
         </div>
