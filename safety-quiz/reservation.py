@@ -8,13 +8,10 @@ from flask import request, session, redirect, url_for, render_template, flash, j
 import sqlalchemy as sa
 
 from checkIn.model import User, UserLocation, Type, Training, Machine, Quiz, Question, Option, MissedQuestion, init_db, Major, College, HawkCard
-from reservation import ReservationType, ReservationWindow, Reservations, HasRemoveMethod, init_reservation_db
 
-reservation = Blueprint('reservation', __name__)
-
+reservation_bp = Blueprint('reservation', __name__)
+import reservation
 db_session = init_db(reservation.config['DB'])
-db_reservations = init_reservation_db(reservation.config['DB_RESERVATION'])
-
 # Just for type-hinting, if you know a better way please fix
 class HasRemoveMethod:
     def remove(self):
@@ -29,6 +26,7 @@ def init_reservation_db(connection_string: str) -> Union[Callable[[], sa.orm.Ses
     db.close()
     return db_session
 
+db_reservations = init_reservation_db(reservation.config['DB_RESERVATION'])
 
 class ReservationType(_base_reservation):
     __tablename__ = 'reservation_types'
@@ -65,7 +63,7 @@ class Reservations(_base_reservation):
         return "%s has a %s reservation from %s to %s" % (self.sid, self.type.name, self.start, self.end)
 
 
-@reservation.route('/reservations', methods=['GET','POST']) # KEEP THIS
+@reservation_bp.route('/reservations', methods=['GET','POST']) # KEEP THIS
 def reservations():
     if request.method == 'GET':
         ##temp disable reservations since users can still reserve time for current day even if in disbaled range
@@ -116,7 +114,7 @@ def confirmAllowed(email):
         flash("User %s does not exist and cannot join reservations." % email, 'danger')
         return {'valid': False, 'user': None}
 
-@reservation.route('/reservations/api/checkEmail')
+@reservation_bp.route('/reservations/api/checkEmail')
 def checkEmail():
     db = g.db_session()
     user = db.query(User).filter_by(email=request.args['email']).one_or_none()
@@ -132,7 +130,7 @@ def checkEmail():
             return jsonify({'valid': False, 'reason': "User not cleared for reservations."})
     return jsonify({'valid': False, 'reason': "User does not exist."})
 
-@reservation.route('/reservations/api/type')
+@reservation_bp.route('/reservations/api/type')
 def get_type():
     x = g.db_reservations().query(ReservationType).filter_by(id=int(request.args['type_id'])).one_or_none()
     if x :
@@ -140,7 +138,7 @@ def get_type():
     else:
         return ''''''
 
-@reservation.route('/reservations/api/start_times', methods=['GET'])
+@reservation_bp.route('/reservations/api/start_times', methods=['GET'])
 def start_times():
     db = g.db_reservations()
     requested_date = datetime.datetime.strptime(request.args['date'][:15], "%a %b %d %Y").date()
@@ -162,7 +160,7 @@ def start_times():
                 start_times.append(i)
         return jsonify([{'date': str(x.date()), 'time': str(x.time())} for x in start_times])
 
-@reservation.route('/reservations/api/end_times', methods=['GET'])
+@reservation_bp.route('/reservations/api/end_times', methods=['GET'])
 def end_times():
     db = db_reservations()
     reservation_type = db.query(ReservationType).filter_by(id = int(request.args['type_id'])).one()
@@ -183,13 +181,13 @@ def end_times():
         else: break
     return jsonify([{'date': str(x.date()), 'time': str(x.time())} for x in end_times])
 
-@reservation.route('/reservations/api/windows', methods=['GET'])
+@reservation_bp.route('/reservations/api/windows', methods=['GET'])
 def get_window():
     db = db_reservations()
     temp = db.query(ReservationWindow).filter(ReservationWindow.start >= datetime.datetime.today().date()).all()
     return [x.start.strftime('%m %d %Y') for x in temp]
 
-@reservation.route('/reservations/view')
+@reservation_bp.route('/reservations/view')
 def view_reservations():
     db = db_reservations()
     start = datetime.datetime.combine(datetime.datetime.now().date(),datetime.time(0,0,0))
@@ -197,7 +195,7 @@ def view_reservations():
     reservations = db.query(Reservations).filter(Reservations.start > start).filter(Reservations.end < end).order_by(Reservations.start.asc()).all()
     return render_template('view_reservations.html', reservations=reservations)
 
-@reservation.route('/api/machine_access', methods=['POST'])
+@reservation_bp.route('/api/machine_access', methods=['POST'])
 def get_machine_access():
     if not request.form or not all(items in request.form.keys() for items in ['machine_name', 'machine_id']):
         return jsonify({'response': 'Invalid request.'})
