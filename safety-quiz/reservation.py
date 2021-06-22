@@ -6,12 +6,13 @@ from typing import Union, Callable, Tuple, Optional
 import datetime
 from flask import request, session, redirect, url_for, render_template, flash, jsonify, g, Blueprint
 import sqlalchemy as sa
-
+from flask import current_app
+#import reservation
 from checkIn.model import User, UserLocation, Type, Training, Machine, Quiz, Question, Option, MissedQuestion, init_db, Major, College, HawkCard
 
 reservation_bp = Blueprint('reservation', __name__)
-import reservation
-db_session = init_db(reservation.config['DB'])
+
+#db_session = init_db(reservation_bp.config['DB'])
 # Just for type-hinting, if you know a better way please fix
 class HasRemoveMethod:
     def remove(self):
@@ -26,7 +27,7 @@ def init_reservation_db(connection_string: str) -> Union[Callable[[], sa.orm.Ses
     db.close()
     return db_session
 
-db_reservations = init_reservation_db(reservation.config['DB_RESERVATION'])
+db_reservations = init_reservation_db(reservation_bp.config['DB_RESERVATION'])
 
 class ReservationType(_base_reservation):
     __tablename__ = 'reservation_types'
@@ -67,7 +68,7 @@ class Reservations(_base_reservation):
 def reservations():
     if request.method == 'GET':
         ##temp disable reservations since users can still reserve time for current day even if in disbaled range
-        if reservation.config['ALLOW_RESERVATIONS'] != 'True':
+        if reservation_bp.config['ALLOW_RESERVATIONS'] != 'True':
             flash("Reservations are currently unavailable and will resume for the Spring 2021 semester.",'warning')
             return render_template('layout.html')
         db = g.db_session()
@@ -80,7 +81,7 @@ def reservations():
         db.close()
         return render_template('reservations.html', reservation_types=reservation_types, user=user, openDate=datetime.date(2020, 9, 8), dateWindows=get_window())
     if request.method == 'POST':
-        user = db_session().query(User).filter_by(sid=session['sid']).one_or_none()
+        user = g.db_session().query(User).filter_by(sid=session['sid']).one_or_none()
         start_time = datetime.datetime.strptime(request.form['start_time'],"%Y-%m-%d %X")
         end_time = datetime.datetime.strptime(request.form['end_time'],"%Y-%m-%d %X")
         db = db_reservations()

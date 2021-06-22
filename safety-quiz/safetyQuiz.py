@@ -19,12 +19,11 @@ import requests
 from flask import current_app
 
 from checkIn.model import User, UserLocation, Type, Training, Machine, Quiz, Question, Option, MissedQuestion, init_db, Major, College, HawkCard
-from reservation import ReservationType, ReservationWindow, Reservations, HasRemoveMethod, init_reservation_db
-
+#from reservation import ReservationType, ReservationWindow, Reservations, HasRemoveMethod, init_reservation_db
 # blueprintname.route not app.route
 from covid import covid
 from auth import auth
-from reservation import reservation
+from reservation import init_reservation_db, reservation_bp
 
 # app setup
 app = Flask(__name__, static_url_path='/safety/static', static_folder='static')  # create the application instance :)
@@ -388,7 +387,7 @@ def no_app(environ, start_response):
 
 # Blueprint registration
 app.register_blueprint(covid)
-app.register_blueprint(reservation)
+app.register_blueprint(reservation_bp)
 app.register_blueprint(auth)
 
 # main
