@@ -1,15 +1,9 @@
-import os
-import datetime
-
-import flask
+import requests
 from flask import Flask, request, session, redirect, url_for, render_template, flash, g
-from flask_bootstrap import Bootstrap
-from flask_fontawesome import FontAwesome
-import sqlalchemy as sa
 import google.oauth2.credentials
 import google_auth_oauthlib.flow
 import googleapiclient.discovery
-from flask import Blueprint, current_app
+from flask import Blueprint
 
 from checkIn.model import User, UserLocation, Type
 
@@ -25,7 +19,6 @@ API_VERSION = 'v2'
 
 auth = Blueprint('auth', __name__)
 
-
 @auth.route('/oauth2callback')
 def oauth2callback(): # AUTH
     # Specify the state when creating the flow in the callback so that it can
@@ -34,7 +27,7 @@ def oauth2callback(): # AUTH
 
     flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(
         CLIENT_SECRETS_FILE, scopes=SCOPES, state=state)
-    flow.redirect_uri = url_for('oauth2callback', _external=True, _scheme='https') #if insecure dev change scheme to 'http'
+    flow.redirect_uri = url_for('auth.oauth2callback', _external=True, _scheme='https') #if insecure dev change scheme to 'http'
 
     # Use the authorization server's response to fetch the OAuth 2.0 tokens.
     authorization_response = request.url.replace('http://','https://',1) #if insecure dev remove .replace('http://','https://',1)
@@ -45,7 +38,7 @@ def oauth2callback(): # AUTH
     #              credentials in a persistent database instead.
     credentials = flow.credentials
     session['credentials'] = credentials_to_dict(credentials)
-    return redirect(url_for('login_google'))
+    return redirect(url_for('auth.login_google'))
 
 def credentials_to_dict(credentials): # AUTH
     return {'token': credentials.token,
@@ -153,7 +146,7 @@ def authorize(): # AUTH
     # for the OAuth 2.0 client, which you configured in the API Console. If this
     # value doesn't match an authorized URI, you will get a 'redirect_uri_mismatch'
     # error.
-    flow.redirect_uri = url_for('oauth2callback', _external=True, _scheme='https') #if insecure dev change scheme to 'http'
+    flow.redirect_uri = url_for('auth.oauth2callback', _external=True, _scheme='https') #if insecure dev change scheme to 'http'
 
     authorization_url, state = flow.authorization_url(
         # Enable offline access so that you can refresh an access token without
@@ -166,3 +159,33 @@ def authorize(): # AUTH
     session['state'] = state
 
     return redirect(authorization_url)
+
+@auth.route('/logout')
+def logout():
+    revoke()
+    clear_credentials()
+    session.clear()
+    return redirect(url_for('auth.login'))
+
+def revoke():
+  if 'credentials' not in session:
+    return ('You need to <a href="/auth.authorize">authorize</a> before ' +
+            'testing the code to revoke credentials.')
+
+  credentials = google.oauth2.credentials.Credentials(
+    **session['credentials'])
+
+  revoke = requests.post('https://oauth2.googleapis.com/revoke',
+      params={'token': credentials.token},
+      headers={'content-type': 'application/x-www-form-urlencoded'})
+
+  status_code = getattr(revoke, 'status_code')
+  if status_code == 200:
+    return('Credentials successfully revoked.')
+  else:
+    return('An error occurred.')
+
+def clear_credentials():
+    if 'credentials' in session:
+        del session['credentials']
+    return ('Credentials have been cleared.<br><br>')

@@ -52,7 +52,7 @@ API_SERVICE_NAME = 'oauth2'
 API_VERSION = 'v2'
 
 @app.before_request
-def before_request(): # KEEP THIS
+def before_request():
     g.db_session = init_db(app.config['DB'])
     if 'sid' not in session \
             and request.endpoint not in ['auth.login', 'auth.login_google', 'auth.authorize', 'auth.oauth2callback', 'register', 'check_sid',
@@ -62,7 +62,7 @@ def before_request(): # KEEP THIS
 
 
 @app.errorhandler(Exception)
-def error_handler(e): # KEEP THIS
+def error_handler(e):
     app.logger.error(e, exc_info=True)
     if type(e) == Warning and 'google' in str(e):
         flash('Looks like something went wrong with Google Login. Please try this legacy login instead.', 'danger')
