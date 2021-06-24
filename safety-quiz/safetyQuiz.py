@@ -3,7 +3,7 @@ import os
 import datetime
 
 import flask
-from flask import Flask, request, session, redirect, url_for, render_template, flash, send_from_directory, Markup, jsonify, g
+from flask import Flask, request, session, redirect, url_for, render_template, flash, send_from_directory, Markup, jsonify, g, Blueprint
 from flask_bootstrap import Bootstrap
 from flask_fontawesome import FontAwesome
 import sqlalchemy as sa
