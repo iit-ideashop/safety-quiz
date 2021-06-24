@@ -22,7 +22,7 @@ def new_quiz():
     trainings = db.query(Training).filter_by(trainee_id=sid).filter_by(quiz_notification_sent=None).all()
     new_quizzes = []
     for index, training in enumerate(trainings):
-        if date.today() >= ((training.in_person_date).in_person_date() + timedelta(days=training.machine.quiz_issue_days)):
+        if date.today() >= ((training.in_person_date).date() + timedelta(days=training.machine.quiz_issue_days)):
             new_quizzes.append(training)
     if new_quizzes:
         return render_template('/emails/new_quiz.html', new_quizzes=new_quizzes)
@@ -51,7 +51,7 @@ def send_quizzes():
                     trainings = db.query(Training).filter_by(trainee_id=sid).filter_by(invalidation_date=None).filter_by(quiz_notification_sent=None).all()
                     new_quizzes = []
                     for index, training in enumerate(trainings):
-                        if date.today() >= ((training.in_person_date).in_person_date() + timedelta(days=training.machine.quiz_issue_days)):
+                        if date.today() >= ((training.in_person_date).date() + timedelta(days=training.machine.quiz_issue_days)):
                             new_quizzes.append(training)
                     if new_quizzes:
                         try:
@@ -77,7 +77,7 @@ def back_add_trainings():
         back_add_list = db.query(Machine.id).filter_by(location_id = 3).filter_by(required = 1).all()
         for each in back_add_list:
             print("%s : adding %s" % (base_training.trainee.name,each.id))
-            new = Training(trainee_id=base_training.trainee_id, trainer_id=base_training.trainer_id, date=base_training.in_person_date, machine_id=each.id)
+            new = Training(trainee_id=base_training.trainee_id, trainer_id=base_training.trainer_id, in_person_date=base_training.in_person_date, machine_id=each.id)
             #db.add(new)
     #db.commit()
     return
