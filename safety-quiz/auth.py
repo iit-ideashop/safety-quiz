@@ -27,7 +27,7 @@ def oauth2callback(): # AUTH
 
     flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(
         CLIENT_SECRETS_FILE, scopes=SCOPES, state=state)
-    flow.redirect_uri = url_for('oauth2callback', _external=True, _scheme='https') #if insecure dev change scheme to 'http'
+    flow.redirect_uri = url_for('auth.oauth2callback', _external=True, _scheme='https') #if insecure dev change scheme to 'http'
 
     # Use the authorization server's response to fetch the OAuth 2.0 tokens.
     authorization_response = request.url.replace('http://','https://',1) #if insecure dev remove .replace('http://','https://',1)
@@ -38,7 +38,7 @@ def oauth2callback(): # AUTH
     #              credentials in a persistent database instead.
     credentials = flow.credentials
     session['credentials'] = credentials_to_dict(credentials)
-    return redirect(url_for('login_google'))
+    return redirect(url_for('auth.login_google'))
 
 def credentials_to_dict(credentials): # AUTH
     return {'token': credentials.token,
@@ -146,7 +146,7 @@ def authorize(): # AUTH
     # for the OAuth 2.0 client, which you configured in the API Console. If this
     # value doesn't match an authorized URI, you will get a 'redirect_uri_mismatch'
     # error.
-    flow.redirect_uri = url_for('oauth2callback', _external=True, _scheme='https') #if insecure dev change scheme to 'http'
+    flow.redirect_uri = url_for('auth.oauth2callback', _external=True, _scheme='https') #if insecure dev change scheme to 'http'
 
     authorization_url, state = flow.authorization_url(
         # Enable offline access so that you can refresh an access token without
@@ -165,7 +165,7 @@ def logout():
     revoke()
     clear_credentials()
     session.clear()
-    return redirect(url_for('login'))
+    return redirect(url_for('auth.login'))
 
 def revoke():
   if 'credentials' not in session:
