@@ -26,7 +26,7 @@ def new_quiz():
     trainings = db.query(Training).filter_by(trainee_id=sid).filter_by(quiz_notification_sent=None).all()
     new_quizzes = []
     for index, training in enumerate(trainings):
-        if date.today() >= ((training.date).date() + timedelta(days=training.machine.quiz_issue_days)):
+        if date.today() >= ((training.in_person_date).in_person_date() + timedelta(days=training.machine.quiz_issue_days)):
             new_quizzes.append(training)
     if new_quizzes:
         return render_template('/emails/new_quiz.html', new_quizzes=new_quizzes)
@@ -55,7 +55,7 @@ def send_quizzes():
                     trainings = db.query(Training).filter_by(trainee_id=sid).filter_by(invalidation_date=None).filter_by(quiz_notification_sent=None).all()
                     new_quizzes = []
                     for index, training in enumerate(trainings):
-                        if date.today() >= ((training.date).date() + timedelta(days=training.machine.quiz_issue_days)):
+                        if date.today() >= ((training.in_person_date).in_person_date() + timedelta(days=training.machine.quiz_issue_days)):
                             new_quizzes.append(training)
                     if new_quizzes:
                         try:
@@ -76,12 +76,12 @@ def send_quizzes():
 def back_add_trainings():
     db = db_session()
     back_add_training_id_list = [9400,9401,9402,9403,9404,9405,10669,10670,10671,10672,10673]
-    base_training_list = db.query(Training).filter(Training.id.in_(back_add_training_id_list)).filter(Training.date > '2020-01-01').group_by(Training.trainee_id).all()
+    base_training_list = db.query(Training).filter(Training.id.in_(back_add_training_id_list)).filter(Training.in_person_date > '2020-01-01').group_by(Training.trainee_id).all()
     for base_training in base_training_list:
         back_add_list = db.query(Machine.id).filter_by(location_id = 3).filter_by(required = 1).all()
         for each in back_add_list:
             print("%s : adding %s" % (base_training.trainee.name,each.id))
-            new = Training(trainee_id=base_training.trainee_id, trainer_id=base_training.trainer_id, date=base_training.date, machine_id=each.id)
+            new = Training(trainee_id=base_training.trainee_id, trainer_id=base_training.trainer_id, date=base_training.in_person_date, machine_id=each.id)
             #db.add(new)
     #db.commit()
     return

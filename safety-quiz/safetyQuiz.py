@@ -75,7 +75,7 @@ def error_handler(e): # KEEP THIS
 @app.route('/')
 def index():
     db = db_session()
-    trainings = db.query(Training).outerjoin(Machine).filter(Training.trainee_id == session['sid']).filter(Training.invalidation_date == None).filter(Machine.location_id.in_((2,3))).order_by(Training.date).all()
+    trainings = db.query(Training).outerjoin(Machine).filter(Training.trainee_id == session['sid']).filter(Training.invalidation_date == None).filter(Machine.location_id.in_((2,3))).order_by(Training.in_person_date).all()
     if session['admin'] and session['admin'] >= 85:
         quizzes = db.query(Machine).filter(Machine.quiz_id != None).order_by(Machine.quiz_id).all()
         return render_template('admin/index.html', trainings=trainings, quizzes=quizzes)
