@@ -3,7 +3,7 @@ import os
 import datetime
 
 import flask
-from flask import Flask, request, session, redirect, url_for, render_template, flash, send_from_directory, Markup, jsonify, g
+from flask import Flask, request, session, redirect, url_for, render_template, flash, send_from_directory, Markup, jsonify, g, Blueprint
 from flask_bootstrap import Bootstrap
 from flask_fontawesome import FontAwesome
 import sqlalchemy as sa
@@ -18,19 +18,18 @@ import googleapiclient.discovery
 import requests
 from flask import current_app
 
-from model import User, UserLocation, Access, Location, Type, Training, Machine, Quiz, Question, Option, MissedQuestion, init_db, Major, College, HawkCard
-from reservation import ReservationType, ReservationWindow, Reservations, HasRemoveMethod, init_reservation_db
-
+from checkIn.model import User, UserLocation, Type, Access, Location, Training, Machine, Quiz, Question, Option, MissedQuestion, init_db, Major, College, HawkCard
+#from reservation import ReservationType, ReservationWindow, Reservations, HasRemoveMethod, init_reservation_db
 # blueprintname.route not app.route
 from covid import covid
 from auth import auth
+from reservation import init_reservation_db, reservation_bp
 
 # app setup
 app = Flask(__name__, static_url_path='/safety/static', static_folder='static')  # create the application instance :)
 app.config.from_object(__name__)
 app.config.from_pyfile('config.cfg')
 app.config.from_envvar('FLASKR_SETTINGS', silent=True)
-
 UPLOAD_FOLDER = 'static/images'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
@@ -53,7 +52,7 @@ API_SERVICE_NAME = 'oauth2'
 API_VERSION = 'v2'
 
 @app.before_request
-def before_request(): # KEEP THIS
+def before_request():
     g.db_session = init_db(app.config['DB'])
     if 'sid' not in session \
             and request.endpoint not in ['auth.login', 'auth.login_google', 'auth.authorize', 'auth.oauth2callback', 'register', 'check_sid',
@@ -70,7 +69,7 @@ def utility_processor():
     return dict(current_time=current_time)
 
 @app.errorhandler(Exception)
-def error_handler(e): # KEEP THIS
+def error_handler(e):
     app.logger.error(e, exc_info=True)
     if type(e) == Warning and 'google' in str(e):
         flash('Looks like something went wrong with Google Login. Please try this legacy login instead.', 'danger')
@@ -83,7 +82,7 @@ def error_handler(e): # KEEP THIS
 @app.route('/')
 def index():
     db = db_session()
-    trainings = db.query(Training).outerjoin(Machine).filter(Training.trainee_id == session['sid']).filter(Training.invalidation_date == None).filter(Machine.location_id.in_((2,3))).order_by(Training.date).all()
+    trainings = db.query(Training).outerjoin(Machine).filter(Training.trainee_id == session['sid']).filter(Training.invalidation_date == None).filter(Machine.location_id.in_((2,3))).order_by(Training.in_person_date).all()
     if session['admin'] and session['admin'] >= 85:
         quizzes = db.query(Machine).filter(Machine.quiz_id != None).order_by(Machine.quiz_id).all()
         return render_template('admin/index.html', trainings=trainings, quizzes=quizzes)
@@ -219,36 +218,6 @@ def check_sid():
     else:
         return jsonify({'sid': None, 'exists': False})
 
-
-@app.route('/logout')
-def logout():
-    revoke()
-    clear_credentials()
-    session.clear()
-    return redirect(url_for('auth.login'))
-
-def revoke():
-  if 'credentials' not in session:
-    return ('You need to <a href="/auth.authorize">authorize</a> before ' +
-            'testing the code to revoke credentials.')
-
-  credentials = google.oauth2.credentials.Credentials(
-    **session['credentials'])
-
-  revoke = requests.post('https://oauth2.googleapis.com/revoke',
-      params={'token': credentials.token},
-      headers={'content-type': 'application/x-www-form-urlencoded'})
-
-  status_code = getattr(revoke, 'status_code')
-  if status_code == 200:
-    return('Credentials successfully revoked.')
-  else:
-    return('An error occurred.')
-
-def clear_credentials():
-    if 'credentials' in session:
-        del session['credentials']
-    return ('Credentials have been cleared.<br><br>')
 
 @app.route('/quiz/override/<training_id>', methods=['GET','POST'])
 def override(training_id):
@@ -472,153 +441,6 @@ def add_object(object_type):
         db.commit()
         return {'id': new.id}
 
-@app.route('/reservations', methods=['GET','POST'])
-def reservations():
-    if request.method == 'GET':
-        ##temp disable reservations since users can still reserve time for current day even if in disbaled range
-        if app.config['ALLOW_RESERVATIONS'] != 'True':
-            flash("Reservations are currently unavailable and will resume for the Spring 2021 semester.",'warning')
-            return render_template('layout.html')
-        db = db_session()
-        temp = db.query(UserLocation).filter_by(sid=session['sid']).filter_by(location_id=2).one_or_none().get_missing_trainings(db)
-        if (9 in [each[0].id for each in temp]):
-            flash("You are not cleared to make reservations at this time. Please chcek the status of your safety trainings or contact Idea Shop staff for assistance.",'warning')
-            return render_template('layout.html')
-        user = db.query(User).filter_by(sid=session['sid']).one_or_none()
-        reservation_types = db_reservations().query(ReservationType).order_by(ReservationType.id.asc()).all()
-        db.close()
-        return render_template('reservations.html', reservation_types=reservation_types, user=user, openDate=datetime.date(2020, 9, 8), dateWindows=get_window())
-    if request.method == 'POST':
-        user = db_session().query(User).filter_by(sid=session['sid']).one_or_none()
-        start_time = datetime.datetime.strptime(request.form['start_time'],"%Y-%m-%d %X")
-        end_time = datetime.datetime.strptime(request.form['end_time'],"%Y-%m-%d %X")
-        db = db_reservations()
-        reservation_type = db.query(ReservationType).filter_by(id=int(request.form['reservation_type'])).one_or_none()
-        parent = Reservations(type_id=reservation_type.id, start=start_time, end=end_time, sid=user.sid)
-        db.add(parent)
-        db.flush()
-        flash("Created %s reservation for %s, %s - %s" % (reservation_type.name, user.name, parent.start, parent.end),'success')
-        for each in [x for x in list(request.form.keys()) if 'user' in x and request.form[x] != '']:
-            response = confirmAllowed(request.form[each])
-            if response['valid'] is True:
-                db.add(Reservations(type_id=int(request.form['reservation_type']), start=start_time, end=end_time, sid=response['user'].sid, parent_id=parent.id))
-                db.flush()
-                flash("Created %s reservation for %s, %s - %s" % (reservation_type.name, response['user'].name, parent.start, parent.end),'success')
-        db.commit()
-        return redirect(url_for('reservations'))
-
-def confirmAllowed(email):
-    db = db_session()
-    user = db.query(User).filter_by(email=email).one_or_none()
-    if user:
-        userLocation = db.query(UserLocation).filter_by(sid=user.sid).filter_by(location_id=2).one_or_none()
-        if userLocation :
-            temp = userLocation.get_missing_trainings(db)
-            if (9 in [each[0].id for each in temp]):
-                flash("User %s is not cleared for reservations." % email, 'danger')
-                return {'valid': False,'user': user}
-            else:
-                return {'valid': True, 'user': user}
-    else:
-        flash("User %s does not exist and cannot join reservations." % email, 'danger')
-        return {'valid': False, 'user': None}
-
-@app.route('/reservations/api/checkEmail')
-def checkEmail():
-    db = db_session()
-    user = db.query(User).filter_by(email=request.args['email']).one_or_none()
-    if user:
-        userLocation = db.query(UserLocation).filter_by(sid=user.sid).filter_by(location_id=2).one_or_none()
-        if userLocation:
-            temp = userLocation.get_missing_trainings(db)
-            if (9 in [each[0].id for each in temp]):
-                return jsonify({'valid': False, 'reason': "User not cleared for reservations."})
-            else:
-                return jsonify({'valid': True, 'reason': "User cleared for reservations."})
-        else:
-            return jsonify({'valid': False, 'reason': "User not cleared for reservations."})
-    return jsonify({'valid': False, 'reason': "User does not exist."})
-
-@app.route('/reservations/api/type')
-def get_type():
-    x = db_reservations().query(ReservationType).filter_by(id=int(request.args['type_id'])).one_or_none()
-    if x :
-        return jsonify({'id':x.id,'name':x.name,'quantity':x.quantity,'capacity':x.capacity})
-    else:
-        return ''''''
-
-@app.route('/reservations/api/start_times', methods=['GET'])
-def start_times():
-    db = db_reservations()
-    requested_date = datetime.datetime.strptime(request.args['date'][:15], "%a %b %d %Y").date()
-    reservation_type = db.query(ReservationType).filter_by(id=int(request.args['type_id'])).one()
-    existing_reservations = db.query(Reservations).filter(Reservations.start >= requested_date).filter(Reservations.end < requested_date+datetime.timedelta(days=1)).filter(Reservations.type_id == reservation_type.id).filter(Reservations.parent_id == None).all()
-    open = True
-    if open:
-        open_time = datetime.datetime.combine(requested_date,datetime.time(9,0))
-        close_time = datetime.datetime.combine(requested_date,datetime.time(17,0))
-        delta_time = datetime.timedelta(hours=0,minutes=15)
-        start_times = []
-        for i in range(open_time.hour*60+open_time.minute,close_time.hour*60+close_time.minute,int(delta_time.seconds / 60)):
-            i = datetime.datetime.combine(requested_date,datetime.time(int(i/60),int(i%60)))
-            availability = reservation_type.quantity
-            for each in existing_reservations:
-                if i > (each.start - (2*delta_time)) and i < (each.end + (2*delta_time)):
-                    availability -= 1
-            if availability > 0:
-                start_times.append(i)
-        return jsonify([{'date': str(x.date()), 'time': str(x.time())} for x in start_times])
-
-@app.route('/reservations/api/end_times', methods=['GET'])
-def end_times():
-    db = db_reservations()
-    reservation_type = db.query(ReservationType).filter_by(id = int(request.args['type_id'])).one()
-    start_time = datetime.datetime.strptime(request.args['start_time'],"%Y-%m-%d %X")
-    existing_reservations = db.query(Reservations).filter(Reservations.start >= start_time).filter(Reservations.end < start_time.date() + datetime.timedelta(days=1)).filter(Reservations.type_id == reservation_type.id).filter(Reservations.parent_id == None).all()
-    close_time = datetime.datetime.combine(start_time.date(), datetime.time(17, 0))
-    delta_time = datetime.timedelta(hours=0, minutes=15)
-    max_reservation_minutes = 180
-    end_times = []
-    for i in range(((start_time+delta_time).hour * 60) + (start_time+delta_time).minute, min((close_time.hour * 60) + close_time.minute,((start_time+delta_time).hour * 60) + (start_time+delta_time).minute + max_reservation_minutes), int(delta_time.seconds / 60)):
-        i = datetime.datetime.combine(start_time.date(), datetime.time(int(i / 60), int(i % 60)))
-        availability = reservation_type.quantity
-        for each in existing_reservations:
-            if i > (each.start - (2*delta_time)):
-                availability -= 1
-        if availability > 0:
-            end_times.append(i)
-        else: break
-    return jsonify([{'date': str(x.date()), 'time': str(x.time())} for x in end_times])
-
-@app.route('/reservations/api/windows', methods=['GET'])
-def get_window():
-    db = db_reservations()
-    temp = db.query(ReservationWindow).filter(ReservationWindow.start >= datetime.datetime.today().date()).all()
-    return [x.start.strftime('%m %d %Y') for x in temp]
-
-@app.route('/reservations/view')
-def view_reservations():
-    db = db_reservations()
-    start = datetime.datetime.combine(datetime.datetime.now().date(),datetime.time(0,0,0))
-    end = datetime.datetime.combine(datetime.datetime.now().date(),datetime.time(23,59,59))
-    reservations = db.query(Reservations).filter(Reservations.start > start).filter(Reservations.end < end).order_by(Reservations.start.asc()).all()
-    return render_template('view_reservations.html', reservations=reservations)
-
-@app.route('/api/machine_access', methods=['POST'])
-def get_machine_access():
-    if not request.form or not all(items in request.form.keys() for items in ['machine_name', 'machine_id']):
-        return jsonify({'response': 'Invalid request.'})
-    machine_id = int(request.form['machine_id'])
-    machine_name = request.form['machine_name']
-    db = db_session()
-    machine = db.query(Machine).filter_by(id=machine_id).one_or_none()
-    if machine and machine.name != machine_name:
-        return jsonify({'response': 'Invalid request.'})
-    sid_list = [item[0] for item in db.query(Training.trainee_id).filter_by(machine_id=machine_id).filter_by(invalidation_date=None)\
-        .filter_by(quiz_score=100.0).all()]
-    access_list = db.query(HawkCard).filter(HawkCard.sid.in_(sid_list)).all()
-    return jsonify({'response': 'Request Successful', 'users':[{'sid': card.sid, 'name': card.user.name, 'facility': card.facility, 'card_number': card.card} for card in access_list]})
-
 
 # app routes end
 
@@ -633,9 +455,8 @@ def no_app(environ, start_response):
     return NotFound()(environ, start_response)
 
 # Blueprint registration
-
 app.register_blueprint(covid)
-#app.register_blueprint(nightly)
+app.register_blueprint(reservation_bp)
 app.register_blueprint(auth)
 
 # main
