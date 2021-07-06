@@ -94,7 +94,7 @@ def new_training_interface():
     db = db_session()
 
     trainings = db.query(Training).outerjoin(Machine).filter(Training.trainee_id == session['sid']).filter(\
-    Training.invalidation_date == None).filter(Machine.location_id.in_((2, 3))).order_by(Training.date).all()
+    Training.invalidation_date == None).filter(Machine.location_id.in_((2, 3))).order_by(Training.in_person_date).all()
     quizzes = db.query(Machine).filter(Machine.quiz_id != None).order_by(Machine.quiz_id).all()
     training_count = len(trainings)
     return render_template('new_trainings.html', trainings=trainings, quizzes=quizzes, training_count = training_count)

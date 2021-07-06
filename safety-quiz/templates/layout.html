@@ -16,10 +16,10 @@
         <div class="collapse navbar-collapse" id="navbarNavAltMarkup" >
             <div class="navbar-nav">
                 <a class="nav-item nav-link" href="{{ url_for('new_training_interface') }}" {% if not session['sid'] %} hidden="true" {% endif %}>Safety Quizzes</a>
-                <a class="nav-item nav-link" href="{{ url_for('reservations') }}" {% if not session['sid'] %} hidden="true" {% endif %}>Make a Reservation</a>
+                <a class="nav-item nav-link" href="{{ url_for('reservation.reservations') }}" {% if not session['sid'] %} hidden="true" {% endif %}>Make a Reservation</a>
                 <a class="nav-item nav-link" href="{{ url_for('covid.COVID') }}" {% if not session['sid'] %} hidden="true" {% endif %}>Fall 2020 Video Training</a>
             {% if session['admin'] %}
-                <a class="nav-item nav-link" href="{{ url_for('view_reservations') }}" {% if not session['sid'] %} hidden="true" {% endif %}>View Reservations</a>
+                <a class="nav-item nav-link" href="{{ url_for('reservation.view_reservations') }}" {% if not session['sid'] %} hidden="true" {% endif %}>View Reservations</a>
             {%  endif %}
                 <a class="nav-item nav-link" href="{{ url_for('shop_status') }}">Shop Status</a>
                 <a class="nav-item nav-link" href="https://wiki.ideashop.iit.edu">Idea Shop Wiki</a>
@@ -38,7 +38,7 @@
                                 <p class="card-text flex-nowrap">{{ session['major'] }}</p>
                             </div>
                             <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="{{ url_for('logout') }}"> Log Out <i class="fas fa-sign-out-alt"></i></a>
+                            <a class="dropdown-item" href="{{ url_for('auth.logout') }}"> Log Out <i class="fas fa-sign-out-alt"></i></a>
                         </div>
                     </div>
                 {% else %}
