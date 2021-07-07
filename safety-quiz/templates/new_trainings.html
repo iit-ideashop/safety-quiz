@@ -1,4 +1,9 @@
 {% extends 'layout.html' %}
+{% block head %}
+    {{ super() }}
+    <script src="safety/static/trainingAnimations.js"></script>
+{% endblock %}
+
 {% block page %}
 
 <h3>Hello {{session['email'] }}</h3>
@@ -9,8 +14,6 @@
     <div class="alert alert-info">
         <p>You must receive 100% on a quiz in order to pass the training</p>
     </div>
-<div class="card" style="margin: 1em 0em;">
-    <h3 class="card-header">Safety Trainings & Quizzes</h3>
     {% if trainings %}
     
         <div class="container-fluid">
@@ -55,7 +58,7 @@
                             </a>
                         </h4>
 
-                    <div id="collapse-completed" class="collapse" aria-labelledby="heading-collapsed">
+                    <div id="collapse-completed" class="" aria-labelledby="heading-collapsed">
                     {% for each in trainings %}
                         {% if each.quiz_passed() %}
                             <div class="card card-spaced-2">
@@ -63,15 +66,7 @@
                                 <div class="card-body">
                                     <h5 class="card-title">Location: {{ each.machine.location.name  }}</h5>
                                     <div class="progress" style="margin: 2mm">
-                                        <div class="progress-bar
-                                        {% if each.quiz_score <= 75.0 %}
-                                        bg-danger
-                                        {% elif each.quiz_score < 100.0 %}
-                                        bg-warning
-                                        {% else %}
-                                        bg-success
-                                        {% endif %}
-                                        " role="progressbar" style="width: {{ each.quiz_score }}%">Best Score: {{ each.quiz_score }}%</div>
+                                        <div class="progress-bar" role="progressbar" final_width="{{ each.quiz_score }}"></div>
                                     </div>
                                     <button type="button" class="btn-secondary btn-sm float-right" data-toggle="modal" data-target="#{{ each.machine.quiz.name }}Modal">Show Details</button>
                                     <a class="btn btn-sm btn-info active" style="margin: 2mm" href="http://wiki.ideashop.iit.edu" target="_blank" role="button"><h5>About this training</h5></a>
@@ -157,7 +152,6 @@
                 safety training. You will receive an email at your IIT email address once it's assigned.</p>
         </div>
     {% endif %}
-</div>
 {% block admin %}
 {% endblock %}
 {% endblock %}
