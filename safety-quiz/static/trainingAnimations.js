@@ -30,21 +30,26 @@ document.addEventListener("DOMContentLoaded", function(event){
         console.log("final_progress_values:", final_progress_values)
     }
 
-
+    var first_loop = true;
     anime({
       targets: 'svg path',
+      endDelay: 1500,
       strokeDashoffset: [anime.setDashoffset, 0],
-      easing: 'easeInCubic',
+      easing: 'easeInOutCirc',
       duration: 1200,
       delay: function(el, i) { return i * 250 },
       direction: 'alternate',
-      loop: false,
-      complete: function(anim) {
-        anime({
-        targets: 'svg path',
-        fill:['rgba(0,0,0,0)', 'rgba(0,158,209,1)'],
-        easing: 'linear'
-        })
+      loop: 1,
+      loopComplete: function(anim) {
+          if(first_loop){
+              anime({
+            targets: 'svg path',
+            fill:['rgba(0,0,0,0)', 'rgba(0,158,209,1)'],
+            easing: 'linear'
+            })
+              first_loop=false
+          }
+
       }
     });
 
