@@ -15,7 +15,7 @@ document.addEventListener("DOMContentLoaded", function(event){
         function animate_progress (target, value, delay_weight){
                 anime({
                     targets: target,
-                    width: "100%",
+                    width: value,
                     easing: 'spring',
                     autoplay: true,
                     delay: 500*delay_weight,
@@ -34,8 +34,8 @@ document.addEventListener("DOMContentLoaded", function(event){
     anime({
       targets: 'svg path',
       strokeDashoffset: [anime.setDashoffset, 0],
-      easing: 'easeInOutSine',
-      duration: 1500,
+      easing: 'easeInCubic',
+      duration: 1200,
       delay: function(el, i) { return i * 250 },
       direction: 'alternate',
       loop: false,
