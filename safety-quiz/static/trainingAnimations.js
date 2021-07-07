@@ -33,11 +33,11 @@ document.addEventListener("DOMContentLoaded", function(event){
     var first_loop = true;
     anime({
       targets: 'svg path',
-      endDelay: 1500,
+      endDelay: 1000,
       strokeDashoffset: [anime.setDashoffset, 0],
       easing: 'easeInOutCirc',
-      duration: 1200,
-      delay: function(el, i) { return i * 250 },
+      duration: 1500,
+      delay: function(el, i) { return i * 100 },
       direction: 'alternate',
       loop: 1,
       loopComplete: function(anim) {
