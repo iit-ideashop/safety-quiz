@@ -9,21 +9,21 @@
 {% endblock %}
 
 {% block navbar %}
-    <nav class="navbar navbar-expand-lg">
+    <nav class="navbar navbar-expand-lg navbar-dark">
         <a class="navbar-brand" href="{{ url_for('welcome') }}">Idea Shop Portal</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNavAltMarkup" >
             <div class="navbar-nav">
-                <a class="nav-item nav-link" href="{{ url_for('new_training_interface') }}" {% if not session['sid'] %} hidden="true" {% endif %}>Safety Quizzes</a>
-                <a class="nav-item nav-link" href="{{ url_for('reservation.reservations') }}" {% if not session['sid'] %} hidden="true" {% endif %}>Make a Reservation</a>
-                <a class="nav-item nav-link" href="{{ url_for('covid.COVID') }}" {% if not session['sid'] %} hidden="true" {% endif %}>Fall 2020 Video Training</a>
+                <a class="nav-item nav-link" style="color: white"  href="{{ url_for('new_training_interface') }}" {% if not session['sid'] %} hidden="true" {% endif %}>Safety Quizzes</a>
+                <a class="nav-item nav-link" style="color: white" href="{{ url_for('reservation.reservations') }}" {% if not session['sid'] %} hidden="true" {% endif %}>Make a Reservation</a>
+                <a class="nav-item nav-link" style="color: white" href="{{ url_for('covid.COVID') }}" {% if not session['sid'] %} hidden="true" {% endif %}>Fall 2020 Video Training</a>
             {% if session['admin'] %}
-                <a class="nav-item nav-link" href="{{ url_for('reservation.view_reservations') }}" {% if not session['sid'] %} hidden="true" {% endif %}>View Reservations</a>
+                <a class="nav-item nav-link" style="color: white" href="{{ url_for('reservation.view_reservations') }}" {% if not session['sid'] %} hidden="true" {% endif %}>View Reservations</a>
             {%  endif %}
-                <a class="nav-item nav-link" href="{{ url_for('shop_status') }}">Shop Status</a>
-                <a class="nav-item nav-link" href="https://wiki.ideashop.iit.edu">Idea Shop Wiki</a>
+                <a class="nav-item nav-link" style="color: white" href="{{ url_for('shop_status') }}">Shop Status</a>
+                <a class="nav-item nav-link" style="color: white" href="https://wiki.ideashop.iit.edu">Idea Shop Wiki</a>
             </div>
             <div class="navbar-nav ml-auto">
                 {% if session['sid'] %}
