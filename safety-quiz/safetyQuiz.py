@@ -56,7 +56,7 @@ def before_request():
     g.db_session = init_db(app.config['DB'])
     if 'sid' not in session \
             and request.endpoint not in ['auth.login', 'auth.login_google', 'auth.authorize', 'auth.oauth2callback', 'register', 'check_sid',
-                                         'logout', 'get_machine_access','welcome','shop_status']:
+                                         'logout', 'get_machine_access','welcome','shop_status', 'static']:
         print(request.endpoint)
         return redirect(url_for('auth.login'))
 
