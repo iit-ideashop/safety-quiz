@@ -49,7 +49,8 @@ CLIENT_SECRETS_FILE = "client_secret.json"
 
 # This OAuth 2.0 access scope allows for full read/write access to the
 # authenticated user's account and requires requests to use an SSL connection.
-SCOPES = ["https://www.googleapis.com/auth/userinfo.email", "https://www.googleapis.com/auth/userinfo.profile", 'openid']
+SCOPES = ["https://www.googleapis.com/auth/userinfo.email", "https://www.googleapis.com/auth/userinfo.profile",
+          'openid']
 API_SERVICE_NAME = 'oauth2'
 API_VERSION = 'v2'
 
@@ -57,8 +58,10 @@ API_VERSION = 'v2'
 def before_request():
     g.db_session = init_db(app.config['DB'])
     if 'sid' not in session \
-            and request.endpoint not in ['auth.login', 'auth.login_google', 'auth.authorize', 'auth.oauth2callback', 'register', 'check_sid',
-                                         'logout', 'get_machine_access','welcome','public.shop_status', 'static', 'public.index']:
+            and request.endpoint not in ['auth.login', 'auth.login_google', 'auth.authorize', 'auth.oauth2callback',
+                                         'register', 'check_sid', 'logout', 'get_machine_access','welcome',
+                                         'public.shop_status', 'static', 'public.custom_css', 'public.animation_js',
+                                         'public.index']:
         print(request.endpoint)
         return redirect(url_for('auth.login'))
 
@@ -104,14 +107,6 @@ def upload_file():
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
-
-@app.route('/scripts/custom_styles.css')
-def custom_css():
-    return send_from_directory('scripts', 'custom_styles.css')
-
-@app.route('/scripts/animations.js')
-def animation_js():
-    return send_from_directory('scripts', 'animations.js')
 
 @app.route('/uploads/<filename>')
 def uploaded_file(filename):

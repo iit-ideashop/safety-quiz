@@ -33,3 +33,11 @@ def shop_status():
     elif request.method == 'POST':
         response = app.make_response('<h1>Not yet implemented!</h1>'), 418
         return response
+
+@public.route('/scripts/custom_styles.css')
+def custom_css():
+    return send_from_directory('scripts', 'custom_styles.css')
+
+@public.route('/scripts/animations.js')
+def animation_js():
+    return send_from_directory('scripts', 'animations.js')
