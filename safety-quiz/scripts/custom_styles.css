@@ -1,0 +1,24 @@
+
+.card-spaced-2 {
+    margin: 2mm;
+}
+.card-spaced-4 {
+    margin: 4mm;
+}
+
+.card-header .fa {
+  transition: .3s transform ease-in-out;
+}
+.card-header .collapsed .fa {
+  transform: rotate(90deg);
+}
+
+.progress-bar {
+    color: #009ED1
+}
+
+.navbar {
+    background: rgb(255,255,255);
+background: linear-gradient(90deg, rgba(0,158,209,0.75) 0%, rgba(0,158,209,0.35) 70%, rgba(88,56,149,1) 100%);
+
+}
