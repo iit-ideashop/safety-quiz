@@ -75,7 +75,7 @@ def login(): # AUTH
                 session['admin'] = user_max_level
             else:
                 session['admin'] = None
-            return redirect(url_for('index'))
+            return redirect(url_for('public.index'))
         else:
             user = db.query(User).filter_by(email=request.form['email']).one_or_none()
             if user:
@@ -123,13 +123,13 @@ def login_google(): # AUTH
             user_level_list = db.query(Type.level).outerjoin(UserLocation).filter(UserLocation.sid == session['sid']).all()
         if not user_level_list:
             flash("Error with automatic UserLocation creation.", 'danger')
-            return redirect(url_for('index'))
+            return redirect(url_for('public.index'))
         user_max_level = max([item for t in user_level_list for item in t])
         if user_max_level > 0:
             session['admin'] = user_max_level
         else:
             session['admin'] = None
-        return redirect(url_for('index'))
+        return redirect(url_for('public.index'))
     else:
         if 'iit.edu' in gSuite['email']:
             flash("Please register before continuing.", 'warning')
@@ -167,7 +167,7 @@ def logout():
     revoke()
     clear_credentials()
     session.clear()
-    return redirect(url_for('auth.login'))
+    return redirect(url_for('public.index'))
 
 def revoke():
   if 'credentials' not in session:
