@@ -1,7 +1,11 @@
 {% extends 'layout.html' %}
 {% block page %}
+    {# Import JavaScript Animations file #}
     <script src="safety/static/trainingAnimations.js"></script>
+
     <h3>Hello, welcome to the Idea Shop Portal!</h3>
+
+    {# Idea Shop Logo SVG with animation in JS file #}
     <div class="logo-drawing">
         <svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 611.81 227.06">
   <defs>
@@ -44,6 +48,7 @@
 
     </div>
 
+    {# Image Carousel #}
     <div id="mainCarouselControls" class="carousel slide" data-ride="carousel">
       <div class="carousel-inner">
         <div class="carousel-item active">
@@ -66,7 +71,9 @@
       </a>
     </div>
 
-    <p>Current time: {{ current_time() }}</p>
+
+    {# Should be at bottom of page #}
+    <p>Timestamp: {{ current_time() }}</p>
 
 
 {% block admin %}
