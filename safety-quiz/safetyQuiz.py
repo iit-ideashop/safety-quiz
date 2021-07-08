@@ -56,7 +56,7 @@ def before_request():
     g.db_session = init_db(app.config['DB'])
     if 'sid' not in session \
             and request.endpoint not in ['auth.login', 'auth.login_google', 'auth.authorize', 'auth.oauth2callback', 'register', 'check_sid',
-                                         'logout', 'get_machine_access','welcome','shop_status', 'static']:
+                                         'logout', 'get_machine_access','welcome','shop_status', 'static', 'index']:
         print(request.endpoint)
         return redirect(url_for('auth.login'))
 
@@ -81,13 +81,7 @@ def error_handler(e):
 
 @app.route('/')
 def index():
-    db = db_session()
-    trainings = db.query(Training).outerjoin(Machine).filter(Training.trainee_id == session['sid']).filter(Training.invalidation_date == None).filter(Machine.location_id.in_((2,3))).order_by(Training.in_person_date).all()
-    if session['admin'] and session['admin'] >= 85:
-        quizzes = db.query(Machine).filter(Machine.quiz_id != None).order_by(Machine.quiz_id).all()
-        return render_template('admin/index.html', trainings=trainings, quizzes=quizzes)
-    else:
-        return render_template('welcome.html', trainings=trainings)
+    return render_template('welcome.html')
 
 @app.route('/new_trainings')
 def new_training_interface():
@@ -136,21 +130,6 @@ def shop_status():
     elif request.method == 'POST':
         response = app.make_response('<h1>Not yet implemented!</h1>'), 418
         return response
-
-@app.route('/COVID',methods=['GET', 'POST'])
-def COVID():
-    if request.method == 'GET':
-        #flash("Video safety training is not currently available. Please check back on September 14th, 2020.", 'warning')
-        #return render_template('layout.html')
-        return render_template('COVID_video.html', youtube_id=app.config['COVID_YOUTUBE_ID'], video_time_seconds=int(app.config['COVID_VIDEO_SECONDS']))
-    elif request.method == 'POST':
-        db = db_session()
-        print(request.form['sid'])
-        db.add(Training(trainee_id=int(request.form['sid']), trainer_id=20000000, machine_id=9, date=sa.func.now()))
-        db.commit()
-        flash("Thank you for participating in the Assembly Area Fall 2020 COVID training. Your verification quiz will be available on this site in one week. \
-            You can re-watch the video at any time by visiting https://wiki.ideashop.iit.edu/index.php?title=Safety_Training",'success')
-        return render_template('layout.html')
 
 @app.route('/admin/upload', methods=['GET', 'POST'])
 def upload_file():
