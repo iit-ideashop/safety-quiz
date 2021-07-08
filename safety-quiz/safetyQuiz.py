@@ -105,6 +105,13 @@ def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
+@app.route('/scripts/custom_styles.css')
+def custom_css():
+    return send_from_directory('scripts', 'custom_styles.css')
+
+@app.route('/scripts/animations.js')
+def animation_js():
+    return send_from_directory('scripts', 'animations.js')
 
 @app.route('/uploads/<filename>')
 def uploaded_file(filename):

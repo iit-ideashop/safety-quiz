@@ -1,7 +1,7 @@
 {% extends 'layout.html' %}
 {% block head %}
     {{ super() }}
-    <script src="safety/static/trainingAnimations.js"></script>
+    <script src="{{ url_for('animation_js') }}"></script>
 {% endblock %}
 
 {% block page %}

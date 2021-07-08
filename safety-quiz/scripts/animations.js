@@ -45,9 +45,20 @@ document.addEventListener("DOMContentLoaded", function(event){
               anime({
             targets: 'svg path',
             fill:['rgba(0,0,0,0)', 'rgba(0,158,209,1)'],
-            easing: 'linear'
-            })
-              first_loop=false
+            easing: 'linear',
+            // complete: function(anim) {
+            //     anime({
+            //       targets: 'svg path',
+            //       fill: ['rgba(0,158,209,1)', 'rgba(88,56,149,1)', '#cc0000'],
+            //       direction: 'alternate',
+            //       easing: 'linear',
+            //       delay: 5000,
+            //       duration: 24000,
+            //       loop: true
+            //     })
+            // }
+          });
+          first_loop=false
           }
 
       }
