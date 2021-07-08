@@ -1,4 +1,4 @@
-flask
+flask~=2.0.1
 flask_bootstrap4
 flask_fontawesome
 flask_mail
@@ -9,3 +9,20 @@ google-auth
 google-auth-httplib2
 google-api-python-client
 google-auth-oauthlib
+pip~=20.2.3
+rsa~=4.7.2
+pyasn1~=0.4.8
+MarkupSafe~=2.0.1
+Werkzeug~=2.0.1
+Jinja2~=3.0.1
+click~=8.0.1
+itsdangerous~=2.0.1
+six~=1.16.0
+cachetools~=4.2.2
+certifi~=2021.5.30
+urllib3~=1.26.6
+requests~=2.25.1
+chardet~=4.0.0
+oauthlib~=3.1.1
+idna~=2.10
+setuptools~=49.2.1
