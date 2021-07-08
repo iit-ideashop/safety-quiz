@@ -23,6 +23,7 @@ from checkIn.model import User, UserLocation, Type, Access, Location, Training, 
 # blueprintname.route not app.route
 from covid import covid
 from public import public
+from userflow import userflow
 from auth import auth
 from reservation import init_reservation_db, reservation_bp
 
@@ -79,21 +80,6 @@ def error_handler(e):
           'current time ' + str(datetime.datetime.now().strftime('%x %X')) +
           ' as well as a brief description of what you were doing.'), 'danger')
     return redirect(url_for('public.index'))
-
-
-
-@app.route('/new_trainings')
-def new_training_interface():
-    db = db_session()
-
-    trainings = db.query(Training).outerjoin(Machine).filter(Training.trainee_id == session['sid']).filter(\
-    Training.invalidation_date == None).filter(Machine.location_id.in_((2, 3))).order_by(Training.in_person_date).all()
-    quizzes = db.query(Machine).filter(Machine.quiz_id != None).order_by(Machine.quiz_id).all()
-    training_count = len(trainings)
-    return render_template('new_trainings.html', trainings=trainings, quizzes=quizzes, training_count = training_count)
-
-
-
 
 @app.route('/admin/upload', methods=['GET', 'POST'])
 def upload_file():
@@ -402,6 +388,7 @@ app.register_blueprint(covid)
 app.register_blueprint(reservation_bp)
 app.register_blueprint(auth)
 app.register_blueprint(public)
+app.register_blueprint(userflow)
 # main
 if __name__ == '__main__':
     #os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1' #if insecure dev uncomment
