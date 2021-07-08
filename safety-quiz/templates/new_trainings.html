@@ -20,7 +20,7 @@
             <div class="justify-content-center">
                     <div class="card card-spaced-2">
                         <h4 class="card-header">
-                            <a class="collapsed d-block" data-toggle="collapse" href="#collapse-available" aria-expanded="true" aria-controls="collapse-available" id="heading-available">
+                            <a class="d-block" data-toggle="collapse" href="#collapse-available" aria-expanded="true" aria-controls="collapse-available" id="heading-available">
                                 Available Trainings
                                 <i class="fa fa-chevron-down float-right"></i>
                             </a>
@@ -49,7 +49,7 @@
                             {% endif %}
 
                         </div>
-                </div>
+                    </div>
                     <div class="card card-spaced-2">
                         <h4 class="card-header">
                             <a class="collapsed d-block" data-toggle="collapse" href="#collapse-completed" aria-expanded="true" aria-controls="collapse-completed" id="heading-completed">
@@ -58,59 +58,24 @@
                             </a>
                         </h4>
 
-                    <div id="collapse-completed" class="" aria-labelledby="heading-collapsed">
-                    {% for each in trainings %}
-                        {% if each.quiz_passed() %}
-                            <div class="card card-spaced-2">
-                                <h5 class="card-header">Topic: {{ each.machine.quiz.name }}</h5>
-                                <div class="card-body">
-                                    <h5 class="card-title">Location: {{ each.machine.location.name  }}</h5>
-                                    <div class="progress" style="margin: 2mm">
-                                        <div class="progress-bar" role="progressbar" final_width="{{ each.quiz_score }}"></div>
+                        <div id="collapse-completed" class="collapse" aria-labelledby="heading-collapsed">
+                        {% for each in trainings %}
+                            {% if each.quiz_passed() %}
+                                <div class="card card-spaced-2">
+                                    <h5 class="card-header">Topic: {{ each.machine.quiz.name }}</h5>
+                                    <div class="card-body">
+                                        <h5 class="card-title">Location: {{ each.machine.location.name  }}</h5>
+                                        <div class="progress" style="margin: 2mm">
+                                            <div class="progress-bar" role="progressbar" final_width="{{ each.quiz_score }}"></div>
+                                        </div>
+                                        <button type="button" class="btn-secondary btn-sm float-right" data-toggle="modal" data-target="#{{ each.machine.quiz.name }}Modal">Show Details</button>
+                                        <a class="btn btn-sm btn-info active" style="margin: 2mm" href="http://wiki.ideashop.iit.edu" target="_blank" role="button"><h5>About this training</h5></a>
                                     </div>
-                                    <button type="button" class="btn-secondary btn-sm float-right" data-toggle="modal" data-target="#{{ each.machine.quiz.name }}Modal">Show Details</button>
-                                    <a class="btn btn-sm btn-info active" style="margin: 2mm" href="http://wiki.ideashop.iit.edu" target="_blank" role="button"><h5>About this training</h5></a>
                                 </div>
-                            </div>
-                        {% endif %}
-                    {% endfor %}
+                            {% endif %}
+                        {% endfor %}
+                        </div>
                     </div>
-                    </div>
-
-{#                    {% for each in trainings %}#}
-{#                    <div class="card" style="margin:2mm">#}
-{#                        {% if (each.machine.location.name == "Maker Space")%}#}
-{#                            <!-- add custom image for makerspace -->#}
-{#                        {% elif (each.machine.location.name == "Assembly Area")%}#}
-{#                            <!-- add custom image for AA -->#}
-{#                        {% endif %}#}
-{##}
-{#                        <h4 class="card-header">#}
-{#                            {{ each.machine.quiz.name }}#}
-{#                            {%  if (each.quiz_available() or each.quiz_passed()) %}#}
-{#                            <button type="button" class="btn-secondary btn-sm float-right" data-toggle="modal" data-target="#{{ each.machine.quiz.name }}Modal">Show Details</button>#}
-{#                            {% endif %}#}
-{#                        </h4>#}
-{#                        <div class="card-body">#}
-{#                            <h5 class="card-title">Location: {{ each.machine.location.name  }}</h5>#}
-{#                            <p class="card-subtitle">Last Taken Date: {{ each.quiz_date }}</p>#}
-{##}
-{#                            {% if each.quiz_available() %}#}
-{#                                <a class="btn btn-primary" style="margin: 2mm" href="{{ url_for('quiz', training_id=each.id)}}" role="button">#}
-{#                                Take the Quiz </a><h3 class="badge badge-secondary">New!</h3>#}
-{#                            {% elif each.quiz_passed() %}#}
-{#                                <a class="btn btn-sm btn-info active" style="margin: 2mm"><h5>Passed</h5></a>#}
-{#                            {% else %}#}
-{#                                Available soon#}
-{#                            {% endif %}#}
-{#                            <a class="btn btn-sm btn-info active" style="margin: 2mm" href="http://wiki.ideashop.iit.edu" target="_blank" role="button"><h5>About this training</h5></a>#}
-{##}
-{##}
-{##}
-{#                        </div>#}
-{##}
-{#                    </div>#}
-{#                {% endfor %}#}
 
                 <!-- Generate Modals for each training quiz -->
                 {% for each in trainings %}
