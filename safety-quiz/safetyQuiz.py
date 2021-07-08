@@ -22,6 +22,7 @@ from checkIn.model import User, UserLocation, Type, Access, Location, Training, 
 #from reservation import ReservationType, ReservationWindow, Reservations, HasRemoveMethod, init_reservation_db
 # blueprintname.route not app.route
 from covid import covid
+from public import public
 from auth import auth
 from reservation import init_reservation_db, reservation_bp
 
@@ -56,7 +57,7 @@ def before_request():
     g.db_session = init_db(app.config['DB'])
     if 'sid' not in session \
             and request.endpoint not in ['auth.login', 'auth.login_google', 'auth.authorize', 'auth.oauth2callback', 'register', 'check_sid',
-                                         'logout', 'get_machine_access','welcome','shop_status', 'static', 'index']:
+                                         'logout', 'get_machine_access','welcome','public.shop_status', 'static', 'public.index']:
         print(request.endpoint)
         return redirect(url_for('auth.login'))
 
@@ -77,11 +78,9 @@ def error_handler(e):
     flash(Markup('<b>An error occurred.</b> Please contact <a href="mailto:ideashop@iit.edu">ideashop@iit.edu</a> and include the '
           'current time ' + str(datetime.datetime.now().strftime('%x %X')) +
           ' as well as a brief description of what you were doing.'), 'danger')
-    return redirect(url_for('index'))
+    return redirect(url_for('public.index'))
 
-@app.route('/')
-def index():
-    return render_template('welcome.html')
+
 
 @app.route('/new_trainings')
 def new_training_interface():
@@ -93,43 +92,8 @@ def new_training_interface():
     training_count = len(trainings)
     return render_template('new_trainings.html', trainings=trainings, quizzes=quizzes, training_count = training_count)
 
-@app.route('/welcome')
-def welcome():
-    db = db_session()
-
-    user_count=db.query(Location.id,Location.name, Location.staff_ratio).all()
-
-    in_lab = [len(db.query(Access)\
-        .filter_by(timeOut=None) \
-        .filter_by(location_id=1)
-        .all()), len(db.query(Access)\
-        .filter_by(timeOut=None) \
-        .filter_by(location_id=2)
-        .all())]
 
 
-
-
-    return render_template('welcome.html', user_count = user_count, in_lab = in_lab)
-
-@app.route('/shop_status', methods=['GET','POST'])
-def shop_status():
-    db = db_session()
-    user_count = db.query(Location.id, Location.name, Location.staff_ratio).all()
-
-    in_lab = [len(db.query(Access) \
-                  .filter_by(timeOut=None) \
-                  .filter_by(location_id=1)
-                  .all()), len(db.query(Access) \
-                  .filter_by(timeOut=None) \
-                  .filter_by(location_id=2)
-                  .all())]
-
-    if request.method =='GET':
-        return render_template('shop_status.html', user_count=user_count, in_lab=in_lab)
-    elif request.method == 'POST':
-        response = app.make_response('<h1>Not yet implemented!</h1>'), 418
-        return response
 
 @app.route('/admin/upload', methods=['GET', 'POST'])
 def upload_file():
@@ -137,13 +101,13 @@ def upload_file():
         # check if the post request has the file part
         if 'file' not in request.files:
             flash('No file part', 'danger')
-            return redirect(url_for('index'))
+            return redirect(url_for('public.index'))
         file = request.files['file']
         # if user does not select file, browser also
         # submit an empty part without filename
         if file.filename == '':
             flash('No selected file', 'danger')
-            return redirect(url_for('index'))
+            return redirect(url_for('public.index'))
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
@@ -205,10 +169,10 @@ def override(training_id):
     if request.method == 'POST':
         quiz(training_id)
         if int(training.quiz_score) == 100:
-            return redirect(url_for('index'))
+            return redirect(url_for('public.index'))
     if not (training and training.machine and training.machine.quiz and training.machine.quiz.questions):
         flash("There was an error with your request. Please try again or see Idea Shop staff if the issue persists.", 'danger')
-        return redirect(url_for('index'))
+        return redirect(url_for('public.index'))
     else:
         questions = training.machine.quiz.questions
         random.shuffle(questions)
@@ -225,7 +189,7 @@ def override(training_id):
         return render_template('quiz.html', training=training, questions=questions, warning=True)
     else:
         flash("You have reached the maximum number of override attempts on the %s quiz without passing. Please see Idea Shop staff for assistance." % (training.machine.name), 'danger')
-        return redirect(url_for('index'))
+        return redirect(url_for('public.index'))
 
 
 @app.route('/quiz/<training_id>', methods=['GET', 'POST'])
@@ -234,7 +198,7 @@ def quiz(training_id):
     training = db.query(Training).filter(Training.id == training_id).one_or_none()
     if not (training and training.machine and training.machine.quiz and training.machine.quiz.questions):
         flash("There was an error with your request. Please try again or see Idea Shop staff if the issue persists.", 'danger')
-        return redirect(url_for('index'))
+        return redirect(url_for('public.index'))
     else:
         questions = training.machine.quiz.questions
         random.shuffle(questions)
@@ -247,7 +211,7 @@ def quiz(training_id):
     if request.method == 'GET':
         if training.quiz_attempts and training.quiz_attempts >= max(float(quiz_stats.avg) + (3 * quiz_stats.stddev), 10):
             flash("You have reached the maximum number of attempts on the %s quiz without passing and your training has been invalidated. Please see Idea Shop staff for assistance." % (training.machine.name), 'danger')
-            return redirect(url_for('index'))
+            return redirect(url_for('public.index'))
         if training.quiz_attempts and training.quiz_attempts >= max(float(quiz_stats.avg) + (1.5 * quiz_stats.stddev), 6):
             warning = True
         else:
@@ -303,10 +267,10 @@ def quiz(training_id):
                 message += "</li>"
             message += "</ul>"
             flash(Markup(message), 'warning')
-        return redirect(url_for('index'))
+        return redirect(url_for('public.index'))
     else:
         flash("There was an error with your request. Please try again or see Idea Shop staff if the issue persists.", 'danger')
-        return redirect(url_for('index'))
+        return redirect(url_for('public.index'))
 
 
 @app.route('/edit_quiz/<id>', methods=['GET', 'POST'])
@@ -403,7 +367,7 @@ def edit_quiz(id):
             db.commit()
             return redirect(url_for('edit_quiz', id=id))
     else:
-        return redirect(url_for('index'))
+        return redirect(url_for('public.index'))
 
 
 @app.route('/admin/api/add/<object_type>', methods=['POST'])
@@ -437,7 +401,7 @@ def no_app(environ, start_response):
 app.register_blueprint(covid)
 app.register_blueprint(reservation_bp)
 app.register_blueprint(auth)
-
+app.register_blueprint(public)
 # main
 if __name__ == '__main__':
     #os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1' #if insecure dev uncomment
