@@ -17,7 +17,6 @@
 
     {#  If student has trainings available, generate trainings portion of webpage  #}
     {% if trainings %}
-    
     <div class="container-fluid">
         <div class="justify-content-center">
 {# Available trainings area #}
@@ -37,10 +36,14 @@
                             <h5 class="card-header">{{ each.machine.quiz.name  }}</h5>
                             <div class="card-body">
                                 <h5 class="card-title">Location: {{ each.machine.location.name  }}</h5>
-                                <p class="card-subtitle">Last Taken Date: None</p>
-
+                                {% if each.quiz_attempts is not none %}
+                                    <p class="card-subtitle">Last Taken: {{each.quiz_date.strftime('%Y-%m-%d at %I:%M%p')}}</p>
+                                    <div class="progress" style="margin: 2mm">
+                                        <div class="progress-bar" role="progressbar" style="width: {{ each.quiz_score }}%" final_width="{{ each.quiz_score }}"></div>
+                                    </div>
+                                {% endif %}
                                 <a class="btn btn-primary" style="margin: 2mm" href="{{ url_for('quiz', training_id=each.id)}}" role="button">
-                                Take the Quiz </a><h3 class="badge badge-secondary">New!</h3>
+                                Take the Quiz </a>
 
                                 <a class="btn btn-sm btn-info active" style="margin: 2mm" href="{% if each.machine.about_link %} {{ each.machine.about_link }} {% else %} https://wiki.ideashop.iit.edu/index.php?title=Main_Page {% endif %}" target="_blank" role="button"><h5>About this training</h5></a>
                             </div>
@@ -73,7 +76,7 @@
                             <div class="card-body">
                                 <h5 class="card-title">Location: {{ each.machine.location.name  }}</h5>
                                 <div class="progress" style="margin: 2mm">
-                                    <div class="progress-bar" role="progressbar" final_width="{{ each.quiz_score }}"></div>
+                                    <div class="progress-bar" role="progressbar" style="width: {{ each.quiz_score }}%" final_width="{{ each.quiz_score }}"></div>
                                 </div>
                                 <button type="button" class="btn-secondary btn-sm float-right" data-toggle="modal" data-target="#{{ each.machine.quiz.name }}Modal">Show Details</button>
                                 <a class="btn btn-sm btn-info active" style="margin: 2mm" href="{% if each.machine.about_link %} {{ each.machine.about_link }} {% else %} https://wiki.ideashop.iit.edu/index.php?title=Main_Page {% endif %}" target="_blank" role="button"><h5>About this training</h5></a>
@@ -97,7 +100,7 @@
                                     </button>
                                 </div>
                                 <div class="modal-body">
-                                    <p>Date Taken: {{ each.quiz_date }}</p>
+                                    <p>Date Taken: {{each.quiz_date.strftime('%Y-%m-%d at %I:%M%p')}}</p>
                                     <p>Quiz Score: {{ each.quiz_score }}</p>
                                     <p>Attempt Count: {{ each.quiz_attempts }}</p>
                                     <p>Trained by: {{ each.trainer.name }}</p>
