@@ -7,13 +7,13 @@ from flask import Blueprint, current_app
 
 video = Blueprint('video', __name__)
 
-@video.route('/COVID', methods=['GET', 'POST'])
-def COVID():
+@video.route('/video', methods=['GET', 'POST'])
+def safety():
     if request.method == 'GET':
         db = g.db_session()
         #flash("Video safety training is not currently available. Please check back on September 14th, 2020.", 'warning')
         #return render_template('layout.html')
-        return render_template('COVID_video.html', youtube_id=current_app.config['COVID_YOUTUBE_ID'], video_time_seconds=int(current_app.config['COVID_VIDEO_SECONDS']))
+        return render_template('safety_video.html', youtube_id=current_app.config['COVID_YOUTUBE_ID'], video_time_seconds=int(current_app.config['COVID_VIDEO_SECONDS']))
     elif request.method == 'POST':
         db = g.db_session()
         print(request.form['sid'])
