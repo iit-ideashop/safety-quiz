@@ -22,3 +22,26 @@
 background: linear-gradient(90deg, rgba(0,158,209,0.75) 0%, rgba(0,158,209,0.35) 70%, rgba(88,56,149,1) 100%);
 
 }
+
+/*-------Covid_video styles--------*/
+.covid-instruction {
+    padding-bottom: 1.875rem;
+    font-size: 1.25rem;
+   /* line-height: .0625rem;*/
+    white-space: normal;
+}
+.video-bar {
+    /*border: 1px solid red;*/
+    width: 100%;
+    height: 3vh;
+    border-radius: .625rem;
+    background-color: rgba(200, 200, 200, 0.87);
+}
+
+.video-bar-progress {
+    height: 3vh;
+    width: 10%;
+    border-radius: .625rem;
+    background-color: rgba(68, 184, 221, 0.99);
+}
+
