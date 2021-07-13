@@ -39,7 +39,7 @@
                                             <a class="btn btn-primary" style="margin: 2mm" href="{{ url_for('quiz', training_id=each.id)}}" role="button">
                                             Take the Quiz </a><h3 class="badge badge-secondary">New!</h3>
 
-                                            <a class="btn btn-sm btn-info active" style="margin: 2mm" href="http://wiki.ideashop.iit.edu" target="_blank" role="button"><h5>About this training</h5></a>
+                                            <a class="btn btn-sm btn-info active" style="margin: 2mm" href="{% if each.machine.about_link %} {{ each.machine.about_link }} {% else %} https://wiki.ideashop.iit.edu/index.php?title=Main_Page {% endif %}" target="_blank" role="button"><h5>About this training</h5></a>
                                         </div>
                                     </div>
                                 {% endif %}
@@ -69,7 +69,7 @@
                                             <div class="progress-bar" role="progressbar" final_width="{{ each.quiz_score }}"></div>
                                         </div>
                                         <button type="button" class="btn-secondary btn-sm float-right" data-toggle="modal" data-target="#{{ each.machine.quiz.name }}Modal">Show Details</button>
-                                        <a class="btn btn-sm btn-info active" style="margin: 2mm" href="http://wiki.ideashop.iit.edu" target="_blank" role="button"><h5>About this training</h5></a>
+                                        <a class="btn btn-sm btn-info active" style="margin: 2mm" href="{% if each.machine.about_link %} {{ each.machine.about_link }} {% else %} https://wiki.ideashop.iit.edu/index.php?title=Main_Page {% endif %}" target="_blank" role="button"><h5>About this training</h5></a>
                                     </div>
                                 </div>
                             {% endif %}
