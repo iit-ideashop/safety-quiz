@@ -21,7 +21,7 @@ from flask import current_app
 from checkIn.model import User, UserLocation, Type, Access, Location, Training, Machine, Quiz, Question, Option, MissedQuestion, init_db, Major, College, HawkCard
 #from reservation import ReservationType, ReservationWindow, Reservations, HasRemoveMethod, init_reservation_db
 # blueprintname.route not app.route
-from covid import covid
+from video import video
 from public import public
 from userflow import userflow
 from auth import auth
@@ -386,7 +386,7 @@ def no_app(environ, start_response):
     return NotFound()(environ, start_response)
 
 # Blueprint registration
-app.register_blueprint(covid)
+app.register_blueprint(video)
 app.register_blueprint(reservation_bp)
 app.register_blueprint(auth)
 app.register_blueprint(public)
