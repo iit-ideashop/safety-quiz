@@ -30,9 +30,10 @@ document.addEventListener("DOMContentLoaded", function(event){
         // console.log("final_progress_values:", final_progress_values)
     // }
 
+    //Animates logo drawing on main page
     var first_loop = true;
     anime({
-      targets: 'svg path',
+      targets: '.logo-drawing svg path',
       endDelay: 1000,
       strokeDashoffset: [anime.setDashoffset, 0],
       easing: 'easeInOutCirc',
@@ -43,7 +44,7 @@ document.addEventListener("DOMContentLoaded", function(event){
       loopComplete: function(anim) {
           if(first_loop){
               anime({
-            targets: 'svg path',
+            targets: '.logo-drawing svg path',
             fill:['rgba(0,0,0,0)', 'rgba(0,158,209,1)'],
             easing: 'linear',
             // complete: function(anim) {
