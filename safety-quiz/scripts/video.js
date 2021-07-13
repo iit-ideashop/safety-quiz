@@ -1,23 +1,23 @@
-var i = 0;
+/*var i = 0;
 function move() {
   if (i === 0) {
     i = 1;
-    var elem = document.getElementById("video-bar-progress");
-    var width = 10;
-    var id = setInterval(frame, 10);
+    var elem = document.getElementsByClassName("video-bar-progress");
+    var width = 0;
+    let progress_rate = 10.57*1000
+    var id = setInterval(frame, progress_rate);
     function frame() {
       if (width >= 100) {
         clearInterval(id);
         i = 0;
       } else {
         width++;
-        elem.style.width = width + "%";
-        elem.innerHTML = width  + "%";
+        elem[0].style.width = width + "%";
+        elem[0].innerHTML = width  + "%";
       }
     }
   }
-}
-
+}*/
 var tag = document.createElement('script');
       tag.src = "https://www.youtube.com/iframe_api";
       var firstScriptTag = document.getElementsByTagName('script')[0];
@@ -42,33 +42,35 @@ var tag = document.createElement('script');
                 'onStateChange': onPlayerStateChange
             }
         });
-        let duration=player.getDuration();
+        /*let duration=player.getDuration();*/
       }
-          /*var Progress = (function ($) {
+          var Progress = (function ($) {
+
 
         var Move = function () {
+            var i = 0
             if (i === 0) {
                 i = 1;
-                var elem = document.getElementById("video-bar-progress");
+                var elem = document.getElementsByClassName("video-bar-progress");
                 var width = 0;
-                var id = setInterval(frame, 10);
-
+                var id = setInterval(frame, 10.57*1000)
                 function frame() {
                     if (width >= 100) {
                         clearInterval(id);
                         i = 0;
                     } else {
                         width++;
-                        elem.style.width = width + "%";
-                        elem.innerHTML = width + "%";
+                        elem[0].style.width = width + "%";
+                        elem[0].innerHTML = width + "%";
                     }
+
                 }
             }
-        };
+        }
         return {
-            Move:Move
+            Move:Move,
         };
-    })(jQuery);*/
+    })(jQuery);
 
 
       function onPlayerStateChange(event) {
@@ -77,12 +79,6 @@ var tag = document.createElement('script');
           }
           if (event.data === YT.PlayerState.PLAYING) {
               Progress.Move();
-              if (CountDown.IsStarted() === false) {
-                  CountDown.Start(video_time_seconds*1000);
-              }
-              else {
-
-              }
           }
           if (event.data === YT.PlayerState.ENDED) {
                 CountDown.Pause();
