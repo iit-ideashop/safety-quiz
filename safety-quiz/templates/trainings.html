@@ -36,7 +36,7 @@
                             <h5 class="card-header">{{ each.machine.quiz.name  }}</h5>
                             <div class="card-body">
                                 <h5 class="card-title">Location: {{ each.machine.location.name  }}</h5>
-                                {% if each.quiz_attempts is not none %}
+                                {% if each.quiz_attempts >=1 %}
                                     <p class="card-subtitle">Last Taken: {{each.quiz_date.strftime('%Y-%m-%d at %I:%M%p')}}</p>
                                     <div class="progress" style="margin: 2mm">
                                         <div class="progress-bar" role="progressbar" style="width: {{ each.quiz_score }}%" final_width="{{ each.quiz_score }}">{{ each.quiz_score|int }}%</div>
@@ -49,7 +49,7 @@
                                     {% else %} https://wiki.ideashop.iit.edu/index.php?title=Main_Page
                                 {% endif %}"
                                 target="_blank" role="button">About this training</a>
-                                {% if each.quiz_attempts is not none %}
+                                {% if each.quiz_attempts >=1 %}
                                     <button type="button" class="btn btn-secondary btn-training-card" data-toggle="modal" data-target="#{{ each.machine.quiz.name }}Modal">Show Details</button>
                                 {% endif %}
                             </div>
@@ -78,7 +78,7 @@
                 {% for each in trainings %}
                     {% if each.quiz_passed() %}
                         <div class="card card-spaced-2">
-                            <h5 class="card-header">Topic: {{ each.machine.quiz.name }}</h5>
+                            <h5 class="card-header">Topic: {{ each.machine.quiz.name }}<i class="bi bi-check-square float-right" style="color: green"></i></h5>
                             <div class="card-body">
                                 <h5 class="card-title">Location: {{ each.machine.location.name  }}</h5>
                                 <div class="progress" style="margin: 2mm">
