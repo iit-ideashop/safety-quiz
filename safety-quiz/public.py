@@ -44,4 +44,4 @@ def animation_js():
 
 @public.route('/scripts/video.js')
 def video_js():
-    return send_from_directory('scripts', 'video.js')
+   return send_from_directory('scripts', 'video.js')
