@@ -12,9 +12,16 @@
 .card-header .collapsed .fa {
   transform: rotate(90deg);
 }
+.btn-training-card {
+    margin-left: 2mm;
+    margin-right: 2mm;
+    margin-top: .5mm;
+    margin-bottom: .5mm;
+}
 
+/*change the text color for progress bar labels*/
 .progress-bar {
-    color: #009ED1
+    color: white;
 }
 
 .navbar {
