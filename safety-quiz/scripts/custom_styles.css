@@ -36,12 +36,20 @@ background: linear-gradient(90deg, rgba(0,158,209,0.75) 0%, rgba(0,158,209,0.35)
     height: 3vh;
     border-radius: .625rem;
     background-color: rgba(200, 200, 200, 0.87);
+    text-wrap: none;
 }
 
 .video-bar-progress {
     height: 3vh;
-    width: 10%;
+    width: 0%;
     border-radius: .625rem;
     background-color: rgba(68, 184, 221, 0.99);
+}
+
+.video-bar-progress p {
+    position: absolute;
+    left:0;
+    width:100%;
+    text-align: center;
 }
 

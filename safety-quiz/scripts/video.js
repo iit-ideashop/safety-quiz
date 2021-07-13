@@ -1,9 +1,28 @@
-var tag = document.createElement('script');
+var i = 0;
+function move() {
+  if (i === 0) {
+    i = 1;
+    var elem = document.getElementById("video-bar-progress");
+    var width = 10;
+    var id = setInterval(frame, 10);
+    function frame() {
+      if (width >= 100) {
+        clearInterval(id);
+        i = 0;
+      } else {
+        width++;
+        elem.style.width = width + "%";
+        elem.innerHTML = width  + "%";
+      }
+    }
+  }
+}
 
+var tag = document.createElement('script');
       tag.src = "https://www.youtube.com/iframe_api";
       var firstScriptTag = document.getElementsByTagName('script')[0];
       firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-      let vid_id='ldCBbAQkgfs'
+      let vid_id='ldCBbAQkgfs';
 
       var player;
       function onYouTubeIframeAPIReady() {
@@ -23,21 +42,49 @@ var tag = document.createElement('script');
                 'onStateChange': onPlayerStateChange
             }
         });
+        let duration=player.getDuration();
       }
+          /*var Progress = (function ($) {
+
+        var Move = function () {
+            if (i === 0) {
+                i = 1;
+                var elem = document.getElementById("video-bar-progress");
+                var width = 0;
+                var id = setInterval(frame, 10);
+
+                function frame() {
+                    if (width >= 100) {
+                        clearInterval(id);
+                        i = 0;
+                    } else {
+                        width++;
+                        elem.style.width = width + "%";
+                        elem.innerHTML = width + "%";
+                    }
+                }
+            }
+        };
+        return {
+            Move:Move
+        };
+    })(jQuery);*/
+
 
       function onPlayerStateChange(event) {
-          if (event.data == YT.PlayerState.PAUSED) {
+          if (event.data === YT.PlayerState.PAUSED) {
             CountDown.Pause();
           }
-          if (event.data == YT.PlayerState.PLAYING) {
-              if (CountDown.IsStarted() == false) {
+          if (event.data === YT.PlayerState.PLAYING) {
+              Progress.Move();
+              if (CountDown.IsStarted() === false) {
                   CountDown.Start(video_time_seconds*1000);
               }
               else {
-                  CountDown.Resume();
+
               }
           }
-          if (event.data == YT.PlayerState.ENDED) {
+          if (event.data === YT.PlayerState.ENDED) {
                 CountDown.Pause();
                 var secondsRemaining = CountDown.TimeRemaining();
                 if (secondsRemaining > 10) {
