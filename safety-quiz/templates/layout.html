@@ -18,7 +18,6 @@
             <div class="navbar-nav">
                 <a class="nav-item nav-link" style="color: white"  href="{{ url_for('userflow.training_interface') }}" {% if not session['sid'] %} hidden="true" {% endif %}>Safety Quizzes</a>
                 <a class="nav-item nav-link" style="color: white" href="{{ url_for('reservation.reservations') }}" {% if not session['sid'] %} hidden="true" {% endif %}>Make a Reservation</a>
-                <a class="nav-item nav-link" style="color: white" href="{{ url_for('video.COVID') }}" {% if not session['sid'] %} hidden="true" {% endif %}>Fall 2020 Video Training</a>
             {% if session['admin'] %}
                 <a class="nav-item nav-link" style="color: white" href="{{ url_for('reservation.view_reservations') }}" {% if not session['sid'] %} hidden="true" {% endif %}>View Reservations</a>
             {%  endif %}
