@@ -31,12 +31,10 @@ background: linear-gradient(90deg, rgba(0,158,209,0.75) 0%, rgba(0,158,209,0.35)
     white-space: normal;
 }
 
-#vid_progress[value] {
-    /*appearance: none;*/
+#vid_progress[value] { /*fall back styles*/
     border: none;
     border-radius: 10px;
     box-shadow: 0 2px 3px rgba(0, 0, 0,.25) inset;
-    /*color: dodgerblue;*/
     display: inline;
     height: 20px;
     order: 1;
