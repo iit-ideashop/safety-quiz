@@ -30,26 +30,43 @@ background: linear-gradient(90deg, rgba(0,158,209,0.75) 0%, rgba(0,158,209,0.35)
    /* line-height: .0625rem;*/
     white-space: normal;
 }
-.video-bar {
-    /*border: 1px solid red;*/
+
+#vid_progress[value] {
+    /*appearance: none;*/
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 2px 3px rgba(0, 0, 0,.25) inset;
+    /*color: dodgerblue;*/
+    display: inline;
+    height: 20px;
+    order: 1;
+    position: relative;
     width: 100%;
-    height: 3vh;
-    border-radius: .625rem;
-    background-color: rgba(200, 200, 200, 0.87);
-    text-wrap: none;
 }
 
-.video-bar-progress {
-    height: 3vh;
-    width: 0%;
-    border-radius: .625rem;
-    background-color: rgba(68, 184, 221, 0.99);
+/* WebKit styles */
+#vid_progress[value]::-webkit-progress-bar {
+    background-color: whitesmoke;
+    border-radius: 10px;
+    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.25) inset;
 }
 
-.video-bar-progress p {
-    position: absolute;
-    left:0;
-    width:100%;
-    text-align: center;
+#vid_progress[value]::-webkit-progress-value {
+  background: linear-gradient(90deg, rgba(0,158,209,0.75) 0%, rgba(0,158,209,0.35) 70%, rgba(88,56,149,1) 100%);
+  );
+  border-radius: 10px;
+  position: relative;
+  transition: width 1s linear;
+}
+
+/* Firefox styles */
+#vid_progress[value]::-moz-progress-bar {
+  background-image: -moz-linear-gradient(
+    to right,
+     rgba(0,158,209,0.75) 0%, rgba(0,158,209,0.35) 70%, rgba(88,56,149,1) 100%);
+  );
+  border-radius: 10px;
+  position: relative;
+  transition: width 1s linear;
 }
 

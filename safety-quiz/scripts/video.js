@@ -1,29 +1,10 @@
-/*var i = 0;
-function move() {
-  if (i === 0) {
-    i = 1;
-    var elem = document.getElementsByClassName("video-bar-progress");
-    var width = 0;
-    let progress_rate = 10.57*1000
-    var id = setInterval(frame, progress_rate);
-    function frame() {
-      if (width >= 100) {
-        clearInterval(id);
-        i = 0;
-      } else {
-        width++;
-        elem[0].style.width = width + "%";
-        elem[0].innerHTML = width  + "%";
-      }
-    }
-  }
-}*/
 var tag = document.createElement('script');
       tag.src = "https://www.youtube.com/iframe_api";
+      const progress = document.getElementById("vid_progress");
       var firstScriptTag = document.getElementsByTagName('script')[0];
       firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-      let vid_id='ldCBbAQkgfs';
-
+      var vid_id='ldCBbAQkgfs';
+      var video_duration = 1057;
       var player;
       function onYouTubeIframeAPIReady() {
         player = new YT.Player('player', {
@@ -42,51 +23,34 @@ var tag = document.createElement('script');
                 'onStateChange': onPlayerStateChange
             }
         });
-        /*let duration=player.getDuration();*/
       }
-          var Progress = (function ($) {
-
-
-        var Move = function () {
-            var i = 0
-            if (i === 0) {
-                i = 1;
-                var elem = document.getElementsByClassName("video-bar-progress");
-                var width = 0;
-                var id = setInterval(frame, 10.57*1000)
-                function frame() {
-                    if (width >= 100) {
-                        clearInterval(id);
-                        i = 0;
-                    } else {
-                        width++;
-                        elem[0].style.width = width + "%";
-                        elem[0].innerHTML = width + "%";
-                    }
-
-                }
-            }
-        }
-        return {
-            Move:Move,
-        };
-    })(jQuery);
+      function progressLoop() {
+          setInterval(function() {
+              progress.value = Math.round((player.getCurrentTime() / video_duration) * 100)
+              progress.innerHTML = progress.value + '%';
+          })
+      }
 
 
       function onPlayerStateChange(event) {
           if (event.data === YT.PlayerState.PAUSED) {
-            CountDown.Pause();
+            /*CountDown.Pause();*/
           }
           if (event.data === YT.PlayerState.PLAYING) {
-              Progress.Move();
+              progressLoop();
+             /* if (!hasStarted()) {
+                  progressLoop();
+              } else {
+
+              }*/
           }
           if (event.data === YT.PlayerState.ENDED) {
-                CountDown.Pause();
+               /* CountDown.Pause();
                 var secondsRemaining = CountDown.TimeRemaining();
                 if (secondsRemaining > 10) {
                     alert("It looks like you may have tried to speed through the video. Please refresh the page to restart this online training.");
                 }
-                else {
+                else {*/
                     var form = document.createElement('form');
                     document.body.appendChild(form);
                     form.method = 'post';
@@ -98,7 +62,7 @@ var tag = document.createElement('script');
                     form.appendChild(input);
                     form.submit();
                 }
-          }
+          //}
       }
 
       function stopVideo() {
@@ -150,7 +114,7 @@ var tag = document.createElement('script');
       }
 
       //timer
-      var CountDown = (function ($) {
+     /* var CountDown = (function ($) {
           // Length ms
           var TimeOut = 10000;
           // Interval ms
@@ -223,4 +187,4 @@ var tag = document.createElement('script');
               IsStarted: IsStarted,
               TimeRemaining, TimeRemaining
           };
-      })(jQuery);
+      })(jQuery);*/
