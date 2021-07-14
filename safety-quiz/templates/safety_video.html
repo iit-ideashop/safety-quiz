@@ -2,7 +2,7 @@
 {%  block head %}
     {{ super() }}
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
-    <script src="{{url_for('public.video_js')}}"></script>
+
 {%  endblock %}
 {% block page %}
     <!-- 1. The <iframe> (and video player) will replace this <div> tag. -->
@@ -10,7 +10,7 @@
         <div class="container covid-instruction">
         <h3>Video Instructions</h3>
         <p>Pausing the video will stop your progress.
-        Leaving this window will pause your.
+        Leaving this window will pause your progress.
             Fast forwarding through the video is not permitted.</p>
         </div>
     <div class="container">
@@ -18,11 +18,10 @@
     </div>
 
     <div class="container">
-        <div class="video-bar">
-            <div class="video-bar-progress"><p>0%</p></div>
-        </div>
+        <progress id="vid_progress" max="100" value="0">0%</progress>
     </div>
     </div>
+    <script src="{{url_for('public.video_js')}}"></script>
 
 {% endblock %}
 
