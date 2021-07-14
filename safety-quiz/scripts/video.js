@@ -34,23 +34,14 @@ var tag = document.createElement('script');
 
       function onPlayerStateChange(event) {
           if (event.data === YT.PlayerState.PAUSED) {
-            /*CountDown.Pause();*/
           }
           if (event.data === YT.PlayerState.PLAYING) {
+              player.setVolume(25);
               progressLoop();
-             /* if (!hasStarted()) {
-                  progressLoop();
-              } else {
 
-              }*/
           }
           if (event.data === YT.PlayerState.ENDED) {
-               /* CountDown.Pause();
-                var secondsRemaining = CountDown.TimeRemaining();
-                if (secondsRemaining > 10) {
-                    alert("It looks like you may have tried to speed through the video. Please refresh the page to restart this online training.");
-                }
-                else {*/
+
                     var form = document.createElement('form');
                     document.body.appendChild(form);
                     form.method = 'post';
@@ -112,79 +103,3 @@ var tag = document.createElement('script');
           }, false);
 
       }
-
-      //timer
-     /* var CountDown = (function ($) {
-          // Length ms
-          var TimeOut = 10000;
-          // Interval ms
-          var TimeGap = 1000;
-
-          var CurrentTime = ( new Date() ).getTime();
-          var EndTime = ( new Date() ).getTime() + TimeOut;
-
-          var GuiTimer = $('#countdown');
-
-          var Started = false;
-          var Running = true;
-
-          var UpdateTimer = function() {
-              // Run till timeout
-              if( CurrentTime + TimeGap < EndTime ) {
-                  setTimeout( UpdateTimer, TimeGap );
-              }
-              // Countdown if running
-              if( Running ) {
-                  CurrentTime += TimeGap;
-                  if( CurrentTime >= EndTime ) {
-                      GuiTimer.css('color','red');
-                  }
-              }
-              // Update Gui
-              var Time = new Date();
-              Time.setTime( EndTime - CurrentTime );
-              var Minutes = Time.getMinutes();
-              var Seconds = Time.getSeconds();
-
-              GuiTimer.html(
-                  (Minutes < 10 ? '0' : '') + Minutes
-                  + ':'
-                  + (Seconds < 10 ? '0' : '') + Seconds );
-          };
-
-          var Pause = function() {
-              Running = false;
-          };
-
-          var Resume = function() {
-              Running = true;
-          };
-
-          var Start = function( Timeout ) {
-              TimeOut = Timeout;
-              CurrentTime = ( new Date() ).getTime();
-              EndTime = ( new Date() ).getTime() + TimeOut;
-              Started = true;
-              UpdateTimer();
-          };
-
-          var IsStarted = function() {
-              return Started;
-          };
-
-          var TimeRemaining = function() {
-                var Time = new Date();
-                Time.setTime( EndTime - CurrentTime );
-                var secondsRemaining = (Time.getMinutes()*60)+(Time.getSeconds())
-                console.log(secondsRemaining);
-                return secondsRemaining;
-          }
-
-          return {
-              Pause: Pause,
-              Resume: Resume,
-              Start: Start,
-              IsStarted: IsStarted,
-              TimeRemaining, TimeRemaining
-          };
-      })(jQuery);*/
