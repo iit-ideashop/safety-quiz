@@ -19,6 +19,7 @@
     margin-bottom: .5mm;
 }
 
+/*provide spin animation for icons*/
 .spin {
     -webkit-animation:spin 4s linear infinite;
     -moz-animation:spin 4s linear infinite;
@@ -34,9 +35,10 @@
     color: white;
 }
 
+/*control gradient for navbar seen on all pages*/
 .navbar {
     background: rgb(255,255,255);
-background: linear-gradient(90deg, rgba(0,158,209,0.75) 0%, rgba(0,158,209,0.35) 70%, rgba(88,56,149,1) 100%);
+background: linear-gradient(90deg, rgba(0,158,209,0.75) 0%, rgba(0,158,209,0.75) 70%, rgba(88,56,149,1) 100%);
 
 }
 
