@@ -59,7 +59,7 @@ def before_request():
     g.db_session = init_db(app.config['DB'])
     if 'sid' not in session \
             and request.endpoint not in ['auth.login', 'auth.login_google', 'auth.authorize', 'auth.oauth2callback',
-                                         'register', 'check_sid', 'logout', 'get_machine_access','welcome',
+                                         'register', 'check_sid', 'logout', 'get_machine_access','public.welcome',
                                          'public.shop_status', 'static', 'public.custom_css', 'public.animation_js',
                                          'public.index']:
         print(request.endpoint)
