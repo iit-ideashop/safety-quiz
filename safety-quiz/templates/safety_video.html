@@ -7,8 +7,8 @@
 {% block page %}
     <!-- 1. The <iframe> (and video player) will replace this <div> tag. -->
     <div id="video_data"
-         data-video-length="video_time_seconds"
-         data-video-path="youtube_id"></div>
+         data-video-length="{{ video_time_seconds }}"
+         data-video-path="{{ youtube_id }}"></div>
     <div class="container" style="text-align: center;">
         <div class="container covid-instruction">
         <h3>Video Instructions</h3>
