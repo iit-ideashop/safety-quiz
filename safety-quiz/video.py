@@ -2,7 +2,7 @@
 import flask
 from flask import Flask, request, session, redirect, url_for, render_template, flash, send_from_directory, Markup, jsonify, g
 import sqlalchemy as sa
-from checkIn.model import User, UserLocation, Type, Training, Machine, Quiz, Question, Option, MissedQuestion, init_db, Major, College, HawkCard
+from checkIn.model import User, UserLocation, Type, Training, Machine, Quiz, Question, Option, MissedQuestion, init_db, Major, College, HawkCard, Video
 from flask import Blueprint, current_app
 
 video = Blueprint('video', __name__)
@@ -13,7 +13,9 @@ def safety():
         db = g.db_session()
         #flash("Video safety training is not currently available. Please check back on September 14th, 2020.", 'warning')
         #return render_template('layout.html')
-        return render_template('safety_video.html', youtube_id=current_app.config['COVID_YOUTUBE_ID'], video_time_seconds=int(current_app.config['COVID_VIDEO_SECONDS']))
+        youtube_id=db.query(Video).get(Video.filepath)
+        video_time_seconds=db.query(Video).get(Video.length)
+        return render_template('safety_video.html', youtube_id=str(youtube_id), video_time_seconds=int(video_time_seconds))
     elif request.method == 'POST':
         db = g.db_session()
         print(request.form['sid'])

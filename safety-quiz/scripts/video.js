@@ -1,10 +1,11 @@
 var tag = document.createElement('script');
+var elem = document.querySelector('#video_data')
       tag.src = "https://www.youtube.com/iframe_api";
       const progress = document.getElementById("vid_progress");
       var firstScriptTag = document.getElementsByTagName('script')[0];
       firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-      var vid_id='ldCBbAQkgfs';
-      var video_duration = 1057;
+      var vid_id=elem.getAttribute('video-path')
+      var video_duration =elem.getAttribute('video-length');
       var player;
       function onYouTubeIframeAPIReady() {
         player = new YT.Player('player', {
