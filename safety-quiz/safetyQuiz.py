@@ -25,6 +25,7 @@ from video import video
 from public import public
 from userflow import userflow
 from auth import auth
+from api import api
 from reservation import init_reservation_db, reservation_bp
 
 # app setup
@@ -61,7 +62,7 @@ def before_request():
             and request.endpoint not in ['auth.login', 'auth.login_google', 'auth.authorize', 'auth.oauth2callback',
                                          'register', 'check_sid', 'logout', 'get_machine_access','public.welcome',
                                          'public.shop_status', 'static', 'public.custom_css', 'public.animation_js',
-                                         'public.index']:
+                                         'public.index','api.get_machine_access', 'api.update_energizer']:
         print(request.endpoint)
         return redirect(url_for('auth.login'))
 
@@ -391,6 +392,7 @@ app.register_blueprint(reservation_bp)
 app.register_blueprint(auth)
 app.register_blueprint(public)
 app.register_blueprint(userflow)
+app.register_blueprint(api)
 # main
 if __name__ == '__main__':
     #os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1' #if insecure dev uncomment
