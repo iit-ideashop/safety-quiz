@@ -11,103 +11,121 @@
     <h3 class="badge badge-secondary">New!</h3> If you are having trouble completing the quizzes or do not remember the correct answer, check out this page on our wiki: <a href="https://wiki.ideashop.iit.edu/index.php?title=Safety_Quizzes">https://wiki.ideashop.iit.edu/index.php?title=Safety_Quizzes</a>
 </div>
 
-    <div class="alert alert-info">
-        <p>You must receive 100% on a quiz in order to pass the training</p>
-    </div>
+<div class="alert alert-info">
+    <p>You must receive 100% on a quiz in order to pass the training</p>
+</div>
+
+    {#  If student has trainings available, generate trainings portion of webpage  #}
     {% if trainings %}
-    
-        <div class="container-fluid">
-            <div class="justify-content-center">
-                    <div class="card card-spaced-2">
-                        <h4 class="card-header">
-                            <a class="d-block" data-toggle="collapse" href="#collapse-available" aria-expanded="true" aria-controls="collapse-available" id="heading-available">
-                                Available Trainings
-                                <i class="fa fa-chevron-down float-right"></i>
-                            </a>
-                        </h4>
-                        <div id="collapse-available" class="collapse show" aria-labelledby="heading-available">
-                        {% set available_count = 0 %}
-                            {% for each in trainings %}
-                                {% if each.quiz_available() %}
-                                    {% set available_count = available_count + 1 %}
-                                    <div class="card card-spaced-2">
-                                        <h5 class="card-header">{{ each.machine.quiz.name  }}</h5>
-                                        <div class="card-body">
-                                            <h5 class="card-title">Location: {{ each.machine.location.name  }}</h5>
-                                            <p class="card-subtitle">Last Taken Date: None</p>
-
-                                            <a class="btn btn-primary" style="margin: 2mm" href="{{ url_for('quiz', training_id=each.id)}}" role="button">
-                                            Take the Quiz </a><h3 class="badge badge-secondary">New!</h3>
-
-                                            <a class="btn btn-sm btn-info active" style="margin: 2mm" href="{% if each.machine.about_link %} {{ each.machine.about_link }} {% else %} https://wiki.ideashop.iit.edu/index.php?title=Main_Page {% endif %}" target="_blank" role="button"><h5>About this training</h5></a>
-                                        </div>
+    <div class="container-fluid">
+        <div class="justify-content-center">
+{# Available trainings area #}
+            <div class="card">
+                <h4 class="card-header">
+                    <a class="d-block" data-toggle="collapse" href="#available_trainings" aria-expanded="true" aria-controls="collapse-available" id="heading-available">
+                        Available Trainings
+                        <i class="fa fa-chevron-down float-right"></i>
+                    </a>
+                </h4>
+                <div id="available_trainings" class="collapse show" aria-labelledby="heading-available">
+                {% set display_no_available = true %}
+                {% for each in trainings %}
+                    {% if each.quiz_available() %}
+                        {% set display_no_available = false %}
+                        <div class="card card-spaced-2">
+                            <h5 class="card-header">{{ each.machine.quiz.name  }}</h5>
+                            <div class="card-body">
+                                <h5 class="card-title">Location: {{ each.machine.location.name  }}</h5>
+                                {% if each.quiz_attempts >=1 %}
+                                    <p class="card-subtitle">Last Taken: {{each.quiz_date.strftime('%Y-%m-%d at %I:%M%p')}}</p>
+                                    <div class="progress" style="margin: 2mm">
+                                        <div class="progress-bar" role="progressbar" style="width: {{ each.quiz_score }}%" final_width="{{ each.quiz_score }}">{{ each.quiz_score|int }}%</div>
                                     </div>
                                 {% endif %}
-                            {% endfor %}
-                            {% if available_count == 0 %}
-                                <h5>Nothing to see here! If you just completed a video, please check back in a week to see your quiz</h5>
-                            {% endif %}
-
+                                <a class="btn btn-primary btn-training-card" href="{{ url_for('quiz', training_id=each.id)}}" role="button">
+                                Take the Quiz </a>
+                                <a class="btn btn-info active btn-training-card" href="
+                                {% if each.machine.about_link %} {{ each.machine.about_link }}
+                                    {% else %} https://wiki.ideashop.iit.edu/index.php?title=Main_Page
+                                {% endif %}"
+                                target="_blank" role="button">About this training</a>
+                                {% if each.quiz_attempts >=1 %}
+                                    <button type="button" class="btn btn-secondary btn-training-card" data-toggle="modal" data-target="#{{ each.machine.quiz.name }}Modal">Show Details</button>
+                                {% endif %}
+                            </div>
                         </div>
-                    </div>
-                    <div class="card card-spaced-2">
-                        <h4 class="card-header">
-                            <a class="collapsed d-block" data-toggle="collapse" href="#collapse-completed" aria-expanded="true" aria-controls="collapse-completed" id="heading-completed">
-                                Completed Trainings
-                                <i class="fa fa-chevron-down float-right"></i>
-                            </a>
-                        </h4>
+                    {% endif %}
+                    {% if loop.last %}
+                        {% if display_no_available %}
+                            <h5>Nothing to see here! If you just completed a video, please check back in a week to see your quiz</h5>
+                        {% endif %}
+                    {% endif %}
+                {% endfor %}
 
-                        <div id="collapse-completed" class="collapse" aria-labelledby="heading-collapsed">
-                        {% for each in trainings %}
-                            {% if each.quiz_passed() %}
-                                <div class="card card-spaced-2">
-                                    <h5 class="card-header">Topic: {{ each.machine.quiz.name }}</h5>
-                                    <div class="card-body">
-                                        <h5 class="card-title">Location: {{ each.machine.location.name  }}</h5>
-                                        <div class="progress" style="margin: 2mm">
-                                            <div class="progress-bar" role="progressbar" final_width="{{ each.quiz_score }}"></div>
-                                        </div>
-                                        <button type="button" class="btn-secondary btn-sm float-right" data-toggle="modal" data-target="#{{ each.machine.quiz.name }}Modal">Show Details</button>
-                                        <a class="btn btn-sm btn-info active" style="margin: 2mm" href="{% if each.machine.about_link %} {{ each.machine.about_link }} {% else %} https://wiki.ideashop.iit.edu/index.php?title=Main_Page {% endif %}" target="_blank" role="button"><h5>About this training</h5></a>
-                                    </div>
-                                </div>
-                            {% endif %}
-                        {% endfor %}
-                        </div>
-                    </div>
 
-                <!-- Generate Modals for each training quiz -->
+                </div>
+            </div>
+{# Completed Trainings area #}
+            <div class="card" style="margin-top: 4mm;">
+                <h4 class="card-header">
+                    <a class="collapsed d-block" data-toggle="collapse" href="#completed_trainings" aria-expanded="true" aria-controls="collapse-completed" id="heading-completed">
+                        Completed Trainings
+                        <i class="fa fa-chevron-down float-right"></i>
+                    </a>
+                </h4>
+
+                <div id="completed_trainings" class="collapse"  aria-labelledby="heading-collapsed">
                 {% for each in trainings %}
-                    {% if (each.quiz_available or each.quiz_passed()) %}
-                        <div class="modal fade" id="{{ each.machine.quiz.name }}Modal" tabindex="-1" role="dialog" aria-labelledby="{{ each.machine.quiz.name }}Modal" aria-hidden="true">
-                            <div class="modal-dialog" role="document">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title" id="{{ each.machine.quiz.name }}ModalLabel">{{ each.machine.quiz.name }} Details</h5>
-                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                            <span aria-hidden="true">&times;</span>
-                                        </button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <p>Date Taken: {{ each.quiz_date }}</p>
-                                        <p>Quiz Score: {{ each.quiz_score }}</p>
-                                        <p>Attempt Count: {{ each.quiz_attempts }}</p>
-                                        <p>Trained by: {{ each.trainer.name }}</p>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                    </div>
+                    {% if each.quiz_passed() %}
+                        <div class="card card-spaced-2">
+                            <h5 class="card-header">Topic: {{ each.machine.quiz.name }}<i class="bi bi-check-square-fill float-right" style="color: green"></i></h5>
+                            <div class="card-body">
+                                <h5 class="card-title">Location: {{ each.machine.location.name  }}</h5>
+                                <div class="progress" style="margin: 2mm">
+                                    <div class="progress-bar" role="progressbar" style="width: {{ each.quiz_score }}%" final_width="{{ each.quiz_score }}">{{ each.quiz_score|int }}%</div>
                                 </div>
+                                <a class="btn btn-info active btn-training-card" href="
+                                    {% if each.machine.about_link %}
+                                        {{ each.machine.about_link }}
+                                    {% else %} https://wiki.ideashop.iit.edu/index.php?title=Main_Page
+                                {% endif %}"
+                                target="_blank" role="button">About this training</a>
+                                <button type="button" class="btn btn-secondary btn-training-card" data-toggle="modal" data-target="#{{ each.machine.quiz.name }}Modal">Show Details</button>
                             </div>
                         </div>
                     {% endif %}
                 {% endfor %}
-
+                </div>
             </div>
 
-
+{# Generate Modals for each training quiz #}
+            {% for each in trainings %}
+                {% if ((each.quiz_available and (each.quiz_attempts|int >= 1)) or each.quiz_passed()) %}
+                    <div class="modal fade" id="{{ each.machine.quiz.name }}Modal" tabindex="-1" role="dialog" aria-labelledby="{{ each.machine.quiz.name }}Modal" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="{{ each.machine.quiz.name }}ModalLabel">{{ each.machine.quiz.name }} Details</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <p>Date Taken: {{each.quiz_date.strftime('%Y-%m-%d at %I:%M%p')}}</p>
+                                    <p>Quiz Score: {{ each.quiz_score|int }}%</p>
+                                    <p>Attempt Count: {{ each.quiz_attempts }}</p>
+                                    <p>Trained by: {{ each.trainer.name }}</p>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+            {% endfor %}
         </div>
+    </div>
     {% else %}
         <div class="card-header">
             No quizzes available
