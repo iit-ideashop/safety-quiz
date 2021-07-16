@@ -22,7 +22,7 @@
         <div class="row flex-row card-spaced-2">
             {% for each in energizers %}
             <div class="card card-spaced-2">
-                <div class="card-header">
+                <div class="card-header machine-card" status="{{ each.status|string }}">
                     <h4>{{ each.name }}<i id="{{ each.name }}icon" class="bi float-right
                     {% if each.status|string == "machineStatus.idle" %}
                     bi-gear-fill
@@ -35,7 +35,6 @@
                     {% endif %}
                      "></i></h4>
                 </div>
-
                 <div class="card-body">
                     <p>Status:
                     {% if each.status|string == "machineStatus.idle" %}
@@ -60,7 +59,26 @@
     <div class="card" style="margin: 4mm">
         <h3 class="card-header">Historical User Activity Graph</h3>
     </div>
+    <script>
+        var machine_cards = document.getElementsByClassName("machine-card")
+        for (card of machine_cards){
+            switch (card.getAttribute("status")){
+                case "machineStatus.offline":
+                    card.style.background = "lightcoral"
+                    break;
+                case "machineStatus.in_use":
+                    card.style.background = "goldenrod"
+                    break;
+                case "machineStatus.idle":
+                    card.style.background = "lightgreen"
+                    break;
+                default:
+                    card.style.background = "lightcyan"
 
+            }
+
+        }
+    </script>
 {% block admin %}
 {% endblock %}
 {% endblock %}
