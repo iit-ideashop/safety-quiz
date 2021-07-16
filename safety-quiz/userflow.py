@@ -52,21 +52,17 @@ def training_interface():
     # For Locked and available
     locked_query = db.query(Machine).outerjoin(Training).filter(Training.trainee_id == session['sid']) \
         .filter(Machine.parent_id != None).all()
-    print(locked_query)
-    print(type(locked_query))
+
 
     for i in locked_query:
-        print(i.parent_id)
-        print(type(i.parent_id))
+
         search_if_complete = db.query(Machine).outerjoin(Training).filter(Training.trainee_id == session['sid']) \
             .filter(Machine.parent_id != None).filter(Training.machine_id == i.parent_id) \
             .filter(Training.quiz_score != passing_score).all()
-        print(search_if_complete)
         if search_if_complete != None:
             locked_list.append(i)
         else:
             available_list.append(i)
-    print(locked_list)
 
     return render_template('trainings.html', completed=completed_list, in_progress=in_progress_list,
                            available=available_list, locked=locked_list)
