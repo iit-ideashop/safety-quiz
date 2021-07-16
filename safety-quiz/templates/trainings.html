@@ -42,6 +42,19 @@
                                         <div class="progress-bar" role="progressbar" style="width: {{ each.quiz_score }}%" final_width="{{ each.quiz_score }}">{{ each.quiz_score|int }}%</div>
                                     </div>
                                 {% endif %}
+
+                                <div class="dropdown">
+                                    <button class="btn btn-primary btn-training-card dropdown-toggle" type="button" id="{{ each.machine.quiz.name }}AvailableDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        Training Videos
+                                    </button>
+                                    <div class="dropdown-menu" aria-labelledby="{{ each.machine.quiz.name }}AvailableDropdown">
+                                        {% set videoList = each.machine.video_id.split(',') %}
+                                        {% for video in videoList %}
+                                        <a class="dropdown-item" href="/safety/video/{{ video }}">Training video {{ video }}</a>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+
                                 <a class="btn btn-primary btn-training-card" href="{{ url_for('quiz', training_id=each.id)}}" role="button">
                                 Take the Quiz </a>
                                 <a class="btn btn-info active btn-training-card" href="
