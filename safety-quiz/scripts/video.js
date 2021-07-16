@@ -47,8 +47,8 @@ console.log(elem)
                     var form = document.createElement('form');
                     document.body.appendChild(form);
                     form.method = 'post';
-                    form.action = "{{ url_for('video.COVID') }}";
-                    var input = document.createElement('input');
+                    form.action = '/safety/video';
+                    var input = document.createElement('sid');
                     input.type = 'hidden';
                     input.name = 'sid';
                     input.value = { session:['sid'] };

@@ -19,11 +19,14 @@ def safety(video_id):
         video_time_seconds=video_object.length
         print(video_object.filepath)
         return render_template('safety_video.html', youtube_id=str(video_object.filepath), video_time_seconds=int(video_time_seconds))
-    elif request.method == 'POST':
-        db = g.db_session()
-        print(request.form['sid'])
-        db.add(Training(trainee_id=int(request.form['sid']), trainer_id=20000000, machine_id=9, date=sa.func.now()))
-        db.commit()
-        flash("Thank you for participating in the Assembly Area Fall 2020 COVID training. Your verification quiz will be available on this site in one week. \
-            You can re-watch the video at any time by visiting https://wiki.ideashop.iit.edu/index.php?title=Safety_Training",'success')
-        return render_template('layout.html')
+
+
+@video.route('/video', methods=['POST'])
+def return_safety():
+    db = g.db_session()
+    print(request.form['sid'])
+    db.add(Training(trainee_id=int(request.form['sid']), trainer_id=20000000, machine_id=9, date=sa.func.now()))
+    db.commit()
+    flash("Thank you for participating in the Assembly Area Fall 2020 COVID training. Your verification quiz will be available on this site in one week. \
+        You can re-watch the video at any time by visiting https://wiki.ideashop.iit.edu/index.php?title=Safety_Training",'success')
+    return render_template('public.layout.html')
