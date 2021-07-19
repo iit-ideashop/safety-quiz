@@ -50,7 +50,7 @@
                                     <div class="dropdown-menu" aria-labelledby="{{ each.machine.quiz.name }}AvailableDropdown">
                                         {% set videoList = each.machine.video_id.split(',') %}
                                         {% for video in videoList %}
-                                        <a class="dropdown-item" href="/safety/video/{{ video }}">Training video {{ video }}</a>
+                                        <a class="dropdown-item" href="/safety/video/{{ each.machine.id }}/{{ video }}">Training video {{ video }}</a>
                                         {% endfor %}
                                     </div>
                                 </div>
