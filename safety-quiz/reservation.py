@@ -8,7 +8,7 @@ from flask import request, session, redirect, url_for, render_template, flash, j
 import sqlalchemy as sa
 from flask import current_app
 #import reservation
-from checkIn.model import User, UserLocation, Type, Training, Machine, Quiz, Question, Option, MissedQuestion, init_db, Major, College, HawkCard
+from checkIn.models import User, UserLocation, Type, Training, Machine, Quiz, Question, Option, MissedQuestion, init_db, Major, College, HawkCard
 
 reservation_bp = Blueprint('reservation', __name__)
 

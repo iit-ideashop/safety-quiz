@@ -32,34 +32,36 @@ def training_interface():
     Available: Machines for which user has no training objects"""
 
     db = g.db_session()
-    passing_score = 100.00
     completed_list = []
     in_progress_list = []
     locked_list = []
     available_list = []
 
     # For Completed and In-progress
-    overall_training = db.query(Training).outerjoin(Machine).filter(Training.trainee_id == session['sid']) \
-        .filter(Training.quiz_score == passing_score).filter(Training.invalidation_date == None) \
-        .filter(Training.in_person_date is not None).all()
-
+    overall_training = db.query(Training).outerjoin(Machine).filter(Training.trainee_id == 20313392) \
+        .filter(Training.invalidation_date == None).filter(Training.in_person_date is not None).all()
     for training in overall_training:
-        if Training.completed(training):
-            completed_list.append(training.machine.name)
+        if training.completed():
+            completed_list.append(training)
         else:
-            in_progress_list.append(training.machine.name)
+            in_progress_list.append(training)
 
     # For Locked and available
-    locked_query = db.query(Machine).outerjoin(Training).filter(Training.trainee_id == session['sid']) \
+    locked_query = db.query(Machine).outerjoin(Training).filter(Training.trainee_id == 20313392) \
         .filter(Machine.parent_id != None).all()
+    print(locked_query)
 
-
+    completed_machine_ids = list()
+    for completed in completed_list:
+        completed_machine_ids.append(completed.machine_id)
     for i in locked_query:
-
-        search_if_complete = db.query(Machine).outerjoin(Training).filter(Training.trainee_id == session['sid']) \
-            .filter(Machine.parent_id != None).filter(Training.machine_id == i.parent_id) \
-            .filter(Training.quiz_score != passing_score).all()
-        if search_if_complete != None:
+        parents_id = i.parent_id[1:-1].split(",")
+        locked_flag = False
+        for j in parents_id:
+            if int(j) not in completed_machine_ids:
+                locked_flag = True
+                break
+        if locked_flag:
             locked_list.append(i)
         else:
             available_list.append(i)

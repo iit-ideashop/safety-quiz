@@ -1,5 +1,0 @@
-DB=''
-SECRET_KEY='this is really, really secret'
-PORT=''
-DB_RESERVATION=''
-ALLOW_RESERVATIONS=''

@@ -2,7 +2,7 @@
 #imports
 from flask import Flask, render_template
 from flask_mail import Mail, Message
-from checkIn.model import db_session, User, Training, Machine, init_db
+from checkIn.models import db_session, User, Training, Machine, init_db
 from datetime import datetime, date, timedelta
 
 app = Flask(__name__)

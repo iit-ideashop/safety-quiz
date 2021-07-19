@@ -5,7 +5,7 @@ import google_auth_oauthlib.flow
 import googleapiclient.discovery
 from flask import Blueprint
 
-from checkIn.model import User, UserLocation, Type
+from checkIn.models import User, UserLocation, Type
 
 # This variable specifies the name of a file that contains the OAuth 2.0
 # information for this application, including its client_id and client_secret.
