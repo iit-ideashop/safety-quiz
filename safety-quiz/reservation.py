@@ -200,17 +200,3 @@ def view_reservations():
     reservations = db.query(Reservations).filter(Reservations.start > start).filter(Reservations.end < end).order_by(Reservations.start.asc()).all()
     return render_template('view_reservations.html', reservations=reservations)
 
-@reservation_bp.route('/api/machine_access', methods=['POST'])
-def get_machine_access():
-    if not request.form or not all(items in request.form.keys() for items in ['machine_name', 'machine_id']):
-        return jsonify({'response': 'Invalid request.'})
-    machine_id = int(request.form['machine_id'])
-    machine_name = request.form['machine_name']
-    db = db_session()
-    machine = db.query(Machine).filter_by(id=machine_id).one_or_none()
-    if machine and machine.name != machine_name:
-        return jsonify({'response': 'Invalid request.'})
-    sid_list = [item[0] for item in db.query(Training.trainee_id).filter_by(machine_id=machine_id).filter_by(invalidation_date=None)\
-        .filter_by(quiz_score=100.0).all()]
-    access_list = db.query(HawkCard).filter(HawkCard.sid.in_(sid_list)).all()
-    return jsonify({'response': 'Request Successful', 'users':[{'sid': card.sid, 'name': card.user.name, 'facility': card.facility, 'card_number': card.card} for card in access_list]})

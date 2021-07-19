@@ -5,16 +5,25 @@
 {%  endblock %}
 {% block page %}
     <!-- 1. The <iframe> (and video player) will replace this <div> tag. -->
-    <div style="text-align: center;">
-        <div id="player"></div>
-    </div>
-    <div>
+    <div class="container" style="text-align: center;">
+        <div class="container covid-instruction">
         <h3>Video Instructions</h3>
-        Pausing the video will stop this timer.
-        Leaving this window will pause the timer.
-        Fast forwarding through the video is not permitted.
-        <h1><div style="text-align: center" id="countdown">Time</div>&nbsp;Remaining</h1>
+        <p>Pausing the video will stop your progress.
+        Leaving this window will pause your.
+            Fast forwarding through the video is not permitted.</p>
+        </div>
+    <div class="container">
+        <div id="player" style="padding-bottom: 1rem;"  ></div>
     </div>
+
+    <div class="container">
+        <div class="video-bar">
+            <div class="video-bar-progress"></div>
+        </div>
+    </div>
+
+    </div>
+
 {% endblock %}
 {%  block scripts %}
     {{ super() }}
@@ -31,6 +40,14 @@
             width: '75%',
             height: '500px',
             videoId: '{{ youtube_id }}',
+            playerVars: {
+                'controls': 0,
+                'cc_lang_pref': 1,
+                'cc_load_policy': 1,
+                'disablekb': 1,
+                'rel': 0,
+                'modestbranding': 1,
+            },
             events: {
                 'onStateChange': onPlayerStateChange
             }
@@ -59,7 +76,7 @@
                     var form = document.createElement('form');
                     document.body.appendChild(form);
                     form.method = 'post';
-                    form.action = "{{ url_for('covid.COVID') }}";
+                    form.action = "{{ url_for('video.COVID') }}";
                     var input = document.createElement('input');
                     input.type = 'hidden';
                     input.name = 'sid';

@@ -12,13 +12,55 @@
 .card-header .collapsed .fa {
   transform: rotate(90deg);
 }
-
-.progress-bar {
-    color: #009ED1
+.btn-training-card {
+    margin-left: 2mm;
+    margin-right: 2mm;
+    margin-top: .5mm;
+    margin-bottom: .5mm;
 }
 
+/*provide spin animation for icons*/
+.spin {
+    -webkit-animation:spin 4s linear infinite;
+    -moz-animation:spin 4s linear infinite;
+    animation:spin 4s linear infinite;
+}
+
+@-moz-keyframes spin { 100% { -moz-transform: rotate(360deg); } }
+@-webkit-keyframes spin { 100% { -webkit-transform: rotate(360deg); } }
+@keyframes spin { 100% { -webkit-transform: rotate(360deg); transform:rotate(360deg); } }
+
+/*change the text color for progress bar labels*/
+.progress-bar {
+    color: white;
+}
+
+/*control gradient for navbar seen on all pages*/
 .navbar {
     background: rgb(255,255,255);
-background: linear-gradient(90deg, rgba(0,158,209,0.75) 0%, rgba(0,158,209,0.35) 70%, rgba(88,56,149,1) 100%);
+background: linear-gradient(90deg, rgba(0,158,209,0.75) 0%, rgba(0,158,209,0.75) 70%, rgba(88,56,149,1) 100%);
 
 }
+
+/*-------Covid_video styles--------*/
+.covid-instruction {
+    padding-bottom: 1.875rem;
+    font-size: 1.25rem;
+   /* line-height: .0625rem;*/
+    white-space: normal;
+}
+.video-bar {
+    /*border: 1px solid red;*/
+    width: 100%;
+    height: 3vh;
+    border-radius: .625rem;
+    background-color: rgba(200, 200, 200, 0.87);
+}
+
+.video-bar-progress {
+    height: 3vh;
+    width: 10%;
+    border-radius: .625rem;
+    background-color: rgba(68, 184, 221, 0.99);
+}
+
