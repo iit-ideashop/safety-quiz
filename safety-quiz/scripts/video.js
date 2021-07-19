@@ -47,7 +47,7 @@ console.log(elem)
                     var form = document.createElement('form');
                     document.body.appendChild(form);
                     form.method = 'post';
-                    form.action = '/safety/video';
+                    form.action = '';
                     var input = document.createElement('sid');
                     input.type = 'hidden';
                     input.name = 'sid';
