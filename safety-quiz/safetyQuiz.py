@@ -18,7 +18,7 @@ import googleapiclient.discovery
 import requests
 from flask import current_app
 
-from checkIn.models import User, UserLocation, Type, Access, Location, Training, Machine, Quiz, Question, Option, MissedQuestion, init_db, Major, College, HawkCard
+from checkIn.model import User, UserLocation, Type, Access, Location, Training, Machine, Quiz, Question, Option, MissedQuestion, init_db, Major, College, HawkCard
 #from reservation import ReservationType, ReservationWindow, Reservations, HasRemoveMethod, init_reservation_db
 # blueprintname.route not app.route
 from covid import covid
