@@ -26,10 +26,24 @@ background: linear-gradient(90deg, rgba(0,158,209,0.75) 0%, rgba(0,158,209,0.35)
     color: white;
 
 }
-
-.card-effect {
-
+.container-full-width {
+    padding-left: 0;
+    padding-right: 0;
 }
+.card-custom {
+    margin: 2mm;
+    background-color:#eff0f0;
+    cursor:default;
+    transition: 0.3s;
+}
+
+@media (hover: hover)  {
+    .card-custom:hover {
+    background-color: white;
+    box-shadow: 5px 5px 4px #d8dde0;
+}
+}
+
 
 /*svg path {*/
 /*    stroke-dasharray: 1000;*/
