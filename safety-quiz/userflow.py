@@ -38,8 +38,8 @@ def training_interface():
     available_list = []
 
     # For Completed and In-progress
-    overall_training = db.query(Training).outerjoin(Machine).filter(Training.trainee_id == 20313392) \
-        .filter(Training.invalidation_date == None).filter(Training.in_person_date is not None).all()
+    overall_training = db.query(Training).outerjoin(Machine).filter(Training.trainee_id == session['sid']) \
+        .filter(Training.invalidation_date == None).all()
     for training in overall_training:
         if training.completed():
             completed_list.append(training)
@@ -47,9 +47,8 @@ def training_interface():
             in_progress_list.append(training)
 
     # For Locked and available
-    locked_query = db.query(Machine).outerjoin(Training).filter(Training.trainee_id == 20313392) \
+    locked_query = db.query(Machine).outerjoin(Training).filter(Training.trainee_id == session['sid']) \
         .filter(Machine.parent_id != None).all()
-    print(locked_query)
 
     completed_machine_ids = list()
     for completed in completed_list:
