@@ -52,7 +52,7 @@
     </nav>
 {% endblock %}
 {% block content %}
-    <div class="container-fluid" style="padding:2em">
+    <div class="container-fluid container-full-width">
         {% with messages = get_flashed_messages(with_categories=True) %}
             {% for category, message in messages %}
                 <div class="alert {% if category %}alert-{{ category }}{% endif %} alert-dismissible" role="alert">
