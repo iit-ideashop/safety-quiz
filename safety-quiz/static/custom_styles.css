@@ -1,0 +1,44 @@
+.card-spaced-2 {
+    margin: 2mm;
+}
+.card-spaced-4 {
+    margin: 4mm;
+}
+
+.card-header .fa {
+  transition: .3s transform ease-in-out;
+}
+.card-header .collapsed .fa {
+  transform: rotate(90deg);
+}
+
+.progress-bar {
+    color: #009ED1
+}
+
+.navbar {
+    background: rgb(255,255,255);
+background: linear-gradient(90deg, rgba(0,158,209,0.75) 0%, rgba(0,158,209,0.35) 70%, rgba(88,56,149,1) 100%);
+
+}
+
+.navbar-brand,.nav-item {
+    color: white;
+
+}
+
+.card-effect {
+
+}
+
+/*svg path {*/
+/*    stroke-dasharray: 1000;*/
+/*    stroke-dashoffset: 1000;*/
+/*    animation: dash 5s linear forwards;*/
+/*    color: red;*/
+/*}*/
+/*@keyframes dash {*/
+/*    to {*/
+/*        stroke-dashoffset: 0;*/
+/*    }*/
+/*}*/
