@@ -43,8 +43,11 @@ def training_interface():
     for training in overall_training:
         if training.completed():
             completed_list.append(training)
+            print("added to completed: ", training)
         else:
             in_progress_list.append(training)
+            print("added to in_progress: ", training)
+
 
     # For Locked and available
     locked_query = db.query(Machine).outerjoin(Training).filter(Training.trainee_id == session['sid']) \
@@ -65,5 +68,7 @@ def training_interface():
         else:
             available_list.append(i)
 
-    return render_template('trainings.html', completed=completed_list, in_progress=in_progress_list,
+    machine_video_ids = Machine.getMachineVideoIds()
+
+    return render_template('trainings.html', machine_video_ids=machine_video_ids, completed=completed_list, in_progress=in_progress_list,
                            available=available_list, locked=locked_list)
