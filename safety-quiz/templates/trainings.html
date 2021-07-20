@@ -36,12 +36,27 @@
                             <h5 class="card-header">{{ each.machine.quiz.name  }}</h5>
                             <div class="card-body">
                                 <h5 class="card-title">Location: {{ each.machine.location.name  }}</h5>
-                                {% if each.quiz_attempts >=1 %}
-                                    <p class="card-subtitle">Last Taken: {{each.quiz_date.strftime('%Y-%m-%d at %I:%M%p')}}</p>
-                                    <div class="progress" style="margin: 2mm">
-                                        <div class="progress-bar" role="progressbar" style="width: {{ each.quiz_score }}%" final_width="{{ each.quiz_score }}">{{ each.quiz_score|int }}%</div>
-                                    </div>
+                                {% if each.quiz_attempts is not none %}
+                                    {% if each.quiz_attempts >=1 %}
+                                        <p class="card-subtitle">Last Taken: {{each.quiz_date.strftime('%Y-%m-%d at %I:%M%p')}}</p>
+                                        <div class="progress" style="margin: 2mm">
+                                            <div class="progress-bar" role="progressbar" style="width: {{ each.quiz_score }}%" final_width="{{ each.quiz_score }}">{{ each.quiz_score|int }}%</div>
+                                        </div>
+                                    {% endif %}
                                 {% endif %}
+
+                                <div class="dropdown">
+                                    <button class="btn btn-primary btn-training-card dropdown-toggle" type="button" id="{{ each.machine.quiz.name }}AvailableDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        Training Videos
+                                    </button>
+                                    <div class="dropdown-menu" aria-labelledby="{{ each.machine.quiz.name }}AvailableDropdown">
+                                        {% set videoList = each.machine.video_id.split(',') %}
+                                        {% for video in videoList %}
+                                        <a class="dropdown-item" href="/safety/video/{{ each.machine.id }}/{{ video }}">Training video {{ video }}</a>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+
                                 <a class="btn btn-primary btn-training-card" href="{{ url_for('quiz', training_id=each.id)}}" role="button">
                                 Take the Quiz </a>
                                 <a class="btn btn-info active btn-training-card" href="
@@ -49,8 +64,10 @@
                                     {% else %} https://wiki.ideashop.iit.edu/index.php?title=Main_Page
                                 {% endif %}"
                                 target="_blank" role="button">About this training</a>
-                                {% if each.quiz_attempts >=1 %}
-                                    <button type="button" class="btn btn-secondary btn-training-card" data-toggle="modal" data-target="#{{ each.machine.quiz.name }}Modal">Show Details</button>
+                                {% if each.quiz_attempts is not none %}
+                                    {% if each.quiz_attempts >=1 %}
+                                        <button type="button" class="btn btn-secondary btn-training-card" data-toggle="modal" data-target="#{{ each.machine.quiz.name }}Modal">Show Details</button>
+                                    {% endif %}
                                 {% endif %}
                             </div>
                         </div>
@@ -100,7 +117,7 @@
 
 {# Generate Modals for each training quiz #}
             {% for each in trainings %}
-                {% if ((each.quiz_available and (each.quiz_attempts|int >= 1)) or each.quiz_passed()) %}
+                {% if (each.quiz_attempts is not none) or each.quiz_passed() %}
                     <div class="modal fade" id="{{ each.machine.quiz.name }}Modal" tabindex="-1" role="dialog" aria-labelledby="{{ each.machine.quiz.name }}Modal" aria-hidden="true">
                         <div class="modal-dialog" role="document">
                             <div class="modal-content">

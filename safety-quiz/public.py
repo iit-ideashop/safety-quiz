@@ -15,7 +15,7 @@ def index():
 def welcome():
     return render_template('welcome.html')
 
-@public.route('/shop_status', methods=['GET','POST'])
+@public.route('/shop_status', methods=['GET'])
 def shop_status():
     db = g.db_session()
     user_count = db.query(Location.id, Location.name, Location.staff_ratio).all()
@@ -30,9 +30,6 @@ def shop_status():
 
     if request.method =='GET':
         return render_template('shop_status.html', user_count=user_count, in_lab=in_lab, energizers = energizers)
-    elif request.method == 'POST':
-        response = app.make_response('<h1>Not yet implemented!</h1>'), 418
-        return response
 
 @public.route('/scripts/custom_styles.css')
 def custom_css():
@@ -41,3 +38,7 @@ def custom_css():
 @public.route('/scripts/animations.js')
 def animation_js():
     return send_from_directory('scripts', 'animations.js')
+
+@public.route('/scripts/video.js')
+def video_js():
+   return send_from_directory('scripts', 'video.js')
