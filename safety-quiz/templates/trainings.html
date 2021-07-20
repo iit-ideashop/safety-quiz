@@ -16,7 +16,7 @@
 </div>
 
     {#  If student has trainings available, generate trainings portion of webpage  #}
-    {% if in_progress or completed or locked %}
+    {% if in_progress or completed or locked or available %}
     <div class="container-fluid">
         <div class="justify-content-center">
 {# Available trainings area #}
@@ -43,31 +43,32 @@
                                         </div>
                                     {% endif %}
                                 {% endif %}
-
-                                <div class="dropdown">
-                                    <button class="btn btn-primary btn-training-card dropdown-toggle" type="button" id="{{ each.machine.quiz.name }}AvailableDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                        Training Videos
-                                    </button>
-                                    <div class="dropdown-menu" aria-labelledby="{{ each.machine.quiz.name }}AvailableDropdown">
-                                        {% set videoList = machine_video_ids[each.machine.id] %}
-                                        {% for video in videoList %}
-                                        <a class="dropdown-item" href="/safety/video/{{ each.machine.id }}/{{ video }}">Training video {{ video }}</a>
-                                        {% endfor %}
+                                <div class="flex-row">
+                                    <div class="dropdown btn">
+                                        <button class="btn btn-primary btn-training-card dropdown-toggle" type="button" id="{{ each.machine.quiz.name }}AvailableDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            Training Videos
+                                        </button>
+                                        <div class="dropdown-menu" aria-labelledby="{{ each.machine.quiz.name }}AvailableDropdown">
+                                            {% set videoList = machine_video_ids[each.machine.id] %}
+                                            {% for video in videoList %}
+                                            <a class="dropdown-item" href="/safety/video/{{ each.machine.id }}/{{ video }}">Training video {{ video }}</a>
+                                            {% endfor %}
+                                        </div>
                                     </div>
-                                </div>
 
-                                <a class="btn btn-primary btn-training-card" href="{{ url_for('quiz', training_id=each.id)}}" role="button">
-                                Take the Quiz </a>
-                                <a class="btn btn-info active btn-training-card" href="
-                                {% if each.machine.about_link %} {{ each.machine.about_link }}
-                                    {% else %} https://wiki.ideashop.iit.edu/index.php?title=Main_Page
-                                {% endif %}"
-                                target="_blank" role="button">About this training</a>
-                                {% if each.quiz_attempts is not none %}
-                                    {% if each.quiz_attempts >=1 %}
-                                        <button type="button" class="btn btn-secondary btn-training-card" data-toggle="modal" data-target="#{{ each.machine.quiz.name }}Modal">Show Details</button>
+                                    <a class="btn btn-primary btn-training-card" href="{{ url_for('quiz', training_id=each.id)}}" role="button">
+                                    Take the Quiz </a>
+                                    <a class="btn btn-info active btn-training-card" href="
+                                    {% if each.machine.about_link %} {{ each.machine.about_link }}
+                                        {% else %} https://wiki.ideashop.iit.edu/index.php?title=Main_Page
+                                    {% endif %}"
+                                    target="_blank" role="button">About this training</a>
+                                    {% if each.quiz_attempts is not none %}
+                                        {% if each.quiz_attempts >=1 %}
+                                            <button type="button" class="btn btn-secondary btn-training-card" data-toggle="modal" data-target="#{{ each.machine.quiz.name }}Modal">Show Details</button>
+                                        {% endif %}
                                     {% endif %}
-                                {% endif %}
+                                </div>
                             </div>
                         </div>
                     {% if loop.last %}
@@ -98,32 +99,54 @@
                             <div class="progress" style="margin: 2mm">
                                 <div class="progress-bar" role="progressbar" style="width: {{ each.quiz_score }}%" final_width="{{ each.quiz_score }}">{{ each.quiz_score|int }}%</div>
                             </div>
-                            <div class="dropdown">
-                                <button class="btn btn-primary btn-training-card dropdown-toggle" type="button" id="{{ each.machine.quiz.name }}AvailableDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    Training Videos
-                                </button>
-                                <div class="dropdown-menu" aria-labelledby="{{ each.machine.quiz.name }}AvailableDropdown">
-                                    {% set videoList = machine_video_ids[each.machine.id] %}
-                                    {% for video in videoList %}
-                                    <a class="dropdown-item" href="/safety/video/{{ each.machine.id }}/{{ video }}">Training video {{ video }}</a>
-                                    {% endfor %}
+                            <div class="flex-row row">
+                                <div class="dropdown">
+                                    <button class="btn btn-primary btn-training-card dropdown-toggle" type="button" id="{{ each.machine.quiz.name }}AvailableDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        Training Videos
+                                    </button>
+                                    <div class="dropdown-menu" aria-labelledby="{{ each.machine.quiz.name }}AvailableDropdown">
+                                        {% set videoList = machine_video_ids[each.machine.id] %}
+                                        {% for video in videoList %}
+                                        <a class="dropdown-item" href="/safety/video/{{ each.machine.id }}/{{ video }}">Training video {{ video }}</a>
+                                        {% endfor %}
+                                    </div>
                                 </div>
+                                <a class="btn btn-info active btn-training-card" href="
+                                    {% if each.machine.about_link %}
+                                        {{ each.machine.about_link }}
+                                    {% else %} https://wiki.ideashop.iit.edu/index.php?title=Main_Page
+                                {% endif %}"
+                                target="_blank" role="button">About this training</a>
+                                <button type="button" class="btn btn-secondary btn-training-card" data-toggle="modal" data-target="#{{ each.machine.quiz.name }}Modal">Show Details</button>
                             </div>
-                            <a class="btn btn-info active btn-training-card" href="
-                                {% if each.machine.about_link %}
-                                    {{ each.machine.about_link }}
-                                {% else %} https://wiki.ideashop.iit.edu/index.php?title=Main_Page
-                            {% endif %}"
-                            target="_blank" role="button">About this training</a>
-                            <button type="button" class="btn btn-secondary btn-training-card" data-toggle="modal" data-target="#{{ each.machine.quiz.name }}Modal">Show Details</button>
                         </div>
                     </div>
                 {% endfor %}
                 </div>
             </div>
+{#Locked Trainings area #}
+            <div class="card" style="margin-top: 4mm;">
+                <h4 class="card-header">
+                    <a class="collapsed d-block" data-toggle="collapse" href="#locked_trainings" aria-expanded="true" aria-controls="collapse-completed" id="heading-completed">
+                        Locked Trainings
+                        <i class="fa fa-chevron-down float-right"></i>
+                    </a>
+                </h4>
+
+                <div id="locked_trainings" class="collapse"  aria-labelledby="heading-collapsed">
+                {% for each in locked %}
+                    <div class="card card-spaced-2">
+                        <h5 class="card-header">Topic: {{ each.name }}<i class="bi bi-lock-fill float-right" style="color: green"></i></h5>
+
+
+                    </div>
+                {% endfor %}
+                </div>
+            </div>
+
 
 {# Generate Modals for each training quiz #}
-            {% for each in (in_progress and completed) %}
+            {% for each in (in_progress or completed) %}
                 {% if (each.quiz_attempts is not none) or each.quiz_passed() %}
                     <div class="modal fade" id="{{ each.machine.quiz.name }}Modal" tabindex="-1" role="dialog" aria-labelledby="{{ each.machine.quiz.name }}Modal" aria-hidden="true">
                         <div class="modal-dialog" role="document">
