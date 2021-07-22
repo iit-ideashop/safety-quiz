@@ -33,8 +33,10 @@ background: linear-gradient(90deg, rgba(0,158,209,0.75) 0%, rgba(0,158,209,0.35)
 .card-custom {
     margin: 2mm;
     background-color:#eff0f0;
+    border-radius: .75rem;
     cursor:default;
     transition: 0.3s;
+    border: none;
 }
 
 @media (hover: hover)  {
