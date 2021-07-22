@@ -86,4 +86,24 @@ background: linear-gradient(90deg, rgba(0,158,209,0.75) 0%, rgba(0,158,209,0.75)
   position: relative;
   transition: width 1s linear;
 }
+/* Landing Page Styles */
+.container-full-width {
+    padding-left: 0;
+    padding-right: 0;
+}
+.card-custom {
+    margin: 2mm;
+    background-color:#eff0f0;
+    border-radius: .75rem;
+    cursor:default;
+    transition: 0.3s;
+    border: none;
+}
+
+@media (hover: hover)  {
+    .card-custom:hover {
+    background-color: white;
+    box-shadow: 5px 5px 4px #d8dde0;
+}
+}
 
