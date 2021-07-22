@@ -115,7 +115,7 @@
     <div class="container">
             <div class="row">
                 <div class="col-sm-4">
-                    <div class="card text-center card-custom text-primary border-primary">
+                    <div class="card text-center card-info primary-text">
                         <div><i class="bi bi-archive-fill" style="font-size: 3rem"></i></div>
                         <h3 class="display-4">Column 1</h3>
                         <p class="card-body">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Amet animi
@@ -126,7 +126,7 @@
                     </div>
                 </div>
                 <div class="col-sm-4">
-                    <div class="card text-center card-custom text-primary border-primary">
+                    <div class="card text-center card-info primary-text">
                         <div><i class="bi bi-archive-fill" style="font-size: 3rem"></i></div>
                         <h3 class="display-4">Column 2</h3>
                         <p class="card-body">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Amet animi
@@ -137,7 +137,7 @@
                     </div>
                 </div>
                 <div class="col-sm-4">
-                    <div class="card text-center card-custom text-primary border-primary">
+                    <div class="card text-center card-info primary-text">
                         <div><i class="bi bi-archive-fill" style="font-size: 3rem"></i></div>
                         <h3 class="display-4">Column 3</h3>
                         <p class="card-body">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Amet animi
@@ -150,9 +150,18 @@
             </div>
         </div>
     </div>
-
-    <p>Current time: {{ current_time() }}</p>
-
+    <!--Machine Showcase-->
+    <div class="container-fluid container-full-width">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="card card-machine text-center">
+                    <h2 class="display-1">Check out our machines</h2>
+                    <p class="card-body"> Here is some basic info: Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aliquam cum, cumque doloribus et hic neque nostrum quaerat quia quo voluptatum?</p>
+                    <div class="btn button-machine btn-outline-primary"><i class="bi bi-plus-lg" style="line-height: 2rem; vertical-align: middle"></i></div>
+                </div>
+            </div>
+        </div>
+    </div>
 
 {% block admin %}
 {% endblock %}
