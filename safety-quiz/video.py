@@ -1,8 +1,10 @@
 # imports
+import json
+
 import flask
 from flask import Flask, request, session, redirect, url_for, render_template, flash, send_from_directory, Markup, jsonify, g
 import sqlalchemy as sa
-from checkIn.model import User, UserLocation, Type, Training, Machine, Quiz, Question, Option, MissedQuestion, init_db, Major, College, HawkCard, Video
+from checkIn.model import User, UserLocation, TrainingVideosBridge, Type, Training, Machine, Quiz, Question, Option, MissedQuestion, init_db, Major, College, HawkCard, Video
 from flask import Blueprint, current_app
 
 video = Blueprint('video', __name__)
@@ -17,14 +19,28 @@ def safety(machine_id, video_id):
         if(not video_object):
             return 'bad request', 447
         video_time_seconds=video_object.length
-        print(video_object.filepath)
+        # print(video_object.filepath)
         return render_template('safety_video.html', youtube_id=str(video_object.filepath), video_time_seconds=int(video_time_seconds))
     elif request.method == 'POST':
         print(session['sid'])
-        db.add(Training(trainee_id = int(session['sid']), machine_id=machine_id, trainer_id=20000000))
+        videoUpdateQuery = db.query(TrainingVideosBridge).filter_by(user_id=int(session['sid'])).one_or_none()
+        if (videoUpdateQuery is None):
+            videoUpdateQuery = db.add(TrainingVideosBridge(user_id=int(session['sid']), videos_watched=json.dumps([int(video_id)])))
+        else:
+            # print("Videos watched before change:", videoUpdateQuery.videos_watched)
+            videos = json.loads(videoUpdateQuery.videos_watched)
+            if(not int(video_id) in videos):
+                videos.append(int(video_id))
+                # print("Videos during change:", videos)
+                newVideos = json.dumps(videos)
+                videoUpdateQuery.videos_watched=newVideos
+                # print("Videos watched after change:", newVideos)
+            # else:
+                # print("video", video_id, "already in list, not appending")
+
         db.commit()
         flash("Thank you for watching an Idea Shop Training Video. Your verification quiz will be available on this site in one week. \
                 You can re-watch the video at any time by visiting the Training Video Library Page",
               'success')
-        return render_template('layout.html')
+        return redirect("/safety/training")
 
