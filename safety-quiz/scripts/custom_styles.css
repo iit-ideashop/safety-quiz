@@ -87,11 +87,16 @@ background: linear-gradient(90deg, rgba(0,158,209,0.75) 0%, rgba(0,158,209,0.75)
   transition: width 1s linear;
 }
 /* Landing Page Styles */
+.primary-text{
+    color:#009ed1;
+}
+
 .container-full-width {
     padding-left: 0;
     padding-right: 0;
 }
-.card-custom {
+
+.card-info {
     margin: 2mm;
     background-color:#eff0f0;
     border-radius: .75rem;
@@ -99,12 +104,30 @@ background: linear-gradient(90deg, rgba(0,158,209,0.75) 0%, rgba(0,158,209,0.75)
     transition: 0.3s;
     border: none;
 }
+@media only screen and (max-width: 768px){
+    .card-info {
+        background-color: white;
+        box-shadow: 5px 5px 4px #d8dde0;
+    }
+}
 
 @media (hover: hover)  {
-    .card-custom:hover {
-    background-color: white;
-    box-shadow: 5px 5px 4px #d8dde0;
+    .card-info:hover {
+        background-color: white;
+        box-shadow: 5px 5px 4px #d8dde0;
+    }
 }
+
+.card-machine {
+
+}
+
+.button-machine {
+    border-radius: 50%;
+    width: 3rem;
+    height: 3rem;
+
+
 }
 
 /*Pretty list styles*/
