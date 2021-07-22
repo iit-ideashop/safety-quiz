@@ -24,30 +24,29 @@
 {# In Progress trainings area #}
             <div class="card" style="margin-top: 4mm;">
                 <h4 class="card-header">
-                    <a class="{% if not in_progress|length %}collapsed{% endif %} d-block" data-toggle="collapse" href="#in_progress_trainings" aria-expanded="" aria-controls="collapse-available" id="heading-available">
+                    <a class="{% if not in_progress|length %}collapsed{% endif %} d-block" data-toggle="collapse" href="#in_progress_trainings" aria-expanded="" aria-controls="collapse-available" id="heading-in_progress">
                         In Progress Trainings
                         <i class="fa fa-chevron-down float-right"></i>
                     </a>
                 </h4>
-                <div id="in_progress_trainings" class="collapse {% if in_progress|length %} show {% endif %}" aria-labelledby="heading-available">
+                <div id="in_progress_trainings" class="collapse {% if in_progress|length %} show {% endif %}" aria-labelledby="heading-in_progress">
                 {% for each in in_progress %}
                         {% set videoList = machine_video_ids[each.machine.id] %}
                         <div class="card card-spaced-2">
-                            <h5 class="card-header">{{ each.machine.quiz.name  }}</h5>
+                            <h5 class="card-header">{{ each.machine.name  }}</h5>
                             <div class="card-body">
                                 <h5 class="card-title">Location: {{ each.machine.location.name  }}</h5>
 
-                                <div class="container-fluid">
-                                    <ol class="rounded-list float-left">
+                                <div class="container row" style="overflow: hidden;">
+                                    <ol class="col rounded-list float-left">
                                         Training Objectives
                                         {% for video in videoList %}
-                                            <li><a class="dropdown-item" href="/safety/video/{{ each.machine.id }}/{{ video }}">Watch training video #{{ video }}</a></li>
+                                            <li><a class="" href="/safety/video/{{ each.machine.id }}/{{ video }}">Watch training video #{{ video }}</a></li>
                                         {% endfor %}
-                                        <li><a class="btn btn-primary btn-training-card" href="{{ url_for('quiz', training_id=each.id)}}" role="button">
+                                        <li><a class="" href="{{ url_for('quiz', training_id=each.id)}}" role="button">
                                             Take the Quiz </a></li>
                                     </ol>
-
-                                    <div class="card-spaced-4 float-right">
+                                    <div class="col card-spaced-2">
 {#                                        Progress Bar for each in-progress quiz#}
                                         <div>
                                         {% if each.quiz_attempts is not none %}
@@ -61,16 +60,16 @@
                                         </div>
 {#                                        Button for watching training videos (maybe depricated?)#}
                                         <div class="flex-row">
-                                            <div class="dropdown btn">
-                                                <button class="btn btn-primary btn-training-card dropdown-toggle" type="button" id="{{ each.machine.quiz.name }}AvailableDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                                    Training Videos
-                                                </button>
-                                                <div class="dropdown-menu" aria-labelledby="{{ each.machine.quiz.name }}AvailableDropdown">
-                                                    {% for video in videoList %}
-                                                    <a class="dropdown-item" href="/safety/video/{{ each.machine.id }}/{{ video }}">Training video {{ video }}</a>
-                                                    {% endfor %}
-                                                </div>
-                                            </div>
+{#                                            <div class="dropdown btn">#}
+{#                                                <button class="btn btn-primary btn-training-card dropdown-toggle" type="button" id="{{ each.machine.quiz.name }}AvailableDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">#}
+{#                                                    Training Videos#}
+{#                                                </button>#}
+{#                                                <div class="dropdown-menu" aria-labelledby="{{ each.machine.quiz.name }}AvailableDropdown">#}
+{#                                                    {% for video in videoList %}#}
+{#                                                    <a class="dropdown-item" href="/safety/video/{{ each.machine.id }}/{{ video }}">Training video {{ video }}</a>#}
+{#                                                    {% endfor %}#}
+{#                                                </div>#}
+{#                                            </div>#}
 
 
                                             <a class="btn btn-info active btn-training-card" href="
@@ -98,30 +97,32 @@
 {# Available Trainings/Machines Area #}
             <div class="card" style="margin-top: 4mm;">
                 <h4 class="card-header">
-                    <a class="{% if in_progress|length %}collapsed{% endif %} d-block" data-toggle="collapse" href="#available_trainings" aria-expanded="true" aria-controls="collapse-completed" id="heading-completed">
+                    <a class="{% if in_progress|length %}collapsed{% endif %} d-block" data-toggle="collapse" href="#available_trainings" aria-expanded="true" aria-controls="collapse-completed" id="heading-available">
                         Available Machine Topics
                         <i class="fa fa-chevron-down float-right"></i>
                     </a>
                 </h4>
-                <div id="available_trainings" class="collapse {% if not in_progress|length %} show {% endif %}"  aria-labelledby="heading-collapsed">
+                <div id="available_trainings" class="collapse {% if not in_progress|length %} show {% endif %}"  aria-labelledby="heading-available">
                 {% for each in available %}
-                    <div class="card card-spaced-2">
-                        <div class="card-header flex-row">
-                            <h5 class="float-left">Topic: {{ each.name }}</h5>
-{#                            Training Videos dropdown#}
-                            <div class="dropdown float-right">
-                                <button class="btn btn-primary btn-training-card dropdown-toggle" type="button" id="{{ each.quiz.name }}AvailableMachinesDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    Training Videos
-                                </button>
-                                <div class="dropdown-menu" aria-labelledby="{{ each.quiz.name }}AvailableMachinesDropdown">
-                                    {% set videoList = machine_video_ids[each.id] %}
-                                    {% for video in videoList %}
-                                        <a class="dropdown-item" href="/safety/video/{{ each.id }}/{{ video }}">Training video {{ video }}</a>
-                                    {% endfor %}
+                    {% if each.id not in completed_machine_ids %}
+                        <div class="card card-spaced-2">
+                            <div class="card-header flex-row">
+                                <h5 class="float-left">Topic: {{ each.name }}</h5>
+    {#                            Training Videos dropdown#}
+                                <div class="dropdown float-right">
+                                    <button class="btn btn-primary btn-training-card dropdown-toggle" type="button" id="{{ each.quiz.name }}AvailableMachinesDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        Training Videos
+                                    </button>
+                                    <div class="dropdown-menu" aria-labelledby="{{ each.quiz.name }}AvailableMachinesDropdown">
+                                        {% set videoList = machine_video_ids[each.id] %}
+                                        {% for video in videoList %}
+                                            <a class="dropdown-item" href="/safety/video/{{ each.id }}/{{ video }}">Training video {{ video }}</a>
+                                        {% endfor %}
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    {% endif %}
                 {% endfor %}
                 </div>
             </div>
