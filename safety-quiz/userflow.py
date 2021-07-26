@@ -39,6 +39,8 @@ def training_interface():
     available_list = []
 
     machine_query = db.query(Machine).filter_by(machineEnabled=1)
+    userVideosWatched = TrainingVideosBridge.getWatchedVideos(session['sid'])
+    machine_video_ids = Machine.getMachineVideoIds()
     # For Completed and In-progress
     overall_training = db.query(Training).outerjoin(Machine).filter(Training.trainee_id == session['sid']) \
         .filter(Training.invalidation_date == None).order_by(Training.video_watch_date).all()
@@ -50,14 +52,24 @@ def training_interface():
     completed_machine_ids = list()
     for completed in completed_list:
         completed_machine_ids.append(completed.machine_id)
+        print("completed machine_id=", completed.machine_id)
     for training in overall_training:
         machine = machine_query.filter_by(id=training.machine_id).one()
         # if machine parents in completed_list or no parents but not in completed list
         # show in in_progress trainings
-        if(machine.parent_id in (completed_machine_ids) or (machine.parent_id is None and machine.id not in completed_machine_ids)):
-            in_progress_list.append(training)
-            in_progress_machineIds.append(int(training.machine_id))
-            # print("added to in_progress: ", training)
+        print("training machine = ", machine.id, "parent =", machine.parent_id)
+        if (machine.parent_id is None):
+            if machine.id not in completed_machine_ids:
+                in_progress_list.append(training)
+                in_progress_machineIds.append(int(training.machine_id))
+                print("added to in_progress: ", training)
+        else:
+            parents = json.loads(machine.parent_id)
+            parents = [int(i) for i in parents]
+            if all(x in parents for x in completed_machine_ids) and any(x in userVideosWatched for x in machine_video_ids[machine.id]):
+                in_progress_list.append(training)
+                in_progress_machineIds.append(int(training.machine_id))
+                print("added to in_progress: ", training)
     # in_progress_machineIds.sort()
     # print("list of machines in progress=",in_progress_machineIds)
 
@@ -83,9 +95,9 @@ def training_interface():
             available_list.append(i)
             # print("in available list:", i, "p_id=", i.parent_id)
 
-    machine_video_ids = Machine.getMachineVideoIds()
-    userVideosWatched = TrainingVideosBridge.getWatchedVideos(session['sid'])
+
+
 
     return render_template('trainings.html', machine_video_ids=machine_video_ids,
-                           completed_machine_ids=completed_machine_ids, completed=completed_list,
-                           in_progress=in_progress_list, available=available_list, locked=locked_list, watched = userVideosWatched)
+           completed_machine_ids=completed_machine_ids, completed=completed_list,
+           in_progress=in_progress_list, available=available_list, locked=locked_list, watched = userVideosWatched)
