@@ -27,9 +27,9 @@
 
 <script>
 
-    function validateEmail(){
-            var email_input = $('#email').text();
-			if(email_input !== null)  {
+    function validateEmail() {
+            let email_input = $('#email').text();
+			if (email_input !== null)  {
 			    var emailRegex = /^[A-Za-z0-9.%+-]+@[A-Za-z0-9.%+-]+[.]iit[.]edu$/;
                 var cname = document.getElementById('email');
 			    return emailRegex.test(cname)
