@@ -20,38 +20,86 @@
     <div class="card" style="margin: 4mm">
         <h3 class="card-header">Machine Status</h3>
         <div class="row flex-row card-spaced-2">
+            {% for each in energizers %}
             <div class="card card-spaced-2">
-
-                <h4 class="card-header">Belt Sander</h4>
-                <div class="card-body">
-                    <p>Status: <button class="btn btn-success active" aria-pressed="true">Online</button></p>
-                    <p>Last Updated: {{ current_time() }}</p>
+                <div class="card-header machine-card" status="{{ each.status|string }}">
+                    <h4>{{ each.name }}<i id="{{ each.name }}icon" class="bi float-right
+                    {% if each.status|string == "machineStatus.idle" %}
+                    bi-gear-fill
+                    {% elif each.status|string == "machineStatus.in_use" %}
+                    bi-gear-fill spin
+                    {% elif each.status|string == "machineStatus.offline" %}
+                    bi-x-square-fill
+                    {% else %}
+                    bi-patch-question-fill
+                    {% endif %}
+                     "></i></h4>
                 </div>
-
-            </div>
-            <div class="card card-spaced-2">
-                <h4 class="card-header">Epilog Helix</h4>
                 <div class="card-body">
-                    <p>Status: <button class="btn btn-warning active" aria-pressed="true">In Use</button></p>
-                    <p>Last Updated: {{ current_time() }}</p>
-                </div>
+                    <p>Status:
+                    {% if each.status|string == "machineStatus.idle" %}
 
-            </div>
-            <div class="card card-spaced-2">
-                <h4 class="card-header">Epilog Fusion Pro</h4>
-                <div class="card-body">
-                    <p>Status: <button class="btn btn-danger active" aria-pressed="true">Offline</button></p>
-                    <p>Last Updated: {{ current_time() }}</p>
+                        <button class="btn btn-success active" aria-pressed="true">Idle</button>
+                    {% elif each.status|string == "machineStatus.in_use" %}
+                        <button class="btn btn-warning active" aria-pressed="true">In Use</button>
+                    {% elif each.status|string == "machineStatus.offline" %}
+                        <button class="btn btn-danger active" aria-pressed="true">Offline</button>
+                    {% else %}
+                        <button class="btn btn-info active" aria-pressed="true">Unknown</button>
+                    {% endif %}
+                    </p>
+                    <p>Last Change: {{ each.timestamp.strftime('%b %d at %I:%M%p') }}</p>
                 </div>
-
             </div>
+            {% endfor %}
+
             <!-- automatically parse machine status data. Update Machine Status from energizer devices -->
         </div>
     </div>
-    <div class="card" style="margin: 4mm">
+    <div class="card card-spaced-4">
         <h3 class="card-header">Historical User Activity Graph</h3>
     </div>
-
 {% block admin %}
+{#    {% if session['admin'] %}#}
+{#        <div id="adminControls" class="card card-spaced-4">#}
+{#        <h4 class="card-header">Admin Shop Controls</h4>#}
+{#        <div class="row flex-row card-spaced-2">#}
+{#            {% for each in energizers %}#}
+{#                <div class="card card-spaced-2">#}
+{#                    <div class="card-header machine-card" status="{{ each.status|string }}">#}
+{#                        <h4>{{ each.name }}</h4>#}
+{#                    </div>#}
+{#                    <div class="card-body">#}
+{#                        <button class="btn btn-secondary dropdown-toggle" type="button" id="{{ each.name }}AdminDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">#}
+{#                            Update Machine Status#}
+{#                        </button>#}
+{#                        <div class="dropdown-menu">#}
+{#                            <a class="dropdown-item" aria-labelledby="{{ each.name }}AdminDropdown" onclick=updateMachine({{ each.machine_id }},"{{ each.name }}","idle")>Idle</a>#}
+{#                            <a class="dropdown-item" aria-labelledby="{{ each.name }}AdminDropdown" onclick=updateMachine({{ each.machine_id }},"{{ each.name }}","in_use")>In Use</a>#}
+{#                            <a class="dropdown-item" aria-labelledby="{{ each.name }}AdminDropdown" onclick=updateMachine({{ each.machine_id }},"{{ each.name }}","offline")>Offline</a>#}
+{#                        </div>#}
+{#                    </div>#}
+{#                </div>#}
+{#            {% endfor %}#}
+{#        </div>#}
+{#    {% endif %}#}
 {% endblock %}
+    <script>
+        var machine_cards = document.getElementsByClassName("machine-card")
+        for (card of machine_cards) {
+            switch (card.getAttribute("status")) {
+                case "machineStatus.offline":
+                    card.style.background = "lightcoral"
+                    break;
+                case "machineStatus.in_use":
+                    card.style.background = "goldenrod"
+                    break;
+                case "machineStatus.idle":
+                    card.style.background = "lightgreen"
+                    break;
+                default:
+                    card.style.background = "lightcyan"
+            }
+        }
+    </script>
 {% endblock %}
