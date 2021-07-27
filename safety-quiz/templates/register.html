@@ -27,23 +27,26 @@
         </div>
         <div class="form-group">
             <label>Major</label>
-            <select class="form-control" id="major" name="major" required>
+            <select class="form-control" id="major" name="major" onchange="validateMName()" required>
                 <option selected value="">Choose your major...</option>
                 {% for each in majors %}
                 <option value="{{ each.id }}">{{ each.name }}</option>
                 {% endfor %}
                 <option value="-1">Other not listed.</option>
             </select>
+            <input class="form-control" type="text" id="custom-major" name="custom-major" hidden>
+
         </div>
         <div class="form-group">
             <label for="college">College</label>
-            <select class="form-control" id="college" name="college" required>
+            <select class="form-control" id="college" onchange="validateCName()" name="college" required>
                 <option selected value="">Choose your college...</option>
                 {% for each in colleges %}
                     <option value="{{ each.id }}">{{ each.name }}</option>
                 {% endfor %}
                 <option value="-1">Other not listed.</option>
             </select>
+            <input class="form-control" type="text" id="custom-name" name="custom-name" hidden>
         </div>
         <div class="form-group">
             <label for="status">Status</label>
@@ -73,14 +76,41 @@
                             sid_warning.removeAttribute('hidden');
                             let label = document.getElementById('sid_warning');
                             label.textContent = 'User for CWID: A' + data['sid'] + ' already exists. Cannot register new user with existing CWID.';
+							$('#name').val(data['name']);
                         }
                     }
                 });
             }
         }
+        function validateCName(){
+            var selectedMajor = $('#college').val();
+            console.log(selectedMajor)
+			if(selectedMajor === '-1')  {
+			    var cname = document.getElementById('custom-name');
+                cname.removeAttribute('hidden')
+			}
+        }
+        function validateMName(){
+            var selectedCollege = $('#major').val();
+            console.log(selectedCollege)
+			if(selectedCollege === '-1')  {
+			    var cname = document.getElementById('custom-major');
+                cname.removeAttribute('hidden')
+			}
+        }
+
+        $(function () {
+            $('#college').change(validateCName)
+        });
+        $(function () {
+            $('#major').change(validateMName)
+        });
+
         $(function () {
             $('#sid').change(checkSID)
         });
+
+
     </script>
 
 {% endblock %}
