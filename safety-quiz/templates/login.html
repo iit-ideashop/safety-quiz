@@ -1,5 +1,7 @@
 {% extends 'layout.html' %}
 {% block page %}
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
 <div class="card card-default">
     <div class="card-header">
         Login
@@ -12,27 +14,36 @@
         <form action="{{ url_for('auth.login') }}" method="post">
             <div class="form-group">
                 <label for="email">IIT Email</label>
-                <input type="email" id="email" onchange="validateEmail()" name="email" required class="form-control" />
+                <input type="email" id="email" onchange="validateEmail()" name="email" placeholder="Enter IIT email" required class="form-control" />
+                <span id='displayError'></span>
             </div>
             <div class="form-group">
                 <label for="pin">A Number -- Do not include the 'A'</label>
                 <input type="password" pattern="[0-9]*" inputmode="numeric" id="pin" name="pin" min="20000000" max="29999999" step="1" required class="form-control" />
             </div>
             <input type="text" value="True" name="legacy" hidden>
-            <input type="submit" value="Login" class="btn btn-primary"/>
+            <input type="submit" disabled value="Login" id="btnSubmit" class="btn btn-primary"/>
         </form>
     </div>
 </div>
-{% endblock %}
-
 <script>
 
     function validateEmail(){
-            var email_input = $('#email').text();
-			if(email_input !== null)  {
-			    var emailRegex = /^[A-Za-z0-9.%+-]+@[A-Za-z0-9.%+-]+[.]iit[.]edu$/;
-                var cname = document.getElementById('email');
-			    return emailRegex.test(cname)
-			}
+            var email_input = $('#email').val();
+            // var k = document.getElementById('email')
+            var bt = document.getElementById('btnSubmit')
+            var emailRegex = /^[A-Za-z0-9.%+-]+@[A-Za-z.%+-]+[.]iit[.]edu$/;
+            var secondRegex = /^[A-Za-z0-9.%+-]+@+iit[.]edu$/;
+            if ( (emailRegex.test(email_input) === false) && secondRegex.test(email_input) ===false ) {
+                alert("Please enter a valid iit email");
+                $('#pin').attr('readonly', 'readonly')
+                bt.disabled = true
+
+            } else {
+                $('#pin').removeAttr('readonly')
+                bt.disabled = false
+            }
         }
 </script>
+{% endblock %}
+
