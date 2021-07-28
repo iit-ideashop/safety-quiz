@@ -41,10 +41,16 @@
                                     <ol class="col rounded-list float-left">
                                         Training Objectives
                                         {% for video in videoList %}
-                                            <li><a class="" {% if watched[video] is not none %}style="background: lightgreen"{% endif %} href="/safety/video/{{ each.machine.id }}/{{ video }}">Watch training #{{ video }}{% if watched[video] is not none %}<i class="bi bi-check-lg float-right" style="color: green"></i>{% endif %}</a></li>
+                                            <li><a class="btn-sm" {% if video in watched %}style="background: lightgreen"{% endif %} href="/safety/video/{{ each.machine.id }}/{{ video }}">Watch training #{{ video }}{% if video in watched %}<i class="bi bi-check-lg float-right" style="color: green"></i>{% endif %}</a></li>
                                         {% endfor %}
-                                        <li><a class="" href="{{ url_for('quiz', training_id=each.id)}}" role="button">
-                                            Take the Quiz </a></li>
+                                        {% if quizAvailable(each.machine_id) %}
+                                            <li><a class="btn-sm" href="{{ url_for('quiz', training_id=each.id)}}" role="button">
+                                                Take the Quiz!  </a></li>
+                                        {% else %}
+                                            <li><a class="btn-sm" style="pointer-events: none" href="https://google.com" tabindex="-1" role="button" aria-disabled="true">
+                                                Quiz Currently Unavailable
+                                            </a></li>
+                                        {% endif %}
                                     </ol>
                                     <div class="col card-spaced-2">
 {#                                        Progress Bar for each in-progress quiz#}
@@ -205,7 +211,7 @@
                                     </button>
                                 </div>
                                 <div class="modal-body">
-                                    <p>Date Taken: {{each.quiz_date.strftime('%Y-%m-%d at %I:%M%p')}}</p>
+                                    <p>Date Taken: {{each.quiz_date}}</p>
                                     <p>Quiz Score: {{ each.quiz_score|int }}%</p>
                                     <p>Attempt Count: {{ each.quiz_attempts }}</p>
                                     <p>Trained by: {{ each.trainer.name }}</p>

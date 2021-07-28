@@ -22,6 +22,14 @@ userflow = Blueprint('userflow', __name__)
 #     training_count = len(trainings)
 #     return render_template('trainings.html', trainings=trainings, quizzes=quizzes, training_count=training_count)
 
+@userflow.context_processor
+def utility_processor():
+    def quizAvailable(machine_id):
+        db=g.db_session()
+        quiz=db.query(Training).filter_by(trainee_id=session['sid'], machine_id=machine_id, invalidation_date=None).one()
+        return quiz.quiz_available()
+    return dict(quizAvailable=quizAvailable)
+
 @userflow.route('/training')
 def training_interface():
     """Gives the List of completed, in_progress, locked and available trainings.
@@ -45,33 +53,38 @@ def training_interface():
     overall_training = db.query(Training).outerjoin(Machine).filter(Training.trainee_id == session['sid']) \
         .filter(Training.invalidation_date == None).order_by(Training.video_watch_date).all()
     in_progress_machineIds = []
+    completed_machine_ids = []
+    # iterate through training objects created for user,
+    # add completed ones to list
     for training in overall_training:
         if training.completed():
             completed_list.append(training)
+            completed_machine_ids.append(training.machine_id)
             # print("added to completed: ", training)
-    completed_machine_ids = list()
-    for completed in completed_list:
-        completed_machine_ids.append(completed.machine_id)
-        print("completed machine_id=", completed.machine_id)
+
+
+    # iterate through training objects created for user, identify trainings that are in-progress
+    # when all machine_parents are in completed machine ids list
     for training in overall_training:
         machine = machine_query.filter_by(id=training.machine_id).one()
         # if machine parents in completed_list or no parents but not in completed list
         # show in in_progress trainings
-        print("training machine = ", machine.id, "parent =", machine.parent_id)
+        # print("training machine = ", machine.id, "parent =", machine.parent_id)
         if (machine.parent_id is None):
             if machine.id not in completed_machine_ids:
                 in_progress_list.append(training)
                 in_progress_machineIds.append(int(training.machine_id))
-                print("added to in_progress: ", training)
+                # print("added to in_progress: ", training)
         else:
             parents = json.loads(machine.parent_id)
-            parents = [int(i) for i in parents]
-            if all(x in parents for x in completed_machine_ids) and any(x in userVideosWatched for x in machine_video_ids[machine.id]):
+            parents = [i for i in parents]
+            print("parents =", parents)
+            print("user videos watched =", userVideosWatched)
+            print("completed machine ids =", completed_machine_ids)
+            if all(x in completed_machine_ids for x in parents) and any(x in userVideosWatched for x in machine_video_ids[machine.id]):
                 in_progress_list.append(training)
                 in_progress_machineIds.append(int(training.machine_id))
-                print("added to in_progress: ", training)
-    # in_progress_machineIds.sort()
-    # print("list of machines in progress=",in_progress_machineIds)
+                # print("added to in_progress: ", training)
 
     locked_query=machine_query.all()
     # For Locked and available
