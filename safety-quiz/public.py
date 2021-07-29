@@ -39,6 +39,10 @@ def custom_css():
 def animation_js():
     return send_from_directory('scripts', 'animations.js')
 
+@public.route('/scripts/landing.js')
+def landing_js():
+    return send_from_directory('scripts', 'landing.js')
+
 @public.route('/scripts/video.js')
 def video_js():
    return send_from_directory('scripts', 'video.js')
