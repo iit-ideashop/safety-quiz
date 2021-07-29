@@ -23,7 +23,7 @@
         </div>
         <div class="form-group">
             <label for="email">Email address</label>
-            <input type="email" class="form-control" id="email" name="email" aria-describedby="emailHelp" value="{{ email }}" readonly required>
+            <input type="email" class="form-control-plaintext" id="email" name="email" aria-describedby="emailHelp" value="{{ email }}" readonly  required>
         </div>
         <div class="form-group">
             <label>Major</label>
@@ -57,7 +57,7 @@
                 {% endfor %}
             </select>
         </div>
-        <button type="submit" class="btn btn-primary">Register</button>
+        <button type="submit" disabled id="btnSubmit" class="btn btn-primary">Register</button>
     </form>
 {%  endblock %}
 {% block scripts %}
@@ -66,22 +66,42 @@
         function checkSID() {
             let sid = $('#sid').val();
             let sid_warning = document.getElementById('sid_warning');
+            var bt = document.getElementById('btnSubmit');
             if (sid && sid !== 'none') {
                 $.getJSON('register/api/checkSID', {sid: sid}, function (data) {
                     if(data) {
                         if (data['exists'] === false) {
                             sid_warning.setAttribute('hidden', true);
                             sid_warning.textContent = "";
+
+                            if (sid && sid !== 'none') {
+                                $.getJSON('otsname', function (id){
+                                    if (id){
+                                        if (id['name'] === true){
+                                            $('#name').val(id['name']);
+                                            bt.disabled=false
+                                        }
+                                    }
+                                    else if (id['name'] === null){
+                                        let warning = document.getElementById('sid_warning');
+                                        warning.textContent = 'ID does not exist. Please contact Idea Shop'
+                                        bt.disabled = true
+                                    }
+                                })
+                            }
+                            bt.disabled=false
                         } else if (data['exists'] === true) {
                             sid_warning.removeAttribute('hidden');
                             let label = document.getElementById('sid_warning');
                             label.textContent = 'User for CWID: A' + data['sid'] + ' already exists. Cannot register new user with existing CWID.';
 							$('#name').val(data['name']);
+							bt.disabled=true
                         }
                     }
                 });
             }
         }
+
         function validateCName(){
             var selectedMajor = $('#college').val();
             console.log(selectedMajor)
@@ -109,6 +129,7 @@
         $(function () {
             $('#sid').change(checkSID)
         });
+
 
 
     </script>

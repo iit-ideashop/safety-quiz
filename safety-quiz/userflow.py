@@ -7,6 +7,7 @@ from checkIn.model import User, UserLocation, Type, Training, Machine, Quiz, Que
     Major, College, HawkCard
 from flask import Blueprint, current_app
 import json
+from checkIn.IITLookup import IITLookup
 
 userflow = Blueprint('userflow', __name__)
 
@@ -77,3 +78,7 @@ def training_interface():
 
     return render_template('trainings.html', machine_video_ids=machine_video_ids, completed=completed_list, in_progress=in_progress_list,
                            available=available_list, locked=locked_list)
+
+@userflow.route('/otsname')
+def otsname_interface(user_id):
+    return IITLookup.nameByID(user_id)
