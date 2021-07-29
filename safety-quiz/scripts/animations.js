@@ -1,4 +1,16 @@
 document.addEventListener("DOMContentLoaded", function(event){
+/* Script for landing machine cards */
+    $('#btnClick').on('click', function () {
+        console.log('button Clicked!')
+        if ($('#1').css('display') != 'none') {
+            $('#2').html('Here is my dynamic content').show().siblings('div').hide();
+        } else if ($('#2').css('display') != 'none') {
+            $('#1').show().siblings('div').hide();
+        }
+        });
+    console.log('Hello World')
+
+    /* logo animation script */
     var progressbars = document.getElementsByClassName("progress-bar")
     // if(progressbars.length != 0){
     //     var final_progress_values = []

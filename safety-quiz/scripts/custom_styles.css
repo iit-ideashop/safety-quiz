@@ -88,7 +88,11 @@ background: linear-gradient(90deg, rgba(0,158,209,0.75) 0%, rgba(0,158,209,0.75)
 }
 /* Landing Page Styles */
 .primary-text{
-    color:#009ed1;
+    color:#a5dff9;
+}
+
+.light-background {
+    background-color: #eff0f0;
 }
 
 .container-full-width {
@@ -98,7 +102,7 @@ background: linear-gradient(90deg, rgba(0,158,209,0.75) 0%, rgba(0,158,209,0.75)
 
 .card-info {
     margin: 2mm;
-    background-color:#eff0f0;
+    background-color:#777777;
     border-radius: .75rem;
     cursor:default;
     transition: 0.3s;
@@ -107,6 +111,7 @@ background: linear-gradient(90deg, rgba(0,158,209,0.75) 0%, rgba(0,158,209,0.75)
 @media only screen and (max-width: 768px){
     .card-info {
         background-color: white;
+        color: #009ED1;
         box-shadow: 5px 5px 4px #d8dde0;
     }
 }
@@ -114,22 +119,43 @@ background: linear-gradient(90deg, rgba(0,158,209,0.75) 0%, rgba(0,158,209,0.75)
 @media (hover: hover)  {
     .card-info:hover {
         background-color: white;
+        color: #009ED1;
         box-shadow: 5px 5px 4px #d8dde0;
     }
 }
 
+/* machine card styles*/
 .card-machine {
-
+    /*height: 40vh;*/
+    color: #777777
 }
 
 .button-machine {
     border-radius: 50%;
     width: 3rem;
     height: 3rem;
-
-
+    float: right;
+    margin-left: auto;
+    margin-right: 1rem;
+    padding-bottom: 0.75rem;
 }
 
+/*project showcase styles*/
+.portfolio {
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+}
+
+/*Footer Styles*/
+.footer-container {
+    padding-top: 1rem;
+    height: 12vh;
+    background-color: #583895;
+}
+
+.footer-content {
+    color: #A5DFF9;
+}
 /*Pretty list styles*/
 
 ol {
