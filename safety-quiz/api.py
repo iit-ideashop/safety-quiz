@@ -43,10 +43,13 @@ def update_energizer():
     if machine and machine.name != name:
         return jsonify({'response': 'Invalid request'})
     energizer_row = db.query(Energizer).filter_by(machine_id=machine_id, name=name).one_or_none()
-    energizer_row.name=name
-    energizer_row.status=status
-    energizer_row.timestamp=timestamp
-    energizer_row.machine_enabled=enabled
-    energizer_row.active_user=active_user
+    if energizer_row is not None:
+        energizer_row.name=name
+        energizer_row.status=status
+        energizer_row.timestamp=timestamp
+        energizer_row.machine_enabled=enabled
+        energizer_row.active_user=active_user
+    else:
+        db.add(Energizer(machine_id=machine_id, name=name, status=status,timestamp=timestamp,active_user=active_user, machine_enabled=1))
     db.commit()
     return jsonify({'response': 'Request Successful'})
