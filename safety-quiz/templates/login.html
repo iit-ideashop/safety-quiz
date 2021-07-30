@@ -6,7 +6,7 @@
     <div class="card-header">
         Login
     </div>
-    <div class="card-body" {% if legacy== True %} hidden {% endif %}>
+    <div class="card-body" {% if legacy == True %} hidden {%  endif %}>
         <a class="btn btn-lg btn-success" href="{{ url_for( 'auth.login_google') }}">Click here to login with
             Google.</a>
         <a href="?legacy=true">Legacy login</a>
