@@ -146,7 +146,7 @@ def check_sid():
     db = db_session()
     user = db.query(User).filter_by(sid=request.args['sid']).one_or_none()
     if user:
-        return jsonify({'sid': user.sid, 'exists': True})
+        return jsonify({'sid': user.sid, 'name':user.name, 'exists': True})
     else:
         return jsonify({'sid': None, 'exists': False})
 
