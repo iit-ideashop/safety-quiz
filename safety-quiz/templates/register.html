@@ -75,11 +75,15 @@
                             sid_warning.textContent = "";
 
                             if (sid && sid !== 'none') {
-                                $.getJSON('otsname', function (id){
-                                    if (id){
-                                        if (id['name'] === true){
-                                            $('#name').val(id['name']);
+                                $.getJSON('otsname', {'user_id': sid}, function (data){
+                                    if (data){
+                                        if (data['name']){
+                                            $('#name').val(data['name']);
                                             bt.disabled=false
+                                        }
+                                        else if (data['failed']){
+                                            $('#name').val(data['failed']);
+                                            bt.disabled=true
                                         }
                                     }
                                     else if (id['name'] === null){

@@ -7,6 +7,7 @@ from checkIn.model import User, UserLocation, Type, Training, TrainingVideosBrid
     Major, College, HawkCard
 from flask import Blueprint, current_app
 import json
+from checkIn.iitlookup import IITLookup
 
 userflow = Blueprint('userflow', __name__)
 
@@ -110,9 +111,16 @@ def training_interface():
             available_list.append(i)
             # print("in available list:", i, "p_id=", i.parent_id)
 
-
-
-
     return render_template('trainings.html', machine_video_ids=machine_video_ids,
            completed_machine_ids=completed_machine_ids, completed=completed_list,
            in_progress=in_progress_list, available=available_list, locked=locked_list, watched = userVideosWatched)
+
+
+@userflow.route('/otsname', methods=['GET'])
+def otsname_interface():
+    il = IITLookup(current_app.config['IITLOOKUPURL'], current_app.config['IITLOOKUPUSER'], current_app.config['IITLOOKUPPASS'])
+    user = il.nameByID(str('A' + request.args['user_id']))
+    if user:
+        return jsonify({'name': (user['first_name'] + " " + user['last_name'])})
+    else:
+        return jsonify({'failed': 'Failed to retrieve user object from OTS for ID A%s' % request.args['user_id']})
