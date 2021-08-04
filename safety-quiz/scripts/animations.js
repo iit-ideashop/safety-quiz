@@ -1,11 +1,11 @@
 document.addEventListener("DOMContentLoaded", function(event){
 /* Script for landing machine cards */
-    $('#btnClick').on('click', function () {
+    $('#cnc-Click').on('click', function () {
         console.log('button Clicked!')
-        if ($('#1').css('display') != 'none') {
-            $('#2').html('Here is my dynamic content').show().siblings('div').hide();
-        } else if ($('#2').css('display') != 'none') {
-            $('#1').show().siblings('div').hide();
+        if ($('cnc-Info').css('display') != 'none') {
+            $('cnc-CTA').html('Here is my dynamic content').show().siblings('div').hide();
+        } else if ($('cnc-CTA').css('display') != 'none') {
+            $('cnc-Info').show().siblings('div').hide();
         }
         });
     console.log('Hello World')

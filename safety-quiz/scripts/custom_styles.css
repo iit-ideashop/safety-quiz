@@ -125,9 +125,48 @@ background: linear-gradient(90deg, rgba(0,158,209,0.75) 0%, rgba(0,158,209,0.75)
 }
 
 /* machine card styles*/
+
+@keyframes card-extend {
+    from {
+        visibility: hidden;
+        opacity: 0;
+    }
+    1% {
+        visibility: visible;
+        opacity: 1;
+    }
+    to {
+        visibility: visible;
+        opacity: 1;
+    }
+}
+
+@keyframes card-collapse {
+    from {
+        visibility: visible;
+        opacity: 1;
+    }
+    1% {
+        visibility: hidden;
+        opacity: 0;
+    }
+    to {
+        visibility: hidden;
+        opacity: 0;
+    }
+}
 .card-machine {
     /*height: 40vh;*/
-    color: #777777
+    color: #777777;
+    visibility: visible;
+}
+
+.machine-extend {
+    position: absolute;
+    visibility: hidden;
+    opacity: 0;
+    background-color: #009ED1;
+    transition: opacity .66s .66s cubic-bezier(.66, 0, 0.2, 1),visibility .66s .66s;
 }
 
 .button-machine {
@@ -138,6 +177,9 @@ background: linear-gradient(90deg, rgba(0,158,209,0.75) 0%, rgba(0,158,209,0.75)
     margin-left: auto;
     margin-right: 1rem;
     padding-bottom: 0.75rem;
+    background-color: #777777;
+    color: white;
+    cursor: pointer;
 }
 
 /*project showcase styles*/
@@ -149,12 +191,23 @@ background: linear-gradient(90deg, rgba(0,158,209,0.75) 0%, rgba(0,158,209,0.75)
 /*Footer Styles*/
 .footer-container {
     padding-top: 1rem;
-    height: 12vh;
+    /*height: 12vh;*/
     background-color: #583895;
 }
 
 .footer-content {
     color: #A5DFF9;
+    padding-top: 10px;
+    cursor:default;
+}
+
+.social-links {
+    padding-top: 10px;
+    padding-bottom: 10px;
+    font-size: 30px;
+    text-align: center;
+    letter-spacing: 10px;
+    cursor: default;
 }
 /*Pretty list styles*/
 
