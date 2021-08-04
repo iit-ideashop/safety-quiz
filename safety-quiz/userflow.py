@@ -66,7 +66,9 @@ def training_interface():
     # iterate through training objects created for user, identify trainings that are in-progress
     # when all machine_parents are in completed machine ids list
     for training in overall_training:
-        machine = machine_query.filter_by(id=training.machine_id).one()
+        machine = machine_query.filter_by(id=training.machine_id).one_or_none()
+        if not machine: #handle exisitng trainings for machine objects which may be disabled.
+            break
         # if machine parents in completed_list or no parents but not in completed list
         # show in in_progress trainings
         # print("training machine = ", machine.id, "parent =", machine.parent_id)
