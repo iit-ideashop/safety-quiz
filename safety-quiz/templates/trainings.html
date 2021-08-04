@@ -24,30 +24,35 @@
 {# In Progress trainings area #}
             <div class="card" style="margin-top: 4mm;">
                 <h4 class="card-header">
-                    <a class="{% if not in_progress|length %}collapsed{% endif %} d-block" data-toggle="collapse" href="#in_progress_trainings" aria-expanded="" aria-controls="collapse-available" id="heading-available">
+                    <a class="{% if not in_progress|length %}collapsed{% endif %} d-block" data-toggle="collapse" href="#in_progress_trainings" aria-expanded="" aria-controls="collapse-available" id="heading-in_progress">
                         In Progress Trainings
                         <i class="fa fa-chevron-down float-right"></i>
                     </a>
                 </h4>
-                <div id="in_progress_trainings" class="collapse {% if in_progress|length %} show {% endif %}" aria-labelledby="heading-available">
+                <div id="in_progress_trainings" class="collapse {% if in_progress|length %} show {% endif %}" aria-labelledby="heading-in_progress">
                 {% for each in in_progress %}
                         {% set videoList = machine_video_ids[each.machine.id] %}
                         <div class="card card-spaced-2">
-                            <h5 class="card-header">{{ each.machine.quiz.name  }}</h5>
+                            <h5 class="card-header">{{ each.machine.name  }}</h5>
                             <div class="card-body">
                                 <h5 class="card-title">Location: {{ each.machine.location.name  }}</h5>
 
-                                <div class="container-fluid">
-                                    <ol class="rounded-list float-left">
+                                <div class="container row" style="overflow: hidden;">
+                                    <ol class="col rounded-list float-left">
                                         Training Objectives
                                         {% for video in videoList %}
-                                            <li><a class="dropdown-item" href="/safety/video/{{ each.machine.id }}/{{ video }}">Watch training video #{{ video }}</a></li>
+                                            <li><a class="btn-sm" {% if video in watched %}style="background: lightgreen"{% endif %} href="/safety/video/{{ each.machine.id }}/{{ video }}">Watch training #{{ video }}{% if video in watched %}<i class="bi bi-check-lg float-right" style="color: green"></i>{% endif %}</a></li>
                                         {% endfor %}
-                                        <li><a class="btn btn-primary btn-training-card" href="{{ url_for('quiz', training_id=each.id)}}" role="button">
-                                            Take the Quiz </a></li>
+                                        {% if quizAvailable(each.machine_id) %}
+                                            <li><a class="btn-sm" href="{{ url_for('quiz', training_id=each.id)}}" role="button">
+                                                Take the Quiz!  </a></li>
+                                        {% else %}
+                                            <li><a class="btn-sm" style="pointer-events: none" href="https://google.com" tabindex="-1" role="button" aria-disabled="true">
+                                                Quiz Currently Unavailable
+                                            </a></li>
+                                        {% endif %}
                                     </ol>
-
-                                    <div class="card-spaced-4 float-right">
+                                    <div class="col card-spaced-2">
 {#                                        Progress Bar for each in-progress quiz#}
                                         <div>
                                         {% if each.quiz_attempts is not none %}
@@ -61,16 +66,16 @@
                                         </div>
 {#                                        Button for watching training videos (maybe depricated?)#}
                                         <div class="flex-row">
-                                            <div class="dropdown btn">
-                                                <button class="btn btn-primary btn-training-card dropdown-toggle" type="button" id="{{ each.machine.quiz.name }}AvailableDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                                    Training Videos
-                                                </button>
-                                                <div class="dropdown-menu" aria-labelledby="{{ each.machine.quiz.name }}AvailableDropdown">
-                                                    {% for video in videoList %}
-                                                    <a class="dropdown-item" href="/safety/video/{{ each.machine.id }}/{{ video }}">Training video {{ video }}</a>
-                                                    {% endfor %}
-                                                </div>
-                                            </div>
+{#                                            <div class="dropdown btn">#}
+{#                                                <button class="btn btn-primary btn-training-card dropdown-toggle" type="button" id="{{ each.machine.name }}AvailableDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">#}
+{#                                                    Training Videos#}
+{#                                                </button>#}
+{#                                                <div class="dropdown-menu" aria-labelledby="{{ each.machine.name }}AvailableDropdown">#}
+{#                                                    {% for video in videoList %}#}
+{#                                                    <a class="dropdown-item" href="/safety/video/{{ each.machine.id }}/{{ video }}">Training video {{ video }}</a>#}
+{#                                                    {% endfor %}#}
+{#                                                </div>#}
+{#                                            </div>#}
 
 
                                             <a class="btn btn-info active btn-training-card" href="
@@ -80,7 +85,7 @@
                                             target="_blank" role="button">About this training</a>
                                             {% if each.quiz_attempts is not none %}
                                                 {% if each.quiz_attempts >=1 %}
-                                                    <button type="button" class="btn btn-secondary btn-training-card" data-toggle="modal" data-target="#{{ each.machine.quiz.name }}Modal">Show Details</button>
+                                                    <button type="button" class="btn btn-secondary btn-training-card" data-toggle="modal" data-target="#{{ each.machine.name }}Modal">Show Details</button>
                                                 {% endif %}
                                             {% endif %}
                                         </div>
@@ -98,30 +103,32 @@
 {# Available Trainings/Machines Area #}
             <div class="card" style="margin-top: 4mm;">
                 <h4 class="card-header">
-                    <a class="{% if in_progress|length %}collapsed{% endif %} d-block" data-toggle="collapse" href="#available_trainings" aria-expanded="true" aria-controls="collapse-completed" id="heading-completed">
+                    <a class="{% if in_progress|length %}collapsed{% endif %} d-block" data-toggle="collapse" href="#available_trainings" aria-expanded="true" aria-controls="collapse-completed" id="heading-available">
                         Available Machine Topics
                         <i class="fa fa-chevron-down float-right"></i>
                     </a>
                 </h4>
-                <div id="available_trainings" class="collapse {% if not in_progress|length %} show {% endif %}"  aria-labelledby="heading-collapsed">
+                <div id="available_trainings" class="collapse {% if not in_progress|length %} show {% endif %}"  aria-labelledby="heading-available">
                 {% for each in available %}
-                    <div class="card card-spaced-2">
-                        <div class="card-header flex-row">
-                            <h5 class="float-left">Topic: {{ each.name }}</h5>
-{#                            Training Videos dropdown#}
-                            <div class="dropdown float-right">
-                                <button class="btn btn-primary btn-training-card dropdown-toggle" type="button" id="{{ each.quiz.name }}AvailableMachinesDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    Training Videos
-                                </button>
-                                <div class="dropdown-menu" aria-labelledby="{{ each.quiz.name }}AvailableMachinesDropdown">
-                                    {% set videoList = machine_video_ids[each.id] %}
-                                    {% for video in videoList %}
-                                        <a class="dropdown-item" href="/safety/video/{{ each.id }}/{{ video }}">Training video {{ video }}</a>
-                                    {% endfor %}
+                    {% if each.id not in completed_machine_ids %}
+                        <div class="card card-spaced-2">
+                            <div class="card-header flex-row">
+                                <h5 class="float-left">Topic: {{ each.name }}</h5>
+    {#                            Training Videos dropdown#}
+                                <div class="dropdown float-right">
+                                    <button class="btn btn-primary btn-training-card dropdown-toggle" type="button" id="{{ each.quiz.name }}AvailableMachinesDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        Training Videos
+                                    </button>
+                                    <div class="dropdown-menu" aria-labelledby="{{ each.quiz.name }}AvailableMachinesDropdown">
+                                        {% set videoList = machine_video_ids[each.id] %}
+                                        {% for video in videoList %}
+                                            <a class="dropdown-item" {% if video in watched %}style="background: lightgreen"{% endif %} href="/safety/video/{{ each.id }}/{{ video }}">Training #{{ video }}</a>
+                                        {% endfor %}
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    {% endif %}
                 {% endfor %}
                 </div>
             </div>
@@ -138,7 +145,7 @@
                 <div id="completed_trainings" class="collapse"  aria-labelledby="heading-collapsed">
                 {% for each in completed %}
                     <div class="card card-spaced-2" style="background: #d3f8d3">
-                        <h5 class="card-header">Topic: {{ each.machine.quiz.name }}<svg class="float-right" style="display: auto; height: 1.2rem" id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1889 391"><defs><style>.cls-1{fill:#db1010;}.cls-2{fill:none;stroke:#db1010;stroke-miterlimit:10;stroke-width:28px;}</style></defs><path class="cls-1" d="M226.07,562.84l57,3.43q-4,37.38-27.62,57.33t-58,20q-41.4,0-66.87-27.4T105.14,540.5q0-47.81,24.12-77.14T196.58,434q40.35,0,62,22.34t24.49,59.27l-58.23,3.13q0-20.4-7.81-29.49t-18.4-9.08q-29.49,0-29.48,59.27,0,33.21,7.67,45.12t21.52,11.92Q223.08,596.5,226.07,562.84Z" transform="translate(-15.5 -344.5)"/><path class="cls-1" d="M393.76,643.56q-42.9,0-69.92-28.44t-27-76.11q0-45.57,25.83-75.28T394.35,434q42.45,0,69.18,28t26.73,74.76q0,48.4-27,77.59T393.76,643.56Zm-.3-46.17q15.78,0,22.71-13.77t6.92-50.41q0-53-28.44-53-30.67,0-30.68,60.46Q364,597.4,393.46,597.39Z" transform="translate(-15.5 -344.5)"/><path class="cls-1" d="M737.63,437.15V640.43H679.69V495.08l-37.6,145.35H602.48l-39.1-145.35V640.43H516.62V437.15h81.54l29.48,108,28.15-108Z" transform="translate(-15.5 -344.5)"/><path class="cls-1" d="M836.36,566.57v73.86H773.07V437.15h86.82q32.48,0,49.37,7.45a60,60,0,0,1,26.81,22.78,62.1,62.1,0,0,1,9.9,34.4q0,29-20.25,46.91t-54.06,17.88Zm-.89-43.64h20.85q27.55,0,27.55-20.25,0-19.06-25.47-19.07H835.47Z" transform="translate(-15.5 -344.5)"/><path class="cls-1" d="M1111.73,590.54v49.89H969.21V437.15h62.4V590.54Z" transform="translate(-15.5 -344.5)"/><path class="cls-1" d="M1286.42,591.88v48.55h-153V437.15h153v46.91h-91.74v29.49h74.16v45.12h-74.16v33.21Z" transform="translate(-15.5 -344.5)"/><path class="cls-1" d="M1394.69,485.85V640.43h-59.13V485.85h-42.14v-48.7h143.41v48.7Z" transform="translate(-15.5 -344.5)"/><path class="cls-1" d="M1607.5,591.88v48.55h-153V437.15h153v46.91h-91.74v29.49h74.17v45.12h-74.17v33.21Z" transform="translate(-15.5 -344.5)"/><path class="cls-1" d="M1632.22,640.43V437.15h78.64q51.23,0,76.69,30.38T1813,537.82q0,45.57-27.33,74.09t-71,28.52Zm62.4-46.76h16.24q15.48,0,26.13-15t10.65-41q0-22.18-9.46-38.27t-27.32-16.08h-16.24Z" transform="translate(-15.5 -344.5)"/><rect class="cls-2" x="14" y="14" width="1861" height="363" rx="39.4"/></svg>
+                        <h5 class="card-header">Topic: {{ each.machine.name }}<svg class="float-right" style="display: auto; height: 1.2rem" id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1889 391"><defs><style>.cls-1{fill:#db1010;}.cls-2{fill:none;stroke:#db1010;stroke-miterlimit:10;stroke-width:28px;}</style></defs><path class="cls-1" d="M226.07,562.84l57,3.43q-4,37.38-27.62,57.33t-58,20q-41.4,0-66.87-27.4T105.14,540.5q0-47.81,24.12-77.14T196.58,434q40.35,0,62,22.34t24.49,59.27l-58.23,3.13q0-20.4-7.81-29.49t-18.4-9.08q-29.49,0-29.48,59.27,0,33.21,7.67,45.12t21.52,11.92Q223.08,596.5,226.07,562.84Z" transform="translate(-15.5 -344.5)"/><path class="cls-1" d="M393.76,643.56q-42.9,0-69.92-28.44t-27-76.11q0-45.57,25.83-75.28T394.35,434q42.45,0,69.18,28t26.73,74.76q0,48.4-27,77.59T393.76,643.56Zm-.3-46.17q15.78,0,22.71-13.77t6.92-50.41q0-53-28.44-53-30.67,0-30.68,60.46Q364,597.4,393.46,597.39Z" transform="translate(-15.5 -344.5)"/><path class="cls-1" d="M737.63,437.15V640.43H679.69V495.08l-37.6,145.35H602.48l-39.1-145.35V640.43H516.62V437.15h81.54l29.48,108,28.15-108Z" transform="translate(-15.5 -344.5)"/><path class="cls-1" d="M836.36,566.57v73.86H773.07V437.15h86.82q32.48,0,49.37,7.45a60,60,0,0,1,26.81,22.78,62.1,62.1,0,0,1,9.9,34.4q0,29-20.25,46.91t-54.06,17.88Zm-.89-43.64h20.85q27.55,0,27.55-20.25,0-19.06-25.47-19.07H835.47Z" transform="translate(-15.5 -344.5)"/><path class="cls-1" d="M1111.73,590.54v49.89H969.21V437.15h62.4V590.54Z" transform="translate(-15.5 -344.5)"/><path class="cls-1" d="M1286.42,591.88v48.55h-153V437.15h153v46.91h-91.74v29.49h74.16v45.12h-74.16v33.21Z" transform="translate(-15.5 -344.5)"/><path class="cls-1" d="M1394.69,485.85V640.43h-59.13V485.85h-42.14v-48.7h143.41v48.7Z" transform="translate(-15.5 -344.5)"/><path class="cls-1" d="M1607.5,591.88v48.55h-153V437.15h153v46.91h-91.74v29.49h74.17v45.12h-74.17v33.21Z" transform="translate(-15.5 -344.5)"/><path class="cls-1" d="M1632.22,640.43V437.15h78.64q51.23,0,76.69,30.38T1813,537.82q0,45.57-27.33,74.09t-71,28.52Zm62.4-46.76h16.24q15.48,0,26.13-15t10.65-41q0-22.18-9.46-38.27t-27.32-16.08h-16.24Z" transform="translate(-15.5 -344.5)"/><rect class="cls-2" x="14" y="14" width="1861" height="363" rx="39.4"/></svg>
                         </h5>
                         <div class="card-body">
                             <h5 class="card-title">Location: {{ each.machine.location.name  }}</h5>
@@ -147,13 +154,13 @@
                             </div>
                             <div class="flex-row row">
                                 <div class="dropdown">
-                                    <button class="btn btn-primary btn-training-card dropdown-toggle" type="button" id="{{ each.machine.quiz.name }}AvailableDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <button class="btn btn-primary btn-training-card dropdown-toggle" type="button" id="{{ each.machine.name }}AvailableDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                         Training Videos
                                     </button>
-                                    <div class="dropdown-menu" aria-labelledby="{{ each.machine.quiz.name }}AvailableDropdown">
+                                    <div class="dropdown-menu" aria-labelledby="{{ each.machine.name }}AvailableDropdown">
                                         {% set videoList = machine_video_ids[each.machine.id] %}
                                         {% for video in videoList %}
-                                        <a class="dropdown-item" href="/safety/video/{{ each.machine.id }}/{{ video }}">Training video {{ video }}</a>
+                                        <a class="dropdown-item" {% if video in watched %}style="background: lightgreen"{% endif %} href="/safety/video/{{ each.machine.id }}/{{ video }}">Training #{{ video }}</a>
                                         {% endfor %}
                                     </div>
                                 </div>
@@ -163,7 +170,7 @@
                                     {% else %} https://wiki.ideashop.iit.edu/index.php?title=Main_Page
                                 {% endif %}"
                                 target="_blank" role="button">About this training</a>
-                                <button type="button" class="btn btn-secondary btn-training-card" data-toggle="modal" data-target="#{{ each.machine.quiz.name }}Modal">Show Details</button>
+                                <button type="button" class="btn btn-secondary btn-training-card" data-toggle="modal" data-target="#{{ each.machine.name }}Modal">Show Details</button>
                             </div>
                         </div>
                     </div>
@@ -194,17 +201,17 @@
 {# Generate Modals for each training quiz #}
             {% for each in (in_progress or completed) %}
                 {% if (each.quiz_attempts is not none) or each.quiz_passed() %}
-                    <div class="modal fade" id="{{ each.machine.quiz.name }}Modal" tabindex="-1" role="dialog" aria-labelledby="{{ each.machine.quiz.name }}Modal" aria-hidden="true">
+                    <div class="modal fade" id="{{ each.machine.name }}Modal" tabindex="-1" role="dialog" aria-labelledby="{{ each.machine.name }}Modal" aria-hidden="true">
                         <div class="modal-dialog" role="document">
                             <div class="modal-content">
                                 <div class="modal-header">
-                                    <h5 class="modal-title" id="{{ each.machine.quiz.name }}ModalLabel">{{ each.machine.quiz.name }} Details</h5>
+                                    <h5 class="modal-title" id="{{ each.machine.name }}ModalLabel">{{ each.machine.name }} Details</h5>
                                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                         <span aria-hidden="true">&times;</span>
                                     </button>
                                 </div>
                                 <div class="modal-body">
-                                    <p>Date Taken: {{each.quiz_date.strftime('%Y-%m-%d at %I:%M%p')}}</p>
+                                    <p>Date Taken: {{each.quiz_date}}</p>
                                     <p>Quiz Score: {{ each.quiz_score|int }}%</p>
                                     <p>Attempt Count: {{ each.quiz_attempts }}</p>
                                     <p>Trained by: {{ each.trainer.name }}</p>

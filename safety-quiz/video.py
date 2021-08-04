@@ -1,4 +1,5 @@
 # imports
+import datetime
 import json
 
 import flask
@@ -37,7 +38,18 @@ def safety(machine_id, video_id):
                 # print("Videos watched after change:", newVideos)
             # else:
                 # print("video", video_id, "already in list, not appending")
-
+        machineIdList = Machine.getMachineVideoIds()
+        machineEnabledList = Machine.getMachinesEnabled()
+        trainingQuery = db.query(Training).filter_by(trainee_id=session['sid'])
+        timestamp = datetime.datetime.now()
+        for each, value in machineIdList.items():
+            video_ids = json.dumps(value)
+            if video_id in video_ids:
+                if (not trainingQuery.filter_by(machine_id=each).all()) and machineEnabledList[each]:
+                    db.add(Training(trainee_id=session['sid'], trainer_id=20000000, machine_id=each, video_watch_date=timestamp))
+                else:
+                    for training in (trainingQuery.filter_by(machine_id=each).all()):
+                        training.video_watch_date=timestamp
         db.commit()
         flash("Thank you for watching an Idea Shop Training Video. Your verification quiz will be available on this site in one week. \
                 You can re-watch the video at any time by visiting the Training Video Library Page",
