@@ -36,6 +36,9 @@
                             <div class="card">
                                 <h5 class="card-text">Hello, {{ session['name'] }}</h5>
                                 <p class="card-text flex-nowrap">{{ session['major'] }}</p>
+                                <p class="card-text flex-nowrap">{{ session['email'] }}</p>
+                                <p class="card-text flex-nowrap">A{{ session['sid'] }}</p>
+
                             </div>
                             <div class="dropdown-divider"></div>
                             <a class="dropdown-item" href="{{ url_for('auth.logout') }}"> Log Out <i class="fas fa-sign-out-alt"></i></a>
