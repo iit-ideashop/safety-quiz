@@ -199,7 +199,7 @@
 
 
 {# Generate Modals for each training quiz #}
-            {% for each in (in_progress or completed) %}
+            {% for each in (in_progress + completed) %}
                 {% if (each.quiz_attempts is not none) or each.quiz_passed() %}
                     <div class="modal fade" id="{{ each.machine.name }}Modal" tabindex="-1" role="dialog" aria-labelledby="{{ each.machine.name }}Modal" aria-hidden="true">
                         <div class="modal-dialog" role="document">
