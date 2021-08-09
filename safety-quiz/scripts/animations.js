@@ -1,4 +1,16 @@
 document.addEventListener("DOMContentLoaded", function(event){
+/* Script for landing machine cards */
+    $('#cnc-Click').on('click', function () {
+        console.log('button Clicked!')
+        if ($('cnc-Info').css('display') != 'none') {
+            $('cnc-CTA').html('Here is my dynamic content').show().siblings('div').hide();
+        } else if ($('cnc-CTA').css('display') != 'none') {
+            $('cnc-Info').show().siblings('div').hide();
+        }
+        });
+    console.log('Hello World')
+
+    /* logo animation script */
     var progressbars = document.getElementsByClassName("progress-bar")
     // if(progressbars.length != 0){
     //     var final_progress_values = []
