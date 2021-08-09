@@ -43,6 +43,13 @@
                                         {% for video in videoList %}
                                             <li><a class="btn-sm" {% if video in watched %}style="background: lightgreen"{% endif %} href="{{ url_for('video.safety', machine_id=each.machine.id, video_id=video) }}">Watch training #{{ video }}{% if video in watched %}<i class="bi bi-check-lg float-right" style="color: green"></i>{% endif %}</a></li>
                                         {% endfor %}
+                                        {% if each.machine.in_person_component %}
+                                            {% if each.videos_watched() %}
+                                                <li><a class="btn-sm">In Person Training:<br>Registration Link</a></li>
+                                            {% else %}
+                                                <li><a class="btn-sm"><i class="bi bi-lock-fill float-right" style=""></i>In Person Training:<br><small>You must watch all videos above before you can register for an in person training.</small></a></li>
+                                            {% endif %}
+                                        {% endif %}
                                         {% if quizAvailable(each.machine_id) %}
                                             <li><a class="btn-sm" href="{{ url_for('quiz', training_id=each.id)}}" role="button">
                                                 Take the Quiz!  </a></li>
