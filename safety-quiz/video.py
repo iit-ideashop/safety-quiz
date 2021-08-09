@@ -54,5 +54,5 @@ def safety(machine_id, video_id):
         flash("Thank you for watching an Idea Shop Training Video. Your verification quiz will be available on this site in one week. \
                 You can re-watch the video at any time by visiting the Training Video Library Page",
               'success')
-        return redirect("/safety/training")
+        return redirect(url_for('userflow.training_interface'))
 
