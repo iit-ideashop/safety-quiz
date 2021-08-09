@@ -49,7 +49,7 @@ def training_interface():
 
     machine_query = db.query(Machine).filter_by(machineEnabled=1)
     userVideosWatched = TrainingVideosBridge.getWatchedVideos(session['sid'])
-    machine_video_ids = Machine.getMachineVideoIds()
+    machine_video_ids = Machine.getMachineVideoIds(db)
     # For Completed and In-progress
     overall_training = db.query(Training).outerjoin(Machine).filter(Training.trainee_id == session['sid']) \
         .filter(Training.invalidation_date == None).order_by(Training.video_watch_date).all()
@@ -84,9 +84,10 @@ def training_interface():
             print("parents =", parents)
             print("user videos watched =", userVideosWatched)
             print("completed machine ids =", completed_machine_ids)
-            if all(x in completed_machine_ids for x in parents) and any(x in userVideosWatched for x in machine_video_ids[machine.id]):
-                in_progress_list.append(training)
-                in_progress_machineIds.append(int(training.machine_id))
+            if not training.completed():
+                if all(x in completed_machine_ids for x in parents) and any(x in userVideosWatched for x in machine_video_ids[machine.id]):
+                    in_progress_list.append(training)
+                    in_progress_machineIds.append(int(training.machine_id))
                 # print("added to in_progress: ", training)
 
     locked_query=machine_query.all()
