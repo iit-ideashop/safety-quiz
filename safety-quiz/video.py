@@ -38,8 +38,8 @@ def safety(machine_id, video_id):
                 # print("Videos watched after change:", newVideos)
             # else:
                 # print("video", video_id, "already in list, not appending")
-        machineIdList = Machine.getMachineVideoIds()
-        machineEnabledList = Machine.getMachinesEnabled()
+        machineIdList = Machine.getMachineVideoIds(db)
+        machineEnabledList = Machine.getMachinesEnabled(db)
         trainingQuery = db.query(Training).filter_by(trainee_id=session['sid'])
         timestamp = datetime.datetime.now()
         for each, value in machineIdList.items():
