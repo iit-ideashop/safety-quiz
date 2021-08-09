@@ -47,8 +47,8 @@
                                             <li><a class="btn-sm" href="{{ url_for('quiz', training_id=each.id)}}" role="button">
                                                 Take the Quiz!  </a></li>
                                         {% else %}
-                                            <li><a class="btn-sm" style="pointer-events: none" href="https://google.com" tabindex="-1" role="button" aria-disabled="true">
-                                                Quiz Currently Unavailable
+                                            <li><a class="btn-sm" style="pointer-events: none" href="#" tabindex="-1" role="button" aria-disabled="true">
+                                                Quiz Currently Unavailable until {{ quiz_available_date(each) }}
                                             </a></li>
                                         {% endif %}
                                     </ol>

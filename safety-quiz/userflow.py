@@ -31,6 +31,16 @@ def utility_processor():
         return quiz.quiz_available()
     return dict(quizAvailable=quizAvailable)
 
+@userflow.context_processor
+def utility_processor():
+    def quiz_available_date(training):
+        if training.machine_id is None:
+            return "error"
+        else:
+            return training.quiz_available_date()
+    return dict(quiz_available_date=quiz_available_date)
+
+
 @userflow.route('/training')
 def training_interface():
     """Gives the List of completed, in_progress, locked and available trainings.
