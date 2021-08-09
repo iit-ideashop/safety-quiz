@@ -41,7 +41,7 @@
                                     <ol class="col rounded-list float-left">
                                         Training Objectives
                                         {% for video in videoList %}
-                                            <li><a class="btn-sm" {% if video in watched %}style="background: lightgreen"{% endif %} href="{{ url_for('video.safety', machine_id=each.machine.id, video_id=video) }}">Watch training #{{ video }}{% if video in watched %}<i class="bi bi-check-lg float-right" style="color: green"></i>{% endif %}</a></li>
+                                            <li><a class="btn-sm" {% if video in watched %}style="background: lightgreen"{% endif %} href="{{ url_for('video.safety', machine_id=each.id, video_id=video) }}">Watch training #{{ video }}{% if video in watched %}<i class="bi bi-check-lg float-right" style="color: green"></i>{% endif %}</a></li>
                                         {% endfor %}
                                         {% if each.machine.in_person_component %}
                                             {% if each.videos_watched() %}
@@ -129,7 +129,7 @@
                                     <div class="dropdown-menu" aria-labelledby="{{ each.quiz.name }}AvailableMachinesDropdown">
                                         {% set videoList = machine_video_ids[each.id] %}
                                         {% for video in videoList %}
-                                            <a class="dropdown-item" {% if video in watched %}style="background: lightgreen"{% endif %} href="{{ url_for('video.safety', machine_id=each.machine.id, video_id=video) }}">Training #{{ video }}</a>
+                                            <a class="dropdown-item" {% if video in watched %}style="background: lightgreen"{% endif %} href="{{ url_for('video.safety', machine_id=each.id, video_id=video) }}">Training #{{ video }}</a>
                                         {% endfor %}
                                     </div>
                                 </div>
