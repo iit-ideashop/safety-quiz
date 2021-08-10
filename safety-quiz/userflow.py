@@ -3,7 +3,7 @@ import flask
 from flask import Flask, request, session, redirect, url_for, render_template, flash, send_from_directory, Markup, \
     jsonify, g
 import sqlalchemy as sa
-from checkIn.model import User, UserLocation, Type, Training, TrainingVideosBridge, Machine, Quiz, Question, Option, MissedQuestion, init_db, \
+from checkIn.model import User, Video, UserLocation, Type, Training, TrainingVideosBridge, Machine, Quiz, Question, Option, MissedQuestion, init_db, \
     Major, College, HawkCard
 from flask import Blueprint, current_app
 import json
@@ -39,6 +39,12 @@ def utility_processor():
         else:
             return training.quiz_available_date()
     return dict(quiz_available_date=quiz_available_date)
+
+@userflow.context_processor
+def utility_processor():
+    def getVideoNameByID(video):
+        return Video.getVideoNameByID(video)
+    return dict(getVideoNameByID=getVideoNameByID)
 
 
 @userflow.route('/training')
