@@ -46,18 +46,18 @@ document.addEventListener("DOMContentLoaded", function(event){
     var first_loop = true;
     anime({
       targets: '.logo-drawing svg path',
-      endDelay: 1000,
+      endDelay: 500,
       strokeDashoffset: [anime.setDashoffset, 0],
       easing: 'easeInOutCirc',
-      duration: 1500,
-      delay: function(el, i) { return i * 100 },
+      duration: 4500,
+      delay: function(el, i) { return i * 200 },
       direction: 'alternate',
       loop: 1,
       loopComplete: function(anim) {
           if(first_loop){
               anime({
             targets: '.logo-drawing svg path',
-            fill:['rgba(0,0,0,0)', 'rgba(0,158,209,1)'],
+            fill:['rgba(0,0,0,0)', 'rgba(0,0,0,1)'],
             easing: 'linear',
             // complete: function(anim) {
             //     anime({

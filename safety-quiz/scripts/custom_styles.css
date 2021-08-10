@@ -37,8 +37,7 @@
 
 /*control gradient for navbar seen on all pages*/
 .navbar {
-    background: rgb(255,255,255);
-background: linear-gradient(90deg, rgba(0,158,209,0.75) 0%, rgba(0,158,209,0.75) 70%, rgba(88,56,149,1) 100%);
+    background: skyblue;
 
 }
 
@@ -256,4 +255,17 @@ ol ol {
   border-radius: 2em;
   transition: all .3s ease-out;
 }
+
+.scrolling-wrapper-flexbox {
+  display: flex;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.scrolling-wrapper-flexbox::-webkit-scrollbar {
+  display: none;
+}
+.scrolling-wrapper-flexbox .card {
+    flex: 0 0 auto;
+  }
 
