@@ -52,10 +52,14 @@
                                         {% endif %}
                                         {% if quizAvailable(each.machine_id) %}
                                             <li><a class="btn-sm" href="{{ url_for('quiz', training_id=each.id)}}" role="button">
-                                                Take the Quiz!  </a></li>
+                                                Take the Quiz!
+                                                <i class="bi bi-unlock-fill float-right" style="color: darkgreen"></i>
+                                            </a></li>
+
                                         {% else %}
                                             <li><a class="btn-sm" style="pointer-events: none" href="#" tabindex="-1" role="button" aria-disabled="true">
                                                 Quiz Currently Unavailable until {{ quiz_available_date(each) }}
+                                                <i class="bi bi-lock-fill float-right" style="color: red"></i>
                                             </a></li>
                                         {% endif %}
                                     </ol>
@@ -64,39 +68,30 @@
                                         <div>
                                         {% if each.quiz_attempts is not none %}
                                             {% if each.quiz_attempts >=1 and each.quiz_score is not none and each.quiz_date is not none %}
-                                                <p class="card-subtitle">Last Taken: {{each.quiz_date.strftime('%Y-%m-%d at %I:%M%p')}}</p>
+                                                <p class="card-subtitle">Last Taken: {{each.quiz_date.strftime('%B %d, %Y at %I:%M%p')}}</p>
+                                                <p class="card-subtitle">Best Quiz Score: {{ each.quiz_score|int }}%</p>
                                                 <div class="progress" style="margin: 2mm">
                                                     <div class="progress-bar" role="progressbar" style="width: {{ each.quiz_score }}%" final_width="{{ each.quiz_score }}">{{ each.quiz_score|int }}%</div>
                                                 </div>
                                             {% endif %}
                                         {% endif %}
                                         </div>
-{#                                        Button for watching training videos (maybe depricated?)#}
-                                        <div class="flex-row">
-{#                                            <div class="dropdown btn">#}
-{#                                                <button class="btn btn-primary btn-training-card dropdown-toggle" type="button" id="{{ each.machine.name }}AvailableDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">#}
-{#                                                    Training Videos#}
-{#                                                </button>#}
-{#                                                <div class="dropdown-menu" aria-labelledby="{{ each.machine.name }}AvailableDropdown">#}
-{#                                                    {% for video in videoList %}#}
-{#                                                    <a class="dropdown-item" href="{{ url_for('video.safety', machine_id=each.machine.id, video_id=video) }}">Training video {{ video }}</a>#}
-{#                                                    {% endfor %}#}
-{#                                                </div>#}
-{#                                            </div>#}
 
-
-                                            <a class="btn btn-info active btn-training-card" href="
-                                            {% if each.machine.about_link %} {{ each.machine.about_link }}
-                                                {% else %} https://wiki.ideashop.iit.edu/index.php?title=Main_Page
-                                            {% endif %}"
-                                            target="_blank" role="button">About this training</a>
-                                            {% if each.quiz_attempts is not none %}
-                                                {% if each.quiz_attempts >=1 %}
-                                                    <button type="button" class="btn btn-secondary btn-training-card" data-toggle="modal" data-target="#{{ each.machine.name }}Modal">Show Details</button>
-                                                {% endif %}
-                                            {% endif %}
                                         </div>
                                     </div>
+                                </div>
+                                <div class="card-footer">
+
+                                    <a class="btn btn-info active btn-training-card" href="
+                                    {% if each.machine.about_link %} {{ each.machine.about_link }}
+                                        {% else %} https://wiki.ideashop.iit.edu/index.php?title=Main_Page
+                                    {% endif %}"
+                                    target="_blank" role="button">About this training</a>
+                                    {% if each.quiz_attempts is not none %}
+                                        {% if each.quiz_attempts >=1 %}
+                                            <button type="button" class="btn btn-secondary btn-training-card" data-toggle="modal" data-target="#{{ each.machine.name }}Modal">Show Details</button>
+                                        {% endif %}
+                                    {% endif %}
                                 </div>
                             </div>
                         </div>
