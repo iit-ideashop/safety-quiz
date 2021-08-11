@@ -1,13 +1,5 @@
 document.addEventListener("DOMContentLoaded", function(event){
 /* Script for landing machine cards */
-    $('#cnc-Click').on('click', function () {
-        console.log('button Clicked!')
-        if ($('cnc-Info').css('display') != 'none') {
-            $('cnc-CTA').html('Here is my dynamic content').show().siblings('div').hide();
-        } else if ($('cnc-CTA').css('display') != 'none') {
-            $('cnc-Info').show().siblings('div').hide();
-        }
-        });
     console.log('Hello World')
 
     /* logo animation script */
@@ -46,10 +38,10 @@ document.addEventListener("DOMContentLoaded", function(event){
     var first_loop = true;
     anime({
       targets: '.logo-drawing svg path',
-      endDelay: 500,
+      endDelay: 200,
       strokeDashoffset: [anime.setDashoffset, 0],
       easing: 'easeInOutCirc',
-      duration: 4500,
+      duration: 2500,
       delay: function(el, i) { return i * 200 },
       direction: 'alternate',
       loop: 1,
@@ -58,7 +50,7 @@ document.addEventListener("DOMContentLoaded", function(event){
               anime({
             targets: '.logo-drawing svg path',
             fill:['rgba(0,0,0,0)', 'rgba(0,0,0,1)'],
-            easing: 'linear',
+            easing: 'easeInOutCirc',
             // complete: function(anim) {
             //     anime({
             //       targets: 'svg path',
@@ -76,5 +68,7 @@ document.addEventListener("DOMContentLoaded", function(event){
 
       }
     });
+
+
 
 });
