@@ -2,7 +2,7 @@
 {% block page %}
 
     <script src="{{ url_for('public.landing_js') }}"></script>
-
+    <script src="https://unpkg.com/@popperjs/core@2"></script>
 
     <!--landing page hero-->
     <div class="container-fluid container-full-width" style="background-color: #f7f7f7">
@@ -12,7 +12,10 @@
                     <h2>Welcome to the Idea Shop Prototyping Lab</h2>
                     <p>Located in the Ed Kaplan Family Institute for Innovation and Entrepreneurship on the Illinois Tech Mies Campus</p>
                     <div class="align-items-center">
-                        <button class="btn btn-info card-spaced-2">Location and Hours</button>
+                        <button id="locationPopover" class="btn btn-info card-spaced-2" data-toggle="popover" data-placement="bottom" title="Find Us">Location and Hours</button>
+                        <div id="locationPopoverContent" style="display: none">
+                            <iframe width="425" height="350" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="https://www.openstreetmap.org/export/embed.html?bbox=-87.6302844285965%2C41.83607446970667%2C-87.62674391269685%2C41.8378670062026&amp;layer=mapnik" style="border: 1px solid black"></iframe><br/><small><a href="https://www.openstreetmap.org/#map=19/41.83697/-87.62851">View Larger Map</a></small>
+                        </div>
                         <a class="btn btn-info card-spaced-2" target="_blank" href="https://wiki.ideashop.iit.edu/index.php?title=Our_Team">Meet the Team</a>
                     </div>
                 </div>

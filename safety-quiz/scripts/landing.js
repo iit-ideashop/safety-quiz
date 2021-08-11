@@ -29,3 +29,15 @@ function showBack(id, show){
     }
 
 
+document.addEventListener('DOMContentLoaded', () => {
+    $(function () {
+      $("#locationPopover").popover({
+          html: true,
+          content: function(){
+              return $("#locationPopoverContent").html();
+          }
+      });
+    });
+
+    var location = document.getElementById('locationPopover')
+});
