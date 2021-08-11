@@ -62,7 +62,7 @@ def before_request():
             and request.endpoint not in ['auth.login', 'auth.login_google', 'auth.authorize', 'auth.oauth2callback',
                                          'register', 'check_sid', 'logout', 'get_machine_access','public.welcome',
                                          'public.shop_status', 'static', 'public.custom_css', 'public.animation_js',
-                                         'public.index','api.get_machine_access', 'api.update_energizer',
+                                         'public.index', 'public.landing_js', 'api.get_machine_access', 'api.update_energizer',
                                          'userflow.otsname_interface']:
         print(request.endpoint)
         return redirect(url_for('auth.login'))

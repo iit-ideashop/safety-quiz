@@ -1,11 +1,31 @@
-document.addEventListener("DOMContentLoaded", function(event) {
-    $('#btnClick').on('click', function () {
-        console.log('button Clicked!')
-        if ($('#1').css('display') != 'none') {
-            $('#2').html('Here is my dynamic content').show().siblings('div').hide();
-        } else if ($('#2').css('display') != 'none') {
-            $('#1').show().siblings('div').hide();
+
+
+function showCNC(){
+        var $ = function( id ) { return document.getElementById( id ); };
+        console.log('CNC button Clicked!')
+        if($('cnc-Info').style.getPropertyValue('display') != 'none'){
+            $('cnc-Info').style.setProperty('display', 'none')
+            $('cnc-CTA').style.setProperty('opacity',1)
+            console.log('CNC details shown!')
         }
-    });
-    console.log('Hello World')
-})
+        else{
+            $('cnc-Info').style.setProperty('display', 'block')
+            $('cnc-CTA').style.setProperty('opacity',0)
+            console.log('CNC details hidden!')
+        }
+    }
+
+function showBack(id, show){
+        var $ = function( id ) { return document.getElementById( id ); };
+        console.log('LP button Clicked!, show = ',show, 'id = ', id)
+        if (show){
+            id.style.setProperty('transform','rotateY(180deg)')
+        }
+        else{
+            id.style.setProperty('transform','rotateY(0deg)')
+        }
+
+        // $('lp-front').style.setProperty('transform', 'rotateY(180deg)')
+    }
+
+
