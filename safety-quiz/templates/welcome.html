@@ -14,7 +14,7 @@
                     <div class="align-items-center">
                         <button id="locationPopover" class="btn btn-info card-spaced-2" data-toggle="popover" data-placement="bottom" title="Find Us">Location and Hours</button>
                         <div id="locationPopoverContent" style="display: none">
-                            <iframe width="425" height="350" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="https://www.openstreetmap.org/export/embed.html?bbox=-87.6302844285965%2C41.83607446970667%2C-87.62674391269685%2C41.8378670062026&amp;layer=mapnik" style="border: 1px solid black"></iframe><br/><small><a href="https://www.openstreetmap.org/#map=19/41.83697/-87.62851">View Larger Map</a></small>
+                            <iframe width="425" height="350" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="https://www.openstreetmap.org/export/embed.html?bbox=-87.63067334890367%2C41.83619437338028%2C-87.6261940598488%2C41.83810081160927&amp;layer=mapnik&amp;marker=41.83714759959362%2C-87.62843370437622" style="border: 1px solid black"></iframe><br/><small><a href="https://www.openstreetmap.org/?mlat=41.83715&amp;mlon=-87.62843#map=19/41.83715/-87.62843&amp;layers=N">View Larger Map</a></small>
                         </div>
                         <a class="btn btn-info card-spaced-2" target="_blank" href="https://wiki.ideashop.iit.edu/index.php?title=Our_Team">Meet the Team</a>
                     </div>
@@ -86,33 +86,61 @@
         </div>
     </div>
     <!--Machine Showcase-->
-    <div class="container-fluid d-flex flex-column text-center" style="padding: 0; margin: 0">
-        <div class="row d-flex justify-content-center" style="min-height: 400;">
-            <div class="col-10 d-flex col-lg-4 h-100" style="min-height: inherit; padding: inherit">
-                <div class="card h-100 card-machine" style="min-height: inherit; inset: 5px">
-                    <h4 class="display-3">CNC Machines</h4>
-                    <p class="card-body">Idea Shop Staff and Student Workers are proficient with CNC Milling workflows, and are able to provide assistance to students</p>
+
+    <div class="container-fluid flex-column text-center">
+        <div class="row justify-content-center">
+            <div class="col-10 col-lg-4" style="inset: 5px">
+                <div id="cnc_card" class="card-machine card machine-grid">
+                    <div class="card h-100 card-front">
+                        <h4 class="display-3">CNC Milling</h4>
+                        <p class="card-body">Idea Shop Staff and Student Workers are proficient with CNC Milling workflows, and are able to provide assistance to students</p>
+                    </div>
+                    <div class="card h-100 card-back">
+                        <h4>ShopSabre Pro 408</h4>
+                        <p>Large Format CNC Mill with 3 axis milling capabilities</p>
+                        <h4>Roland 4-axis CNC Mill</h4>
+                        <p>FDM 3D Printer with high detail capabilities. Has a large bed size and soluble support for complex prints</p>
+                        </div>
                 </div>
 
             </div>
-            <div class="col-10 d-flex col-lg-4 h-100" style="min-height: inherit; padding: inherit">
-                <div class="card h-100 card-machine" style="min-height: inherit; inset: 5px">
-                    <h4 class="display-3">Laser Cutters</h4>
-                    <p class="card-body">Idea Shop Staff and Student Workers are proficient with CNC Milling workflows, and are able to provide assistance to students</p>
+            <div class="col-10 col-lg-4" style="inset: 5px">
+                <div id="laser_card" class="card-machine card machine-grid">
+                    <div class="card h-100 card-front">
+                        <h4 class="display-3">Laser Cutters</h4>
+                        <p class="card-body"> Idea Shop workers are knowledgeable about the Laser Cutting workflow at the Idea Shop, and can direct students through proper utility of the laser cutting template</p>
+                    </div>
+                    <div class="card h-100 card-back">
+                        <h4>Epilog Fusion Pro 48</h4>
+                        <p>Advanced laser cutter with a large, 24"x48" bed size. Has two separate lasers: a 120 watt C02 laser, and a 50 watt fibre laser. This makes the Epilog Fusion ideal for cutting and engraving a variety of materials</p>
+                        <h4>Epilog Helix 24</h4>
+                        <p>The Epliog Helix is a smaller, lower-power varient of the Epilog Fusion. This laser cutter is still proficient at cutting and engraving a variety of materials</p>
+                    </div>
                 </div>
             </div>
-            <div class="col-10 d-flex col-lg-4 h-100" style="min-height: inherit; padding: inherit">
-                <div class="card h-100 card-machine" style="min-height: inherit; inset: 5px">
-                    <h4 class="display-3">3D Printers</h4>
-                    <p class="card-body">Idea Shop Staff and Student Workers are proficient with CNC Milling workflows, and are able to provide assistance to students</p>
+            <div class="col-10 col-lg-4" style="inset: 5px">
+                <div id="print_card" class="card-machine card machine-grid">
+                    <div class="card h-100 card-front">
+                        <h4 class="display-3">3D Printers</h4>
+                        <p class="card-body">The Idea Shop is home to a wide variety of 3D printers, providing several options for color, material properties, and cost depending on student needs</p>
+                    </div>
+                    <div class="card h-100 card-back">
+                        <h4>Stratasys J55</h4>
+                        <p>Full-color PolyJet 3D Printer that produces high-quality models with high structural strength</p>
+                        <h4>Stratasys F370</h4>
+                        <p>FDM 3D Printer with high detail capabilities. Has a large bed size and soluble support for complex prints</p>
+                        <h4>FormLabs Form2</h4>
+                        <p>The Form2 is a SLA 3D Printer that uses resin to produce models with variable material properties. Allows for flexible, transparent, and rigid prints</p>
+                    </div>
                 </div>
+
             </div>
         </div>
 
     </div>
 
     <!-- Prototype Gallery -->
-    <div class="container-full-width">
+    <div class="d-flex flex-column">
         <div class="container-fluid portfolio">
             <div class="row">
                 <div class="display-3 col-sm-6 container" style="display: table; padding-bottom: 1rem">
