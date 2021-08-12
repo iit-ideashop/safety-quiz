@@ -147,3 +147,16 @@
 #calendar #navigation-wrapper button:first-of-type {
     transform: rotate(180deg);
 }
+
+.reservation-instruction {
+    padding-top: 20px;
+    padding-bottom: 10px;
+}
+
+.no-decoration:hover {
+    text-decoration: none;
+}
+
+.no-decoration:active {
+    text-decoration: none;
+}

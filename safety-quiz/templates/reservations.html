@@ -12,6 +12,11 @@
     </style>
 {% endblock %}
 {% block page %}
+    <div class="container reservation-instruction">
+        <h2>
+            Please select an open date and choose one of the available time blocks below. Then click submit to confirm your reservation.
+        </h2>
+    </div>
     <div class="container" style="padding-top: 1.25rem">
     <div id="calendarBorder">
         <div id="myCalendarWrapper"></div>
@@ -21,8 +26,65 @@
             <p id="current-datestring"></p>
             <input id="current-date" hidden></input>
         </h3>
-        <div class="reservation_cards">
+        <div class="row card-deck text-center" style="padding-bottom: 6px">
+            <div class="card reservation_card">
+                 <a href="javascript:void(0);" class="stretched-link text-decoration-none no-decoration">
+                    <div class="card-body">
 
+                    </div>
+                 </a>
+            </div>
+             <div class="card reservation_card">
+                 <a href="javascript:void(0);" class="stretched-link text-decoration-none no-decoration">
+                    <div class="card-body">
+
+                    </div>
+                 </a>
+            </div>
+             <div class="card reservation_card">
+                 <a href="javascript:void(0);" class="stretched-link text-decoration-none no-decoration">
+                    <div class="card-body">
+
+                    </div>
+                 </a>
+            </div>
+             <div class="card reservation_card">
+                 <a href="javascript:void(0);" class="stretched-link text-decoration-none no-decoration">
+                    <div class="card-body">
+
+                    </div>
+                 </a>
+            </div>
+        </div>
+        <div class="row card-deck text-center">
+            <div class="card reservation_card">
+                 <a href="javascript:void(0);" class="stretched-link text-decoration-none no-decoration">
+                    <div class="card-body">
+
+                    </div>
+                 </a>
+            </div>
+            <div class="card reservation_card">
+                 <a href="javascript:void(0);" class="stretched-link text-decoration-none no-decoration">
+                    <div class="card-body">
+
+                    </div>
+                 </a>
+            </div>
+            <div class="card reservation_card">
+                 <a href="javascript:void(0);" class="stretched-link text-decoration-none no-decoration">
+                    <div class="card-body">
+
+                    </div>
+                 </a>
+            </div>
+            <div class="card reservation_card">
+                 <a href="javascript:void(0);" class="stretched-link text-decoration-none no-decoration">
+                    <div class="card-body">
+
+                    </div>
+                 </a>
+            </div>
         </div>
 {#        <form href="{{ url_for('reservation.reservations') }}" method="post">#}
 {#        <div class="form-group input-group mb-auto" style="margin: 1em">#}
@@ -56,8 +118,11 @@
 {#            </select>#}
 {#            <small class="form-text text-muted" style="flex-basis: 100%;">Max reservation length is 3 hours.</small>#}
 {#        </div>#}
-        <button type="submit" class="btn btn-primary" disabled style="float: right; margin-top: 1em;">Submit Reservation</button>
+
 {#        </form>#}
+    </div>
+    <div class="container" style="padding-bottom: 10px">
+        <button type="submit" class="btn btn-primary" disabled style="float: right; margin-top: 1em;">Submit Reservation</button>
     </div>
     </div>
 {% endblock %}
