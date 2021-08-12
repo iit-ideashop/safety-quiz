@@ -83,7 +83,7 @@ def reservations():
         user = db.query(User).filter_by(sid=session['sid']).one_or_none()
         reservation_types = g.reservation_db.query(ReservationType).order_by(ReservationType.id.asc()).all()
         db.close()
-        return render_template('reservations.html', reservation_types=reservation_types, user=user, openDate=datetime.date(2020, 9, 8), dateWindows=get_window())
+        return render_template('reservations.html', reservation_types=reservation_types, user=user, openDate=datetime.date(2021, 9, 8), dateWindows=get_window())
     if request.method == 'POST':
         user = g.db_session().query(User).filter_by(sid=session['sid']).one_or_none()
         start_time = datetime.datetime.strptime(request.form['start_time'],"%Y-%m-%d %X")

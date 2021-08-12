@@ -12,49 +12,52 @@
     </style>
 {% endblock %}
 {% block page %}
-    <div class="row">
-    <div class="col-lg-6" style="padding:1em; border-style: solid; border-color: #0088cc; border-radius: 10px; border-width: 2px; overflow: auto;">
+    <div class="container" style="padding-top: 1.25rem">
+    <div id="calendarBorder">
         <div id="myCalendarWrapper"></div>
     </div>
-    <div class="col-lg-4" style="padding-top: 1em;">
+    <div class="container" style="padding-top: 1em;">
         <h3 style="text-align: center">
             <p id="current-datestring"></p>
             <input id="current-date" hidden></input>
         </h3>
-        <form href="{{ url_for('reservation.reservations') }}" method="post">
-        <div class="form-group input-group mb-auto" style="margin: 1em">
-            <div class="input-group-prepend">
-                <label class="input-group-text">Reservation Type</label>
-            </div>
-            <select class="form-control" id="reservation_type" name="reservation_type" disabled required>
-                <option selected value="">Choose...</option>
-                {%  for each in reservation_types %}
-                <option value={{ each.id }}>{{ each.name }}</option>
-                {% endfor %}
-            </select>
+        <div class="reservation_cards">
+
         </div>
-        <div class="form-group input-group mb-auto" style="margin: 1em" id="extra-people" hidden>
-            <label>You may add extra people to this reservation here:</label>
-        </div>
-        <div class="form-group input-group mb-auto" style="margin: 1em">
-            <div class="input-group-prepend">
-                <label class="input-group-text">Reservation Start</label>
-            </div>
-            <select class="form-control" id="start_times" name="start_time" disabled required>
-                <option selected value="">Choose...</option>
-            </select>
-        </div>
-        <div class="form-group input-group mb-auto" style="margin: 1em">
-            <div class="input-group-prepend">
-                <label class="input-group-text">Reservation End</label>
-            </div>
-            <select class="form-control" id="end_times" name="end_time" disabled required>
-                <option selected value="">Choose...</option>
-            </select>
-            <small class="form-text text-muted" style="flex-basis: 100%;">Max reservation length is 3 hours.</small>
-        </div>
-        <button type="submit" class="btn btn-primary" style="float: right; margin-top: 1em;">Submit Reservation</button>
-        </form>
+{#        <form href="{{ url_for('reservation.reservations') }}" method="post">#}
+{#        <div class="form-group input-group mb-auto" style="margin: 1em">#}
+{#            <div class="input-group-prepend">#}
+{#                <label class="input-group-text">Reservation Type</label>#}
+{#            </div>#}
+{#            <select class="form-control" id="reservation_type" name="reservation_type" disabled required>#}
+{#                <option selected value="">Choose...</option>#}
+{#                {%  for each in reservation_types %}#}
+{#                <option value={{ each.id }}>{{ each.name }}</option>#}
+{#                {% endfor %}#}
+{#            </select>#}
+{#        </div>#}
+{#        <div class="form-group input-group mb-auto" style="margin: 1em" id="extra-people" hidden>#}
+{#            <label>You may add extra people to this reservation here:</label>#}
+{#        </div>#}
+{#        <div class="form-group input-group mb-auto" style="margin: 1em">#}
+{#            <div class="input-group-prepend">#}
+{#                <label class="input-group-text">Reservation Start</label>#}
+{#            </div>#}
+{#            <select class="form-control" id="start_times" name="start_time" disabled required>#}
+{#                <option selected value="">Choose...</option>#}
+{#            </select>#}
+{#        </div>#}
+{#        <div class="form-group input-group mb-auto" style="margin: 1em">#}
+{#            <div class="input-group-prepend">#}
+{#                <label class="input-group-text">Reservation End</label>#}
+{#            </div>#}
+{#            <select class="form-control" id="end_times" name="end_time" disabled required>#}
+{#                <option selected value="">Choose...</option>#}
+{#            </select>#}
+{#            <small class="form-text text-muted" style="flex-basis: 100%;">Max reservation length is 3 hours.</small>#}
+{#        </div>#}
+        <button type="submit" class="btn btn-primary" disabled style="float: right; margin-top: 1em;">Submit Reservation</button>
+{#        </form>#}
     </div>
     </div>
 {% endblock %}
