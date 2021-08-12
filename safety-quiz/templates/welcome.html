@@ -1,79 +1,23 @@
 {% extends 'layout.html' %}
 {% block page %}
-    <script src="{{ url_for('public.animation_js') }}"></script>
-    <script src="{{ url_for('public.landing_js') }}"></script>
-    <div class="logo-drawing container">
-        <svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 611.81 227.06">
-            <defs>
-                <style>
-                    .cls-1 {
-                        fill: none;
-                        stroke: #000;
-                        stroke-width: 0.5px;
-                    }
-                </style>
-            </defs>
-            <path class="cls-1"
-                  d="M611.56,59.16c-1.12.06-2.23.16-3.34.16H510.38c-3.21,0-3.21,0-3.21,3.25V93.65H487.8v4.8c-.44.24-.67.47-.84.44-3.84-.78-5.64,1.46-7.34,4.45-2.73,4.78-5.83,9.34-8.77,14-.45.72-.86,1.47-1.46,2.49l22.94,1.76v1l-14.61,1.25v.31l19.51,1.29c0,.37,0,.73,0,1.1l-16.5,1,0,.39,20.35,1.14.07.82a16.25,16.25,0,0,1-2.81.5c-5.19.1-10.39.14-15.58.18a55.55,55.55,0,0,0-10.4,1c-4,.8-8.31.19-12.48.19,0-.36,0-.72,0-1.09l16.57-1.25v-.24l-17.14-1-.06-1c5.43-.94,11-.58,16.49-1.54l-16.43-1.16,0-1.08,17-1.2v-.33l-7.69-.76c-.42-1.68-.44-2.92-1-3.84-3.21-5.24-6.66-10.33-9.77-15.63-1.25-2.14-2.67-3.15-5.11-2.75a9.59,9.59,0,0,1-1.68-.08c-.09-1.62-.19-3.24-.3-5.12H431.28V59.39H.25V45.48H431.17V.25h75.94V45.19c.94.08,1.62.2,2.31.2H609.89c.55,0,1.11-.08,1.67-.12Z"/>
-            <path class="cls-1"
-                  d="M220.18,226.81c-5.86-2.26-7.77-5.06-7.29-10.66.43-5,3.94-8.21,8.86-8.14s8.23,3.45,8.45,8.53c.22,5.3-1.71,7.9-7.62,10.27Zm5.71-9.66a19.78,19.78,0,0,0-1.37-4,3.47,3.47,0,0,0-5.85-.42c-1.85,2.17-2,6.81-.06,8.92a4.66,4.66,0,0,0,2.86,1.35C224.11,223.23,225.59,221,225.89,217.15Z"/>
-            <path class="cls-1"
-                  d="M172.7,226.81c-6.29-2.43-8.63-6.57-7-12.49,1.23-4.62,5.69-7.17,10.68-6.11,4.29.91,7.08,5.77,6.28,10.69-.71,4.39-3.4,6.79-7.51,7.91Zm5.4-9.39c0-3.76-1.67-6.11-4.32-6-2.36.11-4,2.35-4,5.62-.05,3.5,1.4,5.83,3.77,6C176.39,223.33,178.07,221.24,178.1,217.42Z"/>
-            <path class="cls-1"
-                  d="M92.67,120.81c4.13-.31,8.16-.66,12.2-.91,7.84-.5,15.64-.34,23.19,2.08,11.3,3.61,18.38,13.27,18.71,25.09.22,8.06-1,15.72-5.77,22.47-5.05,7.11-12.45,10.16-20.65,11.69-8.48,1.57-17,1.07-25.54.43-1.32-.1-2.38-.27-2.37-2.17.07-19.07,0-38.14,0-57.21C92.49,122,92.56,121.65,92.67,120.81Zm13.87,49.9c6.71,1.7,17.06-.46,21.37-6.55,5-7.07,5.42-19.89.54-26.69-4.23-5.89-13.91-8.61-21.91-6.11Z"/>
-            <path class="cls-1"
-                  d="M450.28,152c-.21,8-2.36,16.95-10,23.48-8.94,7.62-19.38,9-30.31,5.43-10.48-3.41-16-11.38-18-21.89-2.09-10.9-.52-21.16,6.76-29.91,6.6-7.92,15.46-10.56,25.5-9.77C440.57,120.64,450.25,133.69,450.28,152Zm-14.85-1.17a27.47,27.47,0,0,0-2.8-12.6c-2.58-4.86-6.4-7.87-12.15-7.79a12.23,12.23,0,0,0-11.81,8.18,38.9,38.9,0,0,0-2.61,11.5c-.39,5.44.55,10.82,3.81,15.45,5.79,8.25,17.12,7.76,22.24-.92C434.61,160.4,435.3,155.72,435.43,150.82Z"/>
-            <path class="cls-1"
-                  d="M367.93,156H345.39v25.55H331.54V120.25h13.74v23.21H368v-12c0-3.12.07-6.23,0-9.34-.05-1.6.54-2.07,2.09-2,3.19.09,6.39.14,9.58,0,2-.1,2.55.58,2.54,2.55-.07,17.72,0,35.43,0,53.15,0,5.88,0,5.88-5.84,5.88-1.92,0-3.84-.12-5.75,0s-2.63-.45-2.6-2.5c.13-7.1,0-14.2,0-21.3C368,157.34,368,156.78,367.93,156Z"/>
-            <path class="cls-1"
-                  d="M255.75,181.65c-4.8,0-9.35.06-13.88-.07-.54,0-1.29-1-1.51-1.67q-2-6-3.7-12.08c-.38-1.35-.87-2-2.41-1.94-4.63.1-9.27.07-13.9,0a1.86,1.86,0,0,0-2.15,1.64c-1,4-2.27,8-3.26,12-.39,1.56-1,2.26-2.71,2.2-4-.13-8,0-12.29,0,.19-.9.29-1.57.48-2.21q8.72-28.6,17.43-57.22c.45-1.49,1-2.22,2.78-2.16,4.71.14,9.43.1,14.14,0a2.3,2.3,0,0,1,2.69,1.93q8.85,28.81,17.84,57.59C255.48,180.19,255.56,180.8,255.75,181.65ZM221,155.1h12.9l-6.7-23.71C225.07,139.33,223,147.11,221,155.1Z"/>
-            <path class="cls-1"
-                  d="M194.72,169.86v11.66c-.79,0-1.41.13-2,.13-11.58,0-23.16,0-34.75,0-1.9,0-2.43-.54-2.42-2.43q.09-28.35,0-56.71c0-1.32-.18-2.49,1.86-2.48,11.74.08,23.49,0,35.23.06a7.79,7.79,0,0,1,.9.15v11.49h-23.6v12.41h22.22v11.55H169.9v14.12Z"/>
-            <path class="cls-1"
-                  d="M279.83,178.91l2.78-11.35c3.76,1,7.3,2.37,10.95,2.9a31.69,31.69,0,0,0,9.22-.22,5.55,5.55,0,0,0,4.88-4.91,5.68,5.68,0,0,0-3.13-6.16c-2.27-1.3-4.77-2.18-7.12-3.33-3.21-1.56-6.64-2.84-9.53-4.87-10.25-7.21-9.46-21.72,1.35-28.12A28.63,28.63,0,0,1,307,119.31c3.61.34,7.16,1.41,10.73,2.17,1.52.32,2.08,1.08,1.56,2.71-1,3-1.74,6.09-2.5,8.82-4.19-.75-8.19-1.61-12.23-2.12a14.63,14.63,0,0,0-5.15.56c-2.3.57-4,1.94-4.41,4.47-.41,2.72,1.17,4.42,3.29,5.59s4.32,2,6.5,3c2.68,1.21,5.45,2.25,8,3.67,6.23,3.45,9.73,8.71,9.39,16s-4.07,12.75-10.81,15.62C300.88,184.23,290.42,183.07,279.83,178.91Z"/>
-            <path class="cls-1"
-                  d="M459.26,139.29h13.81c0,2.5.12,4.94,0,7.36-.12,1.8.63,2.59,2.28,2.46,2.67-.21,5.46-.2,8-1,4.32-1.33,5.87-4.27,6.16-10.52,4.25,0,8.53-.05,12.8.1.37,0,1,1.43,1,2.19,0,8.44-4.63,14.93-12.59,17.92a38.46,38.46,0,0,1-17.53,1.9v21.8H459.26Z"/>
-            <path class="cls-1" d="M80.43,181.54H66.77V120.31H80.43Z"/>
-            <path class="cls-1"
-                  d="M327.59,214.8v11.33H324V208.52c4.46-.71,4.48-.72,6.5,2.89,1.36,2.42,2.69,4.86,4.36,7.88v-10.9h3.76V226c-3.82.83-4,.74-5.8-2.48-1.6-2.92-3.18-5.84-4.78-8.75Z"/>
-            <path class="cls-1"
-                  d="M445.76,216.52c2.15,1.39,3.53,3,2.85,5.6s-2.77,3.88-5.28,4.1-5.21.05-8.15.05V213.05c0-4.86,0-4.89,4.85-4.87a24.15,24.15,0,0,1,4.25.36,4.16,4.16,0,0,1,3.7,3.24C448.39,213.63,447.85,214.83,445.76,216.52ZM440,218.18l-.74.71.87,4.35c1.13-.25,2.43-.25,3.32-.85.52-.35.79-2.22.49-2.43A21,21,0,0,0,440,218.18Zm-.4-2.4a26.48,26.48,0,0,0,3.88-1.67,2.13,2.13,0,0,0-.08-1.86,23.2,23.2,0,0,0-3.8-1.16Z"/>
-            <path class="cls-1"
-                  d="M153.49,217.49c1,3,2,5.67,3,8.41-4.18,1-4.38.86-5.37-3a6.75,6.75,0,0,0-1-2.62,3.39,3.39,0,0,0-2.27-.91c-.27,0-.78,1.16-.83,1.82-.13,1.57,0,3.16,0,4.9h-4.32V218.9c0-2.86-.09-5.74.06-8.59,0-.7.85-1.9,1.35-1.92a49.57,49.57,0,0,1,7.61.14,4.35,4.35,0,0,1,4,3.57,4.79,4.79,0,0,1-1.8,5.08C153.58,217.38,153.36,217.61,153.49,217.49ZM147,217a24,24,0,0,0,4.16-2.33,2.35,2.35,0,0,0-.2-2.25,18,18,0,0,0-4-1.29Z"/>
-            <path class="cls-1"
-                  d="M360.67,222.84v-3.31l-2.51-.48V216H365c0,2.86,0,5.78,0,8.69a1.48,1.48,0,0,1-1,1.05c-3,.16-6.09.69-9,.14-4.18-.79-6.38-4.7-5.91-9.09.53-5,3.63-8.27,8.37-8.56a64.28,64.28,0,0,1,7,.29c-.35,1.51-.6,2.54-.86,3.67-3.4-.5-6.89-1.6-9.21,1.88a5.85,5.85,0,0,0,0,6.57C355.72,222.87,357.93,223.34,360.67,222.84Z"/>
-            <path class="cls-1"
-                  d="M425.42,226.29a15.54,15.54,0,0,0-2.2,0c-1.8.28-2.88-.32-3-2.25-.18-2.22-1.64-2.37-3.5-2.47-2.1-.11-2.57,1-2.84,2.61a16.2,16.2,0,0,1-.6,2h-4.31c.41-1.36.79-2.67,1.18-4,1.27-4.18,2.64-8.33,3.79-12.53.57-2.07,2.09-1.34,3.28-1.35s2.5-.64,3.06,1.3C421.83,215.09,423.61,220.51,425.42,226.29Zm-6.69-7.9c-.55-1.92-1.06-3.73-1.58-5.53h-.41c-.48,1.77-1,3.55-1.5,5.53Z"/>
-            <path class="cls-1"
-                  d="M123.8,220.31v5.8h-4.16v-18a74,74,0,0,1,8.76.46c2.83.47,4.1,2.36,4.17,5,.07,2.9-1.3,5.06-3.95,5.84A42.67,42.67,0,0,1,123.8,220.31Zm.08-2.92c1.66-.84,3.08-1.28,4.07-2.19a2.58,2.58,0,0,0,0-2.54,17.3,17.3,0,0,0-4.06-1.66Z"/>
-            <path class="cls-1"
-                  d="M285.63,208.11a74.33,74.33,0,0,1,8.5.51c2.8.47,4.12,2.38,4.19,5,.09,2.9-1.29,5-4,5.83a42.82,42.82,0,0,1-4.73.84v5.86h-4Zm4.12,9.31c1.66-.91,3.05-1.38,4-2.31a2.54,2.54,0,0,0-.15-2.54c-1-.76-2.39-1-3.86-1.51Z"/>
-            <path class="cls-1"
-                  d="M268.49,215.67c.68-1.61,1.17-2.76,1.64-3.92,1.54-3.74,1.54-3.74,6.09-3.33-2.62,5.7-7.72,10.54-5.32,17.71h-4.13c-.52-3-.69-6.2-1.69-9.09s-2.82-5.48-4.29-8.22c3.35-1.33,4.5-.88,5.76,2.14C267.13,212.35,267.7,213.74,268.49,215.67Z"/>
-            <path class="cls-1" d="M252.13,208.41v3.4h-4.67v14.34h-4.3V212h-4.67v-3.58Z"/>
-            <path class="cls-1" d="M204.66,208.4v3.43H200v14.33h-4.3V212H191V208.4Z"/>
-            <path class="cls-1"
-                  d="M392.85,222.64h7v3.53h-11.2c0-5.67,0-11.22.05-16.77,0-.38.7-1,1.16-1.09a16.53,16.53,0,0,1,3-.05Z"/>
-            <path class="cls-1" d="M312.57,226.21h-3.93v-17.8h3.93Z"/>
-            <path class="cls-1" d="M501.94,132c-2.84,2.68-13.65,2.14-16.51-.79Z"/>
-            <path class="cls-1" d="M503.14,135.42c-1.33,1.51-12.2,2.37-13.3,1.5a6.24,6.24,0,0,1-1.08-1.5Z"/>
-            <path class="cls-1" d="M473.25,133.63v1.93L459,134.84C460,133.32,466.09,132.92,473.25,133.63Z"/>
-            <path class="cls-1"
-                  d="M458.91,136.34c4.74,0,9.21,0,13.68.06.32,0,.62.87,1,1.48C469.17,138.54,460,137.72,458.91,136.34Z"/>
-        </svg>
 
-    </div>
+    <script src="{{ url_for('public.landing_js') }}"></script>
+    <script src="https://unpkg.com/@popperjs/core@2"></script>
 
     <!--landing page hero-->
-    <div class="container-fluid container-full-width" style="background-color: #009ed1">
+    <div class="container-fluid container-full-width" style="background-color: #f7f7f7">
         <div class="container" style="/*max-height: 40vh;*/margin: auto; padding-bottom: 1rem; padding-top: 1rem;">
             <div class="row align-items-center">
-                <div class="col-sm-6" style="text-align: center; color: white; cursor: default">
-                    <h2>Welcome to the Idea Shop portal</h2>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Alias molestias quaerat qui!
-                        Accusantium adipisci assumenda cupiditate doloribus possimus recusandae sapiente!</p>
+                <div class="col-sm-6" style="text-align: center; color: #009ED1; cursor: default">
+                    <h2>Welcome to the Idea Shop Prototyping Lab</h2>
+                    <p>Located in the Ed Kaplan Family Institute for Innovation and Entrepreneurship on the Illinois Tech Mies Campus</p>
+                    <div class="align-items-center">
+                        <a class="btn btn-info card-spaced-2" href="{{ url_for('public.shop_status') }}">Location and Hours</a>
+
+                        <a class="btn btn-info card-spaced-2" target="_blank" href="https://wiki.ideashop.iit.edu/index.php?title=Our_Team">Meet the Team</a>
+                    </div>
                 </div>
-                <div class="col-sm-6">
+                <div class="col-sm-6" style="height: 50% ">
                     <div id="mainCarouselControls" class="carousel slide" data-ride="carousel">
                         <ol class="carousel-indicators">
                             <li data-target="#mainCarouselControls" data-slide-to="0" class="active"></li>
@@ -83,18 +27,18 @@
                         <div class="carousel-inner">
                             <!--TODO: set image heights to equal value to avoid re-size on carousel-->
                             <div class="carousel-item active">
-                                <img class="d-block w-100"
-                                     src="https://www.iit.edu/sites/default/files/2019-11/idea_shop_main_800x537.jpg"
+                                <img class="d-block w-100 h-100"
+                                     src="{{ url_for('static', filename='shop_photos/6.jpg')}}"
                                      alt="First slide">
                             </div>
                             <div class="carousel-item">
-                                <img class="d-block w-100"
-                                     src="https://www.iit.edu/sites/default/files/styles/width_640/public/2019-11/idea_shop_gallery_640x450.jpg?itok=PHgadbaD"
+                                <img class="d-block w-100 h-100"
+                                     src="{{ url_for('static', filename='shop_photos/7.jpg')}}"
                                      alt="Second slide">
                             </div>
                             <div class="carousel-item">
-                                <img class="d-block w-100"
-                                     src="https://www.iit.edu/sites/default/files/2019-11/idea_shop_4_860x576.jpg"
+                                <img class="d-block w-100 h-100"
+                                     src="{{ url_for('static', filename='shop_photos/8.jpg')}}"
                                      alt="Third slide">
                             </div>
                         </div>
@@ -115,80 +59,90 @@
     <div class="container-fluid container-full-width" style="background-color: #777777;">
     <div class="container">
             <div class="row">
-                <div class="col-sm-4">
-                    <div class="card text-center card-info primary-text">
-                        <div><i class="bi bi-archive-fill" style="font-size: 3rem"></i></div>
-                        <h3 class="display-4">Column 1</h3>
-                        <p class="card-body">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Amet animi
-                            corporis
-                            dolorum eaque enim eum exercitationem fugiat, fugit illum incidunt ipsum minus nostrum
-                            provident
-                            quae quos reprehenderit veritatis. Officia.</p>
+                <div class="col-lg-4">
+                    <div class="card text-center card-info primary-text card-spaced-2">
+                        <div><i class="bi bi-cpu-fill" style="font-size: 3rem"></i></div>
+                        <h3 class="display-4">Electronics Prototyping</h3>
+                        <p class="card-body">At the Idea Shop, students have access to a variety of Electronics prototyping equipment</p>
                     </div>
                 </div>
-                <div class="col-sm-4">
-                    <div class="card text-center card-info primary-text">
-                        <div><i class="bi bi-archive-fill" style="font-size: 3rem"></i></div>
-                        <h3 class="display-4">Column 2</h3>
-                        <p class="card-body">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Amet animi
-                            corporis
-                            dolorum eaque enim eum exercitationem fugiat, fugit illum incidunt ipsum minus nostrum
-                            provident
-                            quae quos reprehenderit veritatis. Officia.</p>
+                <div class="col-lg-4">
+                    <div class="card text-center card-info primary-text card-spaced-2">
+                        <div><i class="bi bi-bricks" style="font-size: 3rem"></i></div>
+                        <h3 class="display-4">Additive Prototyping</h3>
+                        <p class="card-body">Students and Faculty members can utilize Idea Shop machines and resources to bring their ideas to fruition, creating detailed, full-color models for academic and personal projects</p>
                     </div>
                 </div>
-                <div class="col-sm-4">
-                    <div class="card text-center card-info primary-text">
-                        <div><i class="bi bi-archive-fill" style="font-size: 3rem"></i></div>
-                        <h3 class="display-4">Column 3</h3>
-                        <p class="card-body">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Amet animi
-                            corporis
-                            dolorum eaque enim eum exercitationem fugiat, fugit illum incidunt ipsum minus nostrum
-                            provident
-                            quae quos reprehenderit veritatis. Officia.</p>
+                <div class="col-lg-4">
+                    <div class="card text-center card-info primary-text card-spaced-2">
+                        <div><i class="bi bi-layer-backward" style="font-size: 3rem"></i></div>
+                        <h3 class="display-4">Subtractive prototyping</h3>
+                        <p class="card-body">The Idea Shop also has a wide array of wood and metalworking tools available to the Illinois Tech community</p>
                     </div>
                 </div>
             </div>
         </div>
     </div>
     <!--Machine Showcase-->
-    <div class="container-fluid container-full-width">
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col-sm-4">
-                    <div class="card card-machine text-center">
-                        <h2 class="display-1">Check out our CNC Machine</h2>
-                        <div id="cnc-Info"><p class="card-body"> Here is some basic info: Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aliquam cum, cumque doloribus et hic neque nostrum quaerat quia quo voluptatum?</p></div>
-                        <div id="cnc-CTA" class="machine-extend"><p class="card-body">Here is my dynamic content!</p></div>
-                        <div id="cnc-Click" class="btn button-machine"><i class="bi bi-plus-lg" style="line-height: 2rem; vertical-align: middle"></i></div>
+
+    <div class="container-fluid flex-column text-center">
+        <div class="row justify-content-center">
+            <div class="col-10 col-lg-4" style="inset: 5px">
+                <div id="cnc_card" class="card-machine card machine-grid">
+                    <div class="card h-100 card-front">
+                        <h4 class="display-3">CNC Milling</h4>
+                        <p class="card-body">Idea Shop Staff and Student Workers are proficient with CNC Milling workflows, and are able to provide assistance to students</p>
                     </div>
+                    <div class="card h-100 card-back">
+                        <h4>ShopSabre Pro 408</h4>
+                        <p>Large Format CNC Mill with 3 axis milling capabilities</p>
+                        <h4>Roland 4-axis CNC Mill</h4>
+                        <p>FDM 3D Printer with high detail capabilities. Has a large bed size and soluble support for complex prints</p>
+                        </div>
                 </div>
-                <div class="col-sm-4">
-                    <div class="card card-machine text-center">
-                        <h2 class="display-1">Check out our Laser Printers</h2>
-                        <div id="lp-Info"><p class="card-body"> Here is some basic info: Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aliquam cum, cumque doloribus et hic neque nostrum quaerat quia quo voluptatum?</p></div>
-                        <div id="lp-CTA" style="display: none"><p class="card-body">Here is my dynamic content!</p></div>
-                        <div id="lp-Click" class="btn button-machine"><i class="bi bi-plus-lg" style="line-height: 2rem; vertical-align: middle"></i></div>
+
+            </div>
+            <div class="col-10 col-lg-4" style="inset: 5px">
+                <div id="laser_card" class="card-machine card machine-grid">
+                    <div class="card h-100 card-front">
+                        <h4 class="display-3">Laser Cutters</h4>
+                        <p class="card-body"> Idea Shop workers are knowledgeable about the Laser Cutting workflow at the Idea Shop, and can direct students through proper utility of the laser cutting template</p>
                     </div>
-                </div>
-                <div class="col-sm-4">
-                    <div class="card card-machine text-center">
-                        <h2 class="display-1">Check out our 3d-Printers</h2>
-                        <div id="3dInfo"><p class="card-body"> Here is some basic info: Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aliquam cum, cumque doloribus et hic neque nostrum quaerat quia quo voluptatum?</p></div>
-                        <div id="3d-CTA" style="display: none"><p class="card-body">Here is my dynamic content!</p></div>
-                        <div id="3d-Click" class="btn button-machine"><i class="bi bi-plus-lg" style="line-height: 2rem; vertical-align: middle"></i></div>
+                    <div class="card h-100 card-back">
+                        <h4>Epilog Fusion Pro 48</h4>
+                        <p>Advanced laser cutter with a large, 24"x48" bed size. Has two separate lasers: a 120 watt C02 laser, and a 50 watt fibre laser. This makes the Epilog Fusion ideal for cutting and engraving a variety of materials</p>
+                        <h4>Epilog Helix 24</h4>
+                        <p>The Epliog Helix is a smaller, lower-power varient of the Epilog Fusion. This laser cutter is still proficient at cutting and engraving a variety of materials</p>
                     </div>
                 </div>
             </div>
+            <div class="col-10 col-lg-4" style="inset: 5px">
+                <div id="print_card" class="card-machine card machine-grid">
+                    <div class="card h-100 card-front">
+                        <h4 class="display-3">3D Printers</h4>
+                        <p class="card-body">The Idea Shop is home to a wide variety of 3D printers, providing several options for color, material properties, and cost depending on student needs</p>
+                    </div>
+                    <div class="card h-100 card-back">
+                        <h4>Stratasys J55</h4>
+                        <p>Full-color PolyJet 3D Printer that produces high-quality models with high structural strength</p>
+                        <h4>Stratasys F370</h4>
+                        <p>FDM 3D Printer with high detail capabilities. Has a large bed size and soluble support for complex prints</p>
+                        <h4>FormLabs Form2</h4>
+                        <p>The Form2 is a SLA 3D Printer that uses resin to produce models with variable material properties. Allows for flexible, transparent, and rigid prints</p>
+                    </div>
+                </div>
+
+            </div>
         </div>
+
     </div>
 
     <!-- Prototype Gallery -->
-    <div class="container-full-width">
+    <div class="d-flex flex-column">
         <div class="container-fluid portfolio">
             <div class="row">
-                <div class="display-1 col-sm-6 container" style="display: table; padding-bottom: 1rem">
-                    <p style="display: table-cell; vertical-align: middle; cursor: default">Checkout Some of our featured projects!</p>
+                <div class="display-3 col-sm-6 container" style="display: table; padding-bottom: 1rem">
+                    <p class="text-center" style="display: table-cell; vertical-align: middle; cursor: default">Check out some of our featured projects!</p>
                 </div>
                 <div class="col-sm-6">
                      <div id="portfolioCarouselControls" class="carousel slide" data-ride="carousel">
@@ -201,17 +155,17 @@
                             <!--TODO: set image heights to equal value to avoid re-size on carousel-->
                             <div class="carousel-item active">
                                 <img class="d-block w-100"
-                                     src="https://www.iit.edu/sites/default/files/2019-11/idea_shop_main_800x537.jpg"
+                                     src="{{ url_for('static', filename='shop_photos/5.jpg')}}"
                                      alt="First slide">
                             </div>
                             <div class="carousel-item">
                                 <img class="d-block w-100"
-                                     src="https://www.iit.edu/sites/default/files/styles/width_640/public/2019-11/idea_shop_gallery_640x450.jpg?itok=PHgadbaD"
+                                     src="{{ url_for('static', filename='shop_photos/6.jpg')}}"
                                      alt="Second slide">
                             </div>
                             <div class="carousel-item">
                                 <img class="d-block w-100"
-                                     src="https://www.iit.edu/sites/default/files/2019-11/idea_shop_4_860x576.jpg"
+                                     src="{{ url_for('static', filename='shop_photos/2.jpg')}}"
                                      alt="Third slide">
                             </div>
                         </div>
@@ -231,10 +185,10 @@
 
     <!--Footer-->
     <div class="container-full-width">
-        <div class="container-fluid footer-container">
+        <div class="container-fluid footer-container" style="background: linear-gradient(90deg, rgba(0,158,209,0.75) 0%, rgba(0,158,209,0.9) 50%, rgba(88,56,149,1) 100%);">
             <div class="row">
                 <div class="footer-content text-center container">
-                    Future Note: Add Idea Shop SVG here
+                    <svg style="width: 15vw; max-width: 150px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 457.96 126.12"><defs><style>.cls-1{stroke-width: 1.5px; stroke: dimgrey}</style></defs><g id="Layer_2" data-name="Layer 2"><g id="Layer_1-2" data-name="Layer 1"><path style="fill:black;" class="cls-1" d="M404.05,70.62c6.51-.69,13.1-.59,19.67-1.34L404.13,68.1c0-.29,0-.57-.05-.86,1.86-1,4-.46,6-.71,2.22-.27,4.46-.29,6.7-.42a52.62,52.62,0,0,0,6.45-.66c-3-.21-6-.46-9-.63-.81,0-1.7-.35-1.7-1s.77-.53.77-.53l11.24.81c3.81.27,7.63.5,11.44.82a4.56,4.56,0,0,1,1.5.74,5.88,5.88,0,0,1-1.63.64c-5.32.37-10.64.67-16,1.26l14.63.87c2.09.13,4.18.19,6.26.4a6.87,6.87,0,0,1,1.91.76,7.43,7.43,0,0,1-1.86.63c-4.53.24-9.08.4-13.62.61a22.16,22.16,0,0,0-3.86.49l22.72,1.21c0,.3,0,.6.05.9a8.35,8.35,0,0,1-1.8.41c-6.13.12-12.25.18-18.37.29-2.24,0-4.76-.42-6.64.44-4.54,2.08-9,.21-13.49.57a2.17,2.17,0,0,1-1.69-.79c6.93-.91,13.87-1,20.81-1.49l-20.86-1.17C404.06,71.35,404.05,71,404.05,70.62Zm30.47,10.6-.41,0a9.13,9.13,0,0,1,.3,1.54c0,6.27-4.55,10-11.92,10a20.64,20.64,0,0,1-4.64-.37V82.84H404.1v42.28h13.75V103.19a35.23,35.23,0,0,0,4.73.27c8.18,0,15.19-2,19.92-6.46,3.64-3.46,5.65-8.55,5.65-14.56,0-.42-.11-.81-.14-1.22Zm-3.83-5.72c1.21.61,2.41,1.7,3.64,1.74,3.51.12,7-.17,10.56-.34a12.83,12.83,0,0,0,1.91-.36c0-.31,0-.63,0-1L431,74.83Zm-12.48,5.2a5.64,5.64,0,0,0-.07-.79H404.06V81l14,.77A8.5,8.5,0,0,0,418.21,80.7Zm-14.09-2.39,14,.69V77.08H404.2Zm29.73.08c-.09,1.87.84,2.22,2.3,2.15,3.43-.15,6.88-.2,10.31-.32a12.44,12.44,0,0,0,1.71-.28l0-.81A111.93,111.93,0,0,0,433.85,78.39ZM11.16,125.12H25.08V63.79H11.16ZM91.32,93c0,11.74-4.28,19.84-10.19,24.84-6.46,5.37-16.29,7.92-28.3,7.92a121,121,0,0,1-15.74-.91V64.61a123.63,123.63,0,0,1,18.74-1.28c11.65,0,19.2,2.1,25.12,6.55C87.32,74.62,91.32,82.17,91.32,93Zm-14.74.45C76.67,80.71,69.21,74,57.29,74a29.24,29.24,0,0,0-6.28.54v40.14a25.85,25.85,0,0,0,4.82.27C68.39,115,76.58,108.1,76.58,93.45Zm61.69-18.29V63.79H100.41v61.33h39.13V113.74H114.33V99.19H136.9V87.9H114.33V75.16Zm43.21-11.37,19,61.33H185.58l-4.73-15.74H163.28l-4.36,15.74H144.54l18.74-61.33ZM178.84,99,175,86c-1.09-3.64-2.18-8.19-3.09-11.83h-.18c-.92,3.64-1.83,8.28-2.82,11.83l-3.65,13ZM250.9,88.72c-7.92-3-11.38-4.73-11.38-8.64,0-3.19,2.92-5.92,8.92-5.92a29.16,29.16,0,0,1,12.83,2.91l3.1-11.19a37.58,37.58,0,0,0-15.66-3.09c-14.46,0-23.2,8-23.2,18.47,0,8.92,6.64,14.56,16.84,18.11,7.37,2.64,10.28,4.82,10.28,8.64,0,4-3.37,6.65-9.74,6.65a35.42,35.42,0,0,1-15.38-3.83l-2.82,11.47c3.46,1.91,10.38,3.73,17.38,3.73,16.84,0,24.75-8.73,24.75-19C266.82,98.37,261.73,92.73,250.9,88.72Zm62-1.36H290.11V63.79H276.19v61.33h13.92V99.46H313v25.66h13.83V63.79H313ZM395,93.82c0,20.11-12.2,32.3-30.12,32.3-18.2,0-28.85-13.74-28.85-31.21,0-18.38,11.74-32.12,29.85-32.12C384.74,62.79,395,76.89,395,93.82Zm-14.65.45c0-11-5.28-20.47-14.84-20.47-9.37,0-14.83,8.92-14.83,20.84s5.64,20.47,14.93,20.47S380.37,106.19,380.37,94.27Zm53-78.71V0H393.28V15.56H0V26.4H393.28V49.49h10.34v2.82h2.77l6.95,11,6.94-11h2.77V49.49h10.34V26.4H458V15.56Z"/></g></g></svg>
                 </div>
                 <div class="social-links container">
                         <a class="social-tag" href="https://www.instagram.com/iit_ideashop/?hl=en"><i class="bi bi-instagram" style="height: 3rem; width: 3rem; color: #A5DFF9"></i></a>

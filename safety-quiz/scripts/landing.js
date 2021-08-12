@@ -1,11 +1,36 @@
-document.addEventListener("DOMContentLoaded", function(event) {
-    $('#btnClick').on('click', function () {
-        console.log('button Clicked!')
-        if ($('#1').css('display') != 'none') {
-            $('#2').html('Here is my dynamic content').show().siblings('div').hide();
-        } else if ($('#2').css('display') != 'none') {
-            $('#1').show().siblings('div').hide();
-        }
+
+function flipCard(object) {
+        object.classList.toggle("flipCard")
+        console.log("in handler")
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const cnc = document.getElementById('cnc_card')
+    const laser = document.getElementById('laser_card')
+    const printers = document.getElementById('print_card')
+
+    printers.addEventListener("mousedown", function() {
+        flipCard(printers)
+    })
+    laser.addEventListener("mousedown", function() {
+        flipCard(laser)
+    })
+    cnc.addEventListener("mousedown", function() {
+        flipCard(cnc)
+    })
+
+
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+    $(function () {
+        $("#locationPopover").popover({
+            html: true,
+            content: function () {
+                return $("#locationPopoverContent").html();
+            }
+        });
     });
-    console.log('Hello World')
-})
+});
+
+

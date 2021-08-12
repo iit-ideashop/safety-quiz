@@ -37,8 +37,7 @@
 
 /*control gradient for navbar seen on all pages*/
 .navbar {
-    background: rgb(255,255,255);
-background: linear-gradient(90deg, rgba(0,158,209,0.75) 0%, rgba(0,158,209,0.75) 70%, rgba(88,56,149,1) 100%);
+    background: skyblue;
 
 }
 
@@ -133,7 +132,7 @@ background: linear-gradient(90deg, rgba(0,158,209,0.75) 0%, rgba(0,158,209,0.75)
     }
     1% {
         visibility: visible;
-        opacity: 1;
+        opacity: 0;
     }
     to {
         visibility: visible;
@@ -156,27 +155,34 @@ background: linear-gradient(90deg, rgba(0,158,209,0.75) 0%, rgba(0,158,209,0.75)
     }
 }
 .card-machine {
-    /*height: 40vh;*/
     color: #777777;
     visibility: visible;
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transform-style: preserve-3d;
+    transition: all 0.8s ease;
+    -webkit-transform-style: preserve-3d;
+    -webkit-perspective: 900px;
 }
 
 .machine-extend {
     position: absolute;
-    visibility: hidden;
+    display: block;
     opacity: 0;
     background-color: #009ED1;
-    transition: opacity .66s .66s cubic-bezier(.66, 0, 0.2, 1),visibility .66s .66s;
+    transition: all .66s ease-in-out;
 }
 
 .button-machine {
+    position:fixed;
+    bottom:0;
+    right:0;
     border-radius: 50%;
     width: 3rem;
     height: 3rem;
-    float: right;
-    margin-left: auto;
-    margin-right: 1rem;
     padding-bottom: 0.75rem;
+    backface-visibility: hidden;
     background-color: #777777;
     color: white;
     cursor: pointer;
@@ -257,3 +263,54 @@ ol ol {
   transition: all .3s ease-out;
 }
 
+.scrolling-wrapper-flexbox {
+  display: flex;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.scrolling-wrapper-flexbox::-webkit-scrollbar {
+  display: none;
+}
+.scrolling-wrapper-flexbox .card {
+    flex: 0 0 auto;
+  }
+.card-front {
+    grid-column-start: 1;
+    grid-row-start: 1;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    visibility:visible;
+    -webkit-perspective: 0;
+    -webkit-backface-visibility: hidden;
+    background: lightskyblue;
+    color: #777777;
+    text-align: center;
+}
+
+.flipCard{
+    transform: rotateY(180deg);
+    visibility: hidden;
+    background: none;
+    -webkit-transform: rotateY(180deg);
+}
+
+.machine-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr;
+}
+
+.card-back {
+    grid-column-start: 1;
+    grid-row-start: 1;
+    color: black;
+    background: #009ED1;
+    -webkit-perspective: 0;
+    -webkit-backface-visibility: hidden;
+    -webkit-transform: rotateY(180deg);
+    visibility:visible;
+
+
+}
