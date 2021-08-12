@@ -2,8 +2,7 @@
 function flipCard(object) {
         object.classList.toggle("flipCard")
         console.log("in handler")
-        setTimeout(function(){ object.classList.toggle("flipCard") }, 25000);
-    }
+}
 
 document.addEventListener('DOMContentLoaded', () => {
     const cnc = document.getElementById('cnc_card')
