@@ -3,7 +3,7 @@ import flask
 from flask import Flask, request, session, redirect, url_for, render_template, flash, send_from_directory, Markup, \
     jsonify, g
 import sqlalchemy as sa
-from checkIn.model import User, UserLocation, Type, Training, TrainingVideosBridge, Machine, Quiz, Question, Option, MissedQuestion, init_db, \
+from checkIn.model import User, Video, UserLocation, Type, Training, TrainingVideosBridge, Machine, Quiz, Question, Option, MissedQuestion, init_db, \
     Major, College, HawkCard
 from flask import Blueprint, current_app
 import json
@@ -31,6 +31,22 @@ def utility_processor():
         return quiz.quiz_available()
     return dict(quizAvailable=quizAvailable)
 
+@userflow.context_processor
+def utility_processor():
+    def quiz_available_date(training):
+        if training.machine_id is None:
+            return "error"
+        else:
+            return training.quiz_available_date()
+    return dict(quiz_available_date=quiz_available_date)
+
+@userflow.context_processor
+def utility_processor():
+    def getVideoNameByID(video):
+        return Video.getVideoNameByID(video)
+    return dict(getVideoNameByID=getVideoNameByID)
+
+
 @userflow.route('/training')
 def training_interface():
     """Gives the List of completed, in_progress, locked and available trainings.
@@ -49,7 +65,7 @@ def training_interface():
 
     machine_query = db.query(Machine).filter_by(machineEnabled=1)
     userVideosWatched = TrainingVideosBridge.getWatchedVideos(session['sid'])
-    machine_video_ids = Machine.getMachineVideoIds()
+    machine_video_ids = Machine.getMachineVideoIds(db)
     # For Completed and In-progress
     overall_training = db.query(Training).outerjoin(Machine).filter(Training.trainee_id == session['sid']) \
         .filter(Training.invalidation_date == None).order_by(Training.video_watch_date).all()
@@ -84,9 +100,10 @@ def training_interface():
             print("parents =", parents)
             print("user videos watched =", userVideosWatched)
             print("completed machine ids =", completed_machine_ids)
-            if all(x in completed_machine_ids for x in parents) and any(x in userVideosWatched for x in machine_video_ids[machine.id]):
-                in_progress_list.append(training)
-                in_progress_machineIds.append(int(training.machine_id))
+            if not training.completed():
+                if all(x in completed_machine_ids for x in parents) and any(x in userVideosWatched for x in machine_video_ids[machine.id]):
+                    in_progress_list.append(training)
+                    in_progress_machineIds.append(int(training.machine_id))
                 # print("added to in_progress: ", training)
 
     locked_query=machine_query.all()
