@@ -64,7 +64,6 @@ def before_request():
                                          'public.shop_status', 'static', 'public.custom_css', 'public.animation_js',
                                          'public.index', 'public.landing_js', 'api.get_machine_access', 'api.update_energizer',
                                          'userflow.otsname_interface']:
-        print(request.endpoint)
         return redirect(url_for('auth.login'))
 
 

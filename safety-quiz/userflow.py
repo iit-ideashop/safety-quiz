@@ -68,7 +68,7 @@ def training_interface():
     machine_video_ids = Machine.getMachineVideoIds(db)
     # For Completed and In-progress
     overall_training = db.query(Training).outerjoin(Machine).filter(Training.trainee_id == session['sid']) \
-        .filter(Training.invalidation_date == None).order_by(Training.video_watch_date).all()
+        .filter(Training.invalidation_date == None).all()
     in_progress_machineIds = []
     completed_machine_ids = []
     # iterate through training objects created for user,
@@ -97,11 +97,8 @@ def training_interface():
         else:
             parents = json.loads(machine.parent_id)
             parents = [i for i in parents]
-            print("parents =", parents)
-            print("user videos watched =", userVideosWatched)
-            print("completed machine ids =", completed_machine_ids)
             if not training.completed():
-                if all(x in completed_machine_ids for x in parents) and any(x in userVideosWatched for x in machine_video_ids[machine.id]):
+                if all(x in completed_machine_ids for x in parents) and training.watched_videos:
                     in_progress_list.append(training)
                     in_progress_machineIds.append(int(training.machine_id))
                 # print("added to in_progress: ", training)
@@ -127,7 +124,6 @@ def training_interface():
         elif(i.id not in in_progress_machineIds):
             available_list.append(i)
             # print("in available list:", i, "p_id=", i.parent_id)
-
     return render_template('trainings.html', machine_video_ids=machine_video_ids,
            completed_machine_ids=completed_machine_ids, completed=completed_list,
            in_progress=in_progress_list, available=available_list, locked=locked_list, watched = userVideosWatched)
