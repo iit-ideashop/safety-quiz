@@ -5,54 +5,37 @@ import json
 import flask
 from flask import Flask, request, session, redirect, url_for, render_template, flash, send_from_directory, Markup, jsonify, g
 import sqlalchemy as sa
-from checkIn.model import User, UserLocation, TrainingVideosBridge, Type, Training, Machine, Quiz, Question, Option, MissedQuestion, init_db, Major, College, HawkCard, Video
+from checkIn.model import User, UserLocation, TrainingVideosBridge, Type, Training, Machine, Quiz, Question, Option, MissedQuestion, init_db, Major, College, HawkCard, Video, VideoMachineBridge
 from flask import Blueprint, current_app
 
 video = Blueprint('video', __name__)
 
-@video.route('/video/<machine_id>/<video_id>', methods=['GET', 'POST'])
-def safety(machine_id, video_id):
+@video.route('/video/<video_id>', methods=['GET', 'POST'])
+def safety(video_id):
     db = g.db_session()
     if request.method == 'GET':
-        #flash("Video safety training is not currently available. Please check back on September 14th, 2020.", 'warning')
-        #return render_template('layout.html')
         video_object=db.query(Video).filter_by(id=video_id).one_or_none()
         if(not video_object):
             return 'bad request', 447
         video_time_seconds=video_object.length
-        # print(video_object.filepath)
         return render_template('safety_video.html', youtube_id=str(video_object.filepath), video_time_seconds=int(video_time_seconds))
     elif request.method == 'POST':
-        print(session['sid'])
-        videoUpdateQuery = db.query(TrainingVideosBridge).filter_by(user_id=int(session['sid'])).one_or_none()
-        if (videoUpdateQuery is None):
-            videoUpdateQuery = db.add(TrainingVideosBridge(user_id=int(session['sid']), videos_watched=json.dumps([int(video_id)])))
-        else:
-            # print("Videos watched before change:", videoUpdateQuery.videos_watched)
-            videos = json.loads(videoUpdateQuery.videos_watched)
-            if(not int(video_id) in videos):
-                videos.append(int(video_id))
-                # print("Videos during change:", videos)
-                newVideos = json.dumps(videos)
-                videoUpdateQuery.videos_watched=newVideos
-                # print("Videos watched after change:", newVideos)
-            # else:
-                # print("video", video_id, "already in list, not appending")
-        machineIdList = Machine.getMachineVideoIds()
-        machineEnabledList = Machine.getMachinesEnabled()
-        trainingQuery = db.query(Training).filter_by(trainee_id=session['sid'])
-        timestamp = datetime.datetime.now()
-        for each, value in machineIdList.items():
-            video_ids = json.dumps(value)
-            if video_id in video_ids:
-                if (not trainingQuery.filter_by(machine_id=each).all()) and machineEnabledList[each]:
-                    db.add(Training(trainee_id=session['sid'], trainer_id=20000000, machine_id=each, video_watch_date=timestamp))
-                else:
-                    for training in (trainingQuery.filter_by(machine_id=each).all()):
-                        training.video_watch_date=timestamp
+        machines = [each.machine for each in db.query(VideoMachineBridge).filter_by(video_id=video_id).all()]
+        new_trainings = []
+        existing_trainings = []
+        for machine in machines:
+            training = db.query(Training).filter_by(trainee_id = session['sid']).filter_by(machine_id=machine.id).filter(Training.invalidation_date == None).order_by(sa.desc(Training.id)).first()
+            if not training:
+                new_trainings.append(Training(trainee_id=session['sid'], machine_id=machine.id))
+            else:
+                existing_trainings.append(training)
+        db.add_all(new_trainings)
+        db.flush()
+        for training in (new_trainings + existing_trainings):
+            if not training.watched_videos or video_id not in [x.video_id for x in training.watched_videos]:
+                if not db.query(TrainingVideosBridge).filter_by(training_id=training.id).filter_by(video_id=video_id).one_or_none():
+                    db.add(TrainingVideosBridge(training_id=training.id, video_id=video_id))
         db.commit()
-        flash("Thank you for watching an Idea Shop Training Video. Your verification quiz will be available on this site in one week. \
-                You can re-watch the video at any time by visiting the Training Video Library Page",
-              'success')
-        return redirect("/safety/training")
+        flash("Thank you for watching an Idea Shop Training Video.", 'success')
+        return redirect(url_for('userflow.training_interface'))
 
