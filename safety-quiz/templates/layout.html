@@ -28,9 +28,9 @@
                 <a class="nav-item nav-link" href="{{ url_for('reservation.view_reservations') }}" {% if not session['sid'] %} hidden="true" {% endif %}>View Reservations</a>
             {%  endif %}
                 <a class="nav-item nav-link" href="{{ url_for('public.shop_status') }}">Shop Status</a>
-                <a class="nav-item nav-link" href="https://wiki.ideashop.iit.edu">Idea Shop Wiki</a>
             </div>
             <div class="navbar-nav ml-auto">
+                <a class="btn btn-info nav-item nav-link" style="margin-right: 2mm; font-weight: bold" href="https://wiki.ideashop.iit.edu">Idea Shop Wiki <i class="bi bi-box-arrow-up-right"></i></a>
                 {% if session['sid'] %}
                     <div class="btn-group">
                         <button type="button" style="color: black; font-weight: bold" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -51,10 +51,7 @@
                         </div>
                     </div>
                 {% else %}
-                    <div class="navbar-nav nav-item ml-auto">
-                            <a class="nav-item nav-link" href="{{ url_for('auth.login') }}"> Log In <i class="bi bi-box-arrow-in-left"></i></a>
-
-
+                    <a class="btn btn-info nav-item nav-link" href="{{ url_for('auth.login') }}"> Log In <i class="bi bi-box-arrow-in-left"></i></a>
                 {% endif %}
             </div>
         </div>
