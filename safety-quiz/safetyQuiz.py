@@ -63,7 +63,7 @@ def before_request():
                                          'register', 'check_sid', 'logout', 'get_machine_access','public.welcome',
                                          'public.shop_status', 'static', 'public.custom_css', 'public.animation_js',
                                          'public.index', 'public.landing_js', 'api.get_machine_access', 'api.update_energizer',
-                                         'userflow.otsname_interface']:
+                                         'userflow.otsname_interface', 'app.instance_path', None]:
         return redirect(url_for('auth.login'))
 
 
