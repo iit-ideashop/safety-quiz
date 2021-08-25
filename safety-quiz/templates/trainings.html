@@ -41,7 +41,7 @@
                                                     {% endfor %}
                                                     {% if each.machine.in_person_component %}
                                                         {% if each.videos_watched() %}
-                                                            <li><a class="btn-sm">In Person Training:<br>Registration Link</a></li>
+                                                            <li><a class="btn-sm"><i class="bi bi-unlock-fill float-right" style="color: darkgreen"></i>In Person Training:<br>Registration Link</a></li>
                                                         {% else %}
                                                             <li><a class="btn-sm"><i class="bi bi-lock-fill float-right" style="color: red"></i>In Person Training:<br><small>You must watch all videos above before you can register for an in person training.</small></a></li>
                                                         {% endif %}
