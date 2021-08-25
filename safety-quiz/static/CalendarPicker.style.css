@@ -15,6 +15,7 @@
     grid-row: 1/2;
     font-size: 2em;
     box-sizing: inherit;
+    text-align: center;
 }
 
 #calendar-wrapper header h4 {
@@ -29,6 +30,16 @@
     box-sizing: inherit;
     padding: 0;
     margin: 0;
+}
+
+#calendarBorder {
+
+    padding:1em;
+    border-style: solid;
+    border-color: #0088cc;
+    border-radius: 10px;
+    border-width: 2px;
+    overflow: auto;
 }
 
 #calendar #calendar-days,
@@ -91,7 +102,7 @@
 }
 
 #calendar #calendar-grid > *:hover {
-    border: 2px solid rgba(72, 72, 72, 0.5);
+   /* border: 2px solid rgba(72, 72, 72, 0.5);*/
     box-shadow: 1px 1px rgba(0, 0, 0, 0.2);
     box-sizing: inherit;
 }
@@ -135,4 +146,17 @@
 
 #calendar #navigation-wrapper button:first-of-type {
     transform: rotate(180deg);
+}
+
+.reservation-instruction {
+    padding-top: 20px;
+    padding-bottom: 10px;
+}
+
+.no-decoration:hover {
+    text-decoration: none;
+}
+
+.no-decoration:active {
+    text-decoration: none;
 }
