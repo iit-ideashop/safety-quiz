@@ -1,7 +1,5 @@
 document.addEventListener("DOMContentLoaded", function(event){
 /* Script for landing machine cards */
-    console.log('Hello World')
-
     /* logo animation script */
     var progressbars = document.getElementsByClassName("progress-bar")
     // if(progressbars.length != 0){
