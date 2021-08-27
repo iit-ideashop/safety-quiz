@@ -1,66 +1,68 @@
 {% extends 'layout.html' %}
 {% block head %}
     {{ super() }}
-    
+
 {% endblock %}
 {%  block page %}
-    <form href="{{ url_for('register') }}" method="post">
-        <div class="form-group">
-            <label for="sid">CWID (aka A Number)</label>
-            <div class="input-group">
-                <div class="input-group-prepend">
-                    <div class="input-group-text">A</div>
+    <div class="container-fluid" style="width: 80%;">
+        <form href="{{ url_for('register') }}" method="post">
+            <div class="form-group">
+                <label for="sid">CWID (aka A Number)</label>
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <div class="input-group-text">A</div>
+                    </div>
+                    <input type="number" class="form-control" id="sid" name="sid" placeholder="20000000" min="20000000" max="20600000" step="1" required>
                 </div>
-                <input type="number" class="form-control" id="sid" name="sid" placeholder="20000000" min="20000000" max="20600000" step="1" required>
+                <small>
+                    <label for="sid" class="form-text" id="sid_warning" style="color: red; text-align: center"></label>
+                </small>
             </div>
-            <small>
-                <label for="sid" class="form-text" id="sid_warning" style="color: red; text-align: center"></label>
-            </small>
-        </div>
-        <div class="form-group">
-            <label for="name">Name</label>
-            <input class="form-control" type="text" id="name" name="name" value="{{ name }}" required>
-        </div>
-        <div class="form-group">
-            <label for="email">Email address</label>
-            <input type="email" class="form-control-plaintext" id="email" name="email" aria-describedby="emailHelp" value="{{ email }}" readonly  required>
-        </div>
+            <div class="form-group">
+                <label for="name">Name</label>
+                <input class="form-control" type="text" id="name" name="name" value="{{ name }}" required>
+            </div>
+            <div class="form-group">
+                <label for="email">Email address</label>
+                <input type="email" class="form-control-plaintext" id="email" name="email" aria-describedby="emailHelp" value="{{ email }}" readonly  required>
+            </div>
 
-        <div class="form-group">
-            <label for="college">College</label>
-            <select class="form-control" id="college" onchange="inputCollegeName()" name="college" required>
-                <option selected value="">Choose your college...</option>
-                {% for each in colleges %}
-                    <option value="{{ each.id }}">{{ each.name }}</option>
-                {% endfor %}
-                <option value="-1">Other not listed.</option>
-            </select>
-            <input class="form-control" type="text" id="custom-name" name="custom-name" hidden>
-        </div>
+            <div class="form-group">
+                <label for="college">College</label>
+                <select class="form-control" id="college" onchange="inputCollegeName()" name="college" required>
+                    <option selected value="">Choose your college...</option>
+                    {% for each in colleges %}
+                        <option value="{{ each.id }}">{{ each.name }}</option>
+                    {% endfor %}
+                    <option value="-1">Other not listed.</option>
+                </select>
+                <input class="form-control" type="text" id="custom-name" name="custom-name" hidden>
+            </div>
 
-        <div class="form-group">
-            <label>Major</label>
-            <select class="form-control" id="major" name="major" onchange="inputMajorName()" required>
-                <option selected value="">Choose your major...</option>
-                {% for each in majors %}
-                <option value="{{ each.id }}">{{ each.name }}</option>
-                {% endfor %}
-                <option value="-1">Other not listed.</option>
-            </select>
-            <input class="form-control" type="text" id="custom-major" name="custom-major" hidden>
-        </div>
+            <div class="form-group">
+                <label>Major</label>
+                <select class="form-control" id="major" name="major" onchange="inputMajorName()" required>
+                    <option selected value="">Choose your major...</option>
+                    {% for each in majors %}
+                        <option value="{{ each.id }}">{{ each.name }}</option>
+                    {% endfor %}
+                    <option value="-1">Other not listed.</option>
+                </select>
+                <input class="form-control" type="text" id="custom-major" name="custom-major" hidden>
+            </div>
 
-        <div class="form-group">
-            <label for="status">Status</label>
-            <select class="form-control" id="status" name="status" required>
-                <option selected value="">Choose your status...</option>
-                {% for each in statuses %}
-                    <option value="{{ each }}">{{ each }}</option>
-                {% endfor %}
-            </select>
-        </div>
-        <button type="submit" disabled id="btnSubmit" class="btn btn-primary">Register</button>
-    </form>
+            <div class="form-group">
+                <label for="status">Status</label>
+                <select class="form-control" id="status" name="status" required>
+                    <option selected value="">Choose your status...</option>
+                    {% for each in statuses %}
+                        <option value="{{ each }}">{{ each }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <button type="submit" disabled id="btnSubmit" class="btn btn-primary">Register</button>
+        </form>
+    </div>
 {%  endblock %}
 {% block scripts %}
     {{ super() }}
@@ -69,29 +71,37 @@
             let sid = $('#sid').val();
             let sid_warning = document.getElementById('sid_warning');
             var bt = document.getElementById('btnSubmit');
+
             if (sid && sid !== 'none') {
                 $.getJSON('register/api/checkSID', {sid: sid}, function (data) {
                     if(data) {
+                        console.log(data);
                         if (data['exists'] === false) {
                             sid_warning.setAttribute('hidden', true);
                             sid_warning.textContent = "";
+                            sid_warning.style.color = 'red'
 
                             if (sid && sid !== 'none') {
                                 $.getJSON('otsname', {'user_id': sid}, function (data){
+                                    console.log(data);
                                     if (data){
                                         if (data['name']){
-                                            $('#name').val(data['name']);
+                                            sid_warning.textContent = ("CWID A" + sid + " belongs to " + data['name']);
+                                            sid_warning.style.color = 'green';
+                                            sid_warning.removeAttribute('hidden');
                                             bt.disabled=false
                                         }
                                         else if (data['failed']){
-                                            $('#name').val(data['failed']);
+                                            sid_warning.textContent = data['failed'];
+                                            sid_warning.removeAttribute('hidden');
                                             bt.disabled=true
                                         }
                                     }
                                     else if (id['name'] === null){
                                         let warning = document.getElementById('sid_warning');
-                                        warning.textContent = 'ID does not exist. Please contact Idea Shop'
-                                        bt.disabled = true
+                                        warning.textContent = 'ID does not exist. Please contact Idea Shop';
+                                        sid_warning.removeAttribute('hidden');
+                                        bt.disabled = true;
                                     }
                                 })
                             }
@@ -99,9 +109,9 @@
                         } else if (data['exists'] === true) {
                             sid_warning.removeAttribute('hidden');
                             let label = document.getElementById('sid_warning');
-                            label.textContent = 'User for CWID: A' + data['sid'] + ' already exists. Cannot register new user with existing CWID.';
-							$('#name').val(data['name']);
-							bt.disabled=true
+                            label.textContent = 'User for CWID: A' + data['sid'] + ' already exists. Cannot register new Idea Shop user with existing CWID.';
+                            $('#name').val(data['name']);
+                            bt.disabled=true
                         }
                     }
                 });
@@ -111,33 +121,28 @@
         function inputCollegeName(){
             var selectedMajor = $('#college').val();
             console.log(selectedMajor)
-			if(selectedMajor === '-1')  {
-			    var cname = document.getElementById('custom-name');
+            if(selectedMajor === '-1')  {
+                var cname = document.getElementById('custom-name');
                 cname.removeAttribute('hidden')
-			}
+            }
         }
         function inputMajorName(){
             var selectedCollege = $('#major').val();
             console.log(selectedCollege)
-			if(selectedCollege === '-1')  {
-			    var cname = document.getElementById('custom-major');
+            if(selectedCollege === '-1')  {
+                var cname = document.getElementById('custom-major');
                 cname.removeAttribute('hidden')
-			}
+            }
         }
 
         $(function () {
-            $('#college').change(inputCollegeName)
+            $('#college').change(inputCollegeName);
+            $('#major').change(inputMajorName);
+            $('#sid').change(checkSID);
+            $('#sid').keypress(function () {
+                this.value = this.value.replace(/[^0-9\.]/g,'');
+            });
         });
-        $(function () {
-            $('#major').change(inputMajorName)
-        });
-
-        $(function () {
-            $('#sid').change(checkSID)
-        });
-
-
-
     </script>
 
 {% endblock %}
