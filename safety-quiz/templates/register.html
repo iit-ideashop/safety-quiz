@@ -36,7 +36,7 @@
                     {% endfor %}
                     <option value="-1">Other not listed.</option>
                 </select>
-                <input class="form-control" type="text" id="custom-name" name="custom-name" hidden>
+                <input class="form-control" type="text" id="custom-college" name="custom-college" hidden>
             </div>
 
             <div class="form-group">
@@ -75,7 +75,6 @@
             if (sid && sid !== 'none') {
                 $.getJSON('register/api/checkSID', {sid: sid}, function (data) {
                     if(data) {
-                        console.log(data);
                         if (data['exists'] === false) {
                             sid_warning.setAttribute('hidden', true);
                             sid_warning.textContent = "";
@@ -83,7 +82,6 @@
 
                             if (sid && sid !== 'none') {
                                 $.getJSON('otsname', {'user_id': sid}, function (data){
-                                    console.log(data);
                                     if (data){
                                         if (data['name']){
                                             sid_warning.textContent = ("CWID A" + sid + " belongs to " + data['name']);
@@ -119,19 +117,23 @@
         }
 
         function inputCollegeName(){
-            var selectedMajor = $('#college').val();
-            console.log(selectedMajor)
-            if(selectedMajor === '-1')  {
-                var cname = document.getElementById('custom-name');
+            var selectedCollege = $('#college').val();
+            var cname = document.getElementById('custom-college');
+            if(selectedCollege === '-1')  {
                 cname.removeAttribute('hidden')
+            }
+            else{
+                cname.setAttribute('hidden', 'true');
             }
         }
         function inputMajorName(){
-            var selectedCollege = $('#major').val();
-            console.log(selectedCollege)
-            if(selectedCollege === '-1')  {
-                var cname = document.getElementById('custom-major');
+            var selectedMajor = $('#major').val();
+            var cname = document.getElementById('custom-major');
+            if(selectedMajor === '-1')  {
                 cname.removeAttribute('hidden')
+            }
+            else{
+                cname.setAttribute('hidden', 'true');
             }
         }
 

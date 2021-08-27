@@ -128,7 +128,19 @@ def register():
         if college and major:
             user = User(sid=int(request.form['sid']), name=request.form['name'], email=request.form['email'], major_id=major.id, college_id=college.id, status=request.form['status'])
         else:
-            user = User(sid=int(request.form['sid']), name=request.form['name'], email=request.form['email'], status=request.form['status'])
+            user = User(sid=int(request.form['sid']), name=request.form['name'], email=request.form['email'],
+                        status=request.form['status'])
+            if not college:
+                college = College(name=request.form['custom-college'].title())
+                db.add(college)
+                db.flush()
+                user.college_id = college.id
+            if not major:
+                major = Major(name=request.form['custom-major'].title())
+                db.add(major)
+                db.flush()
+                user.major_id = major.id
+        print(user.major)
         db.add(user)
         db.add(UserLocation(sid=user.sid,location_id=2,type_id=2))
         db.add(UserLocation(sid=user.sid,location_id=3,type_id=2))
