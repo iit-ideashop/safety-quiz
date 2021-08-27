@@ -258,7 +258,7 @@ def quiz(training_id):
         return redirect(url_for('public.index'))
     else:
         flash("There was an error with your request. Please try again or see Idea Shop staff if the issue persists.", 'danger')
-        return redirect(url_for('public.index'))
+        return redirect(url_for('userflow.training_interface'))
 
 
 @app.route('/edit_quiz/<id>', methods=['GET', 'POST'])
