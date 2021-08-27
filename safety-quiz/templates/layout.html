@@ -41,7 +41,7 @@
                         <div class="dropdown-menu">
                             <div class="card">
                                 <h5 class="card-text">Hello, {{ session['name'] }}</h5>
-                                <p class="card-text flex-nowrap">{{ session['major'] }}</p>
+                                {% if session['major'] %}<p class="card-text flex-nowrap">{{ session['major'] }}</p>{% endif %}
                                 <p class="card-text flex-nowrap">{{ session['email'] }}</p>
                                 <p class="card-text flex-nowrap">A{{ session['sid'] }}</p>
 
@@ -57,6 +57,7 @@
 
                 {% endif %}
             </div>
+        </div>
         </div>
     </nav>
 {% endblock %}

@@ -65,7 +65,8 @@ def login(): # AUTH
             session['sid'] = user.sid
             session['email'] = user.email
             session['name'] = user.name
-            session['major'] = user.major.name
+            if user.major:
+                session['major'] = user.major.name
             user_level_list = db.query(Type.level).outerjoin(UserLocation).filter(UserLocation.sid == session['sid']).all()
             if not user_level_list:
                 db.add(UserLocation(sid=user.sid, location_id=2, type_id=0, waiverSigned=None))
@@ -109,7 +110,8 @@ def login_google(): # AUTH
         session['sid'] = user.sid
         session['email'] = user.email
         session['name'] = user.name
-        session['major'] = user.major.name
+        if user.major:
+            session['major'] = user.major.name
         user_level_list = db.query(Type.level).outerjoin(UserLocation).filter(UserLocation.sid == session['sid']).all()
         if not user_level_list:
             db.add(UserLocation(sid=user.sid, location_id=2, type_id=2))
