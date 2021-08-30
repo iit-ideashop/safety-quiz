@@ -38,7 +38,7 @@ console.log(elem)
           if (event.data === YT.PlayerState.PAUSED) {
           }
           if (event.data === YT.PlayerState.PLAYING) {
-              player.setVolume(25);
+              player.setVolume(100);
               progressLoop();
 
           }
