@@ -141,7 +141,6 @@ def register():
                 db.add(major)
                 db.flush()
                 user.major_id = major.id
-        print(user.major)
         db.add(user)
         db.add(UserLocation(sid=user.sid,location_id=2,type_id=2))
         db.add(UserLocation(sid=user.sid,location_id=3,type_id=2))

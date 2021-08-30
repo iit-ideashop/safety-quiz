@@ -6,11 +6,7 @@
 
 {% block page %}
     <div class="container-fluid" style="padding: 2em;">
-        <h3>Hello {{session['email'] }}</h3>
-        <div class="alert alert-info">
-            <h3 class="badge badge-secondary">New!</h3> If you are having trouble completing the quizzes or do not remember the correct answer, check out this page on our wiki: <a href="https://wiki.ideashop.iit.edu/index.php?title=Safety_Quizzes">https://wiki.ideashop.iit.edu/index.php?title=Safety_Quizzes</a>
-        </div>
-
+        <h2>Hello {{session['name'] }},</h2>
         {#  If student has trainings available, generate trainings portion of webpage  #}
         {% if in_progress or completed or locked or available %}
             <div class="container-fluid" style="padding-left: 0; padding-right: 0">
@@ -26,6 +22,9 @@
                             </a>
                         </h4>
                         <div id="in_progress_trainings" class="collapse {% if in_progress|length %} show {% endif %}" aria-labelledby="heading-in_progress">
+                            <div class="alert alert-info">
+                                <h3 class="badge badge-secondary">New!</h3> If you are having trouble completing the quizzes or do not remember the correct answer, check out this page on our wiki: <a href="https://wiki.ideashop.iit.edu/index.php?title=Safety_Quizzes">https://wiki.ideashop.iit.edu/index.php?title=Safety_Quizzes</a>
+                            </div>
                             {% for each in in_progress %}
                                 <div class="card card-spaced-2">
                                     <h5 class="card-header">{{ each.machine.name  }}</h5>
