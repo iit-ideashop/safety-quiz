@@ -60,6 +60,7 @@
 {% endblock %}
 {% block content %}
     <div class="container-fluid container-full-width">
+        {% if config['DEV'] == 'True' %}<div class="alert alert-warning" role="alert" style="font-size: 2em; text-align: center;"><i class="bi bi-cone-striped"></i>This is a development site meant for Idea Shop staff & beta testers only. All changes are non-persistent.<i class="bi bi-cone-striped"></i></div>{% endif %}
         {% with messages = get_flashed_messages(with_categories=True) %}
             {% for category, message in messages %}
                 <div class="alert {% if category %}alert-{{ category }}{% endif %} alert-dismissible" role="alert">
