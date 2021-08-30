@@ -65,7 +65,6 @@ def training_interface():
 
     machine_query = db.query(Machine).filter_by(machineEnabled=1)
     userVideosWatched = TrainingVideosBridge.getWatchedVideos(session['sid'])
-    machine_video_ids = Machine.getMachineVideoIds(db)
     # For Completed and In-progress
     overall_training = db.query(Training).outerjoin(Machine).filter(Training.trainee_id == session['sid']) \
         .filter(Training.invalidation_date == None).all()
@@ -124,7 +123,7 @@ def training_interface():
         elif(i.id not in in_progress_machineIds):
             available_list.append(i)
             # print("in available list:", i, "p_id=", i.parent_id)
-    return render_template('trainings.html', machine_video_ids=machine_video_ids,
+    return render_template('trainings.html',
            completed_machine_ids=completed_machine_ids, completed=completed_list,
            in_progress=in_progress_list, available=available_list, locked=locked_list, watched = userVideosWatched)
 

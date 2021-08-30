@@ -93,7 +93,7 @@
                                     {% if each.machine.about_link %} {{ each.machine.about_link }}
                                         {% else %} https://wiki.ideashop.iit.edu/index.php?title=Main_Page
                                     {% endif %}"
-                                           target="_blank" role="button">About this training</a>
+                                           target="_blank" role="button">About this training <i class="bi bi-box-arrow-up-right"></i></a>
                                         {% if each.quiz_attempts is not none %}
                                             {% if each.quiz_attempts >=1 %}
                                                 <button type="button" class="btn btn-secondary btn-training-card" data-toggle="modal" data-target="#{{ each.machine.name }}Modal">Show Details</button>
@@ -104,7 +104,7 @@
                             {% endfor %}
                         {% if not in_progress|length %}
                             <div class="card card-spaced-2">
-                                <h5 class="card-header">Nothing to see here! If you just completed a video/Quiz, please check the Available Machine Topics tab for more content.</h5>
+                                <h5 class="card-header">Nothing to see here! Please check the <strong>Available Training Topics</strong> tab below for more content.</h5>
                             </div>
                         {% endif %}
                     </div>
@@ -168,9 +168,9 @@
                                                 Training Videos
                                             </button>
                                             <div class="dropdown-menu" aria-labelledby="{{ each.machine.name }}AvailableDropdown">
-                                                {% set videoList = machine_video_ids[each.machine.id] %}
+                                                {% set videoList = each.machine.videos %}
                                                 {% for video in videoList %}
-                                                    <a class="dropdown-item" {% if video in watched %}style="background: lightgreen"{% endif %} href="{{ url_for('video.safety', video_id=video) }}">Training: {{ getVideoNameByID(video) }}</a>
+                                                    <a class="dropdown-item"  href="{{ url_for('video.safety', video_id=video.video_id) }}">Training: {{ video.video.name }}</a>
                                                 {% endfor %}
                                             </div>
                                         </div>
@@ -179,7 +179,7 @@
                                         {{ each.machine.about_link }}
                                     {% else %} https://wiki.ideashop.iit.edu/index.php?title=Main_Page
                                 {% endif %}"
-                                           target="_blank" role="button">About this training</a>
+                                           target="_blank" role="button">About this training <i class="bi bi-box-arrow-up-right"></i></a>
                                         <button type="button" class="btn btn-secondary btn-training-card" data-toggle="modal" data-target="#{{ each.machine.name }}Modal">Show Details</button>
                                     </div>
                                 </div>
