@@ -26,10 +26,10 @@ from public import public
 from userflow import userflow
 from auth import auth
 from api import api
-from reservation import init_reservation_db, reservation_bp
+from reservation import reservation_bp
 
 # app setup
-app = Flask(__name__, static_url_path='/safety/static', static_folder='static')  # create the application instance :)
+app = Flask(__name__, static_url_path='/static', static_folder='static')  # create the application instance :)
 app.config.from_object(__name__)
 app.config.from_pyfile('config.cfg')
 app.config.from_envvar('FLASKR_SETTINGS', silent=True)
@@ -42,7 +42,6 @@ Bootstrap(app)
 FontAwesome(app)
 
 db_session = init_db(app.config['DB'])
-db_reservations = init_reservation_db(app.config['DB_RESERVATION'])
 
 # This variable specifies the name of a file that contains the OAuth 2.0
 # information for this application, including its client_id and client_secret.
@@ -57,7 +56,7 @@ API_VERSION = 'v2'
 
 @app.before_request
 def before_request():
-    g.db_session = init_db(app.config['DB'])
+    g.db_session = db_session
     if 'sid' not in session \
             and request.endpoint not in ['auth.login', 'auth.login_google', 'auth.authorize', 'auth.oauth2callback',
                                          'register', 'check_sid', 'logout', 'get_machine_access','public.welcome',
@@ -129,7 +128,19 @@ def register():
         if college and major:
             user = User(sid=int(request.form['sid']), name=request.form['name'], email=request.form['email'], major_id=major.id, college_id=college.id, status=request.form['status'])
         else:
-            user = User(sid=int(request.form['sid']), name=request.form['name'], email=request.form['email'], status=request.form['status'])
+            user = User(sid=int(request.form['sid']), name=request.form['name'], email=request.form['email'],
+                        status=request.form['status'])
+            if not college:
+                college = College(name=request.form['custom-college'].title())
+                db.add(college)
+                db.flush()
+                user.college_id = college.id
+            if not major:
+                major = Major(name=request.form['custom-major'].title())
+                db.add(major)
+                db.flush()
+                user.major_id = major.id
+        print(user.major)
         db.add(user)
         db.add(UserLocation(sid=user.sid,location_id=2,type_id=2))
         db.add(UserLocation(sid=user.sid,location_id=3,type_id=2))
@@ -259,7 +270,7 @@ def quiz(training_id):
         return redirect(url_for('public.index'))
     else:
         flash("There was an error with your request. Please try again or see Idea Shop staff if the issue persists.", 'danger')
-        return redirect(url_for('public.index'))
+        return redirect(url_for('userflow.training_interface'))
 
 
 @app.route('/edit_quiz/<id>', methods=['GET', 'POST'])

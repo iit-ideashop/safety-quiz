@@ -40,8 +40,14 @@
                                                         <li><a class="btn-sm" {% if machineVideo.video.id in videos_watched %}style="background: lightgreen"{% endif %} href="{{ url_for('video.safety', video_id=machineVideo.video.id) }}">Video: {{ machineVideo.video.name }}{% if machineVideo.video.id in videos_watched %}<i class="bi bi-check-lg float-right" style="color: green"></i>{% endif %}</a></li>
                                                     {% endfor %}
                                                     {% if each.machine.in_person_component %}
-                                                        {% if each.videos_watched() %}
-                                                            <li><a class="btn-sm"><i class="bi bi-unlock-fill float-right" style="color: darkgreen"></i>In Person Training:<br>Registration Link</a></li>
+                                                        {% if each.videos_watched() and each.in_person_date %}
+                                                            <li><a class="btn-sm" style="background: lightgreen">In Person Training: Completed {{ each.in_person_date }}<i class="bi bi-check-lg float-right" style="color: green"></i></a></li>
+                                                        {% elif each.videos_watched() %}
+                                                            {% if each.in_person_reservation %}
+                                                                <li><a class="btn-sm">In-Person training scheduled for:<ul>{% for x in each.in_person_reservation %}<li>{{ x.window.start }} lasts ~{{ x.window.window_type.duration|int }} minutes</li>{% endfor %}</ul></a></li>
+                                                            {% else %}
+                                                                <li><a class="btn-sm" href="{{ url_for('reservation.reservations',training_id=each.id) }}">In Person Training: Click here to register.<i class="bi bi-unlock-fill float-right" style="color: darkgreen"></i></a></li>
+                                                            {% endif %}
                                                         {% else %}
                                                             <li><a class="btn-sm"><i class="bi bi-lock-fill float-right" style="color: red"></i>In Person Training:<br><small>You must watch all videos above before you can register for an in person training.</small></a></li>
                                                         {% endif %}
@@ -59,7 +65,7 @@
                                                     {% else %}
                                                         <li><a class="btn-sm" style="pointer-events: none" href="#" tabindex="-1" role="button" aria-disabled="true">
                                                             {% if each.quiz_available_date() %}
-                                                                Quiz: Currently Unavailable until {{ each.quiz_available_date() }}
+                                                                Quiz locked until {{ each.quiz_available_date().date() }}
                                                             {% else %}
                                                                 Quiz: Complete prerequisites to take the quiz.
                                                             {% endif %}
@@ -95,7 +101,6 @@
                                         {% endif %}
                                     </div>
                                 </div>
-                                </div>
                             {% endfor %}
                         {% if not in_progress|length %}
                             <div class="card card-spaced-2">
@@ -109,7 +114,7 @@
                 <div class="card" style="margin-top: 4mm;">
                     <h4 class="card-header">
                         <a class="{% if in_progress|length %}collapsed{% endif %} d-block" data-toggle="collapse" href="#available_trainings" aria-expanded="true" aria-controls="collapse-completed" id="heading-available">
-                            Available Machine Topics
+                            Available Training Topics
                             <i class="fa fa-chevron-down float-right"></i>
                         </a>
                     </h4>
@@ -124,7 +129,7 @@
                                             <button class="btn btn-primary btn-training-card dropdown-toggle" type="button" id="{{ each.quiz.name }}AvailableMachinesDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                                 Start Here
                                             </button>
-                                            <div class="dropdown-menu" aria-labelledby="{{ each.quiz.name }}AvailableMachinesDropdown">
+                                            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="{{ each.quiz.name }}AvailableMachinesDropdown">
                                                 {% set videoList = machine_video_ids[each.id] %}
                                                 {% for videoBridge in each.videos %}
                                                     <a class="dropdown-item" {% if video in watched %}style="background: lightgreen"{% endif %} href="{{ url_for('video.safety', video_id=videoBridge.video_id) }}">Video: {{ videoBridge.video.name }}</a>

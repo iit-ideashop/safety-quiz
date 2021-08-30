@@ -1,10 +1,23 @@
 {% extends 'layout.html' %}
 {% block head %}
     {{ super() }}
-    <script src="safety/static/CalendarPicker.js"></script>
+    <script src="{{ url_for('static', filename='CalendarPicker.js') }}"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-    <script src="safety/static/Reservations.js"></script>
-    <link rel="stylesheet" href="safety/static/CalendarPicker.style.css">
+    <script>
+        function updateDate(e) {
+            $('#current-datestring').removeAttr('hidden');
+            $('#windows>.auto-start').remove();
+            let selected_date = $('#current-date').val();
+            $.getJSON('{{ url_for('reservation.times') }}', {reservation_type:{{reservation_type.id}}, date: selected_date}, function (data) {
+                let windows = $('#windows');
+                if (data.length > 0) {
+                    data.forEach(x => windows.append('<option class="auto-start" value="' + x.id + '">' + x.start + ' -> ' + x.end + '</option>'));
+                }
+            });
+        }
+    </script>
+    {# <script src="{{ url_for('static', filename='Reservations.js') }}"></script> #}
+    <link rel="stylesheet" href="{{ url_for('static', filename='CalendarPicker.style.css') }}">
     <style>
         div.extra-people, small{
             flex-basis: 100%;
@@ -12,50 +25,35 @@
     </style>
 {% endblock %}
 {% block page %}
-    <div class="row">
-    <div class="col-lg-6" style="padding:1em; border-style: solid; border-color: #0088cc; border-radius: 10px; border-width: 2px; overflow: auto;">
+    <div class="container reservation-instruction">
+        <h2>Creating reservation for <strong>{{ reservation_type.name }}</strong> in-person training.</h2>
+        <h4>Please select an open date and choose one of the available time blocks below.
+            <br>Then click submit to confirm your reservation.</h4>
+    </div>
+    <div class="container" style="padding-top: 1.25rem">
+    <div id="calendarBorder">
         <div id="myCalendarWrapper"></div>
     </div>
-    <div class="col-lg-4" style="padding-top: 1em;">
+    <div class="container" style="padding-top: 1em;">
         <h3 style="text-align: center">
             <p id="current-datestring"></p>
             <input id="current-date" hidden></input>
         </h3>
-        <form href="{{ url_for('reservation.reservations') }}" method="post">
-        <div class="form-group input-group mb-auto" style="margin: 1em">
-            <div class="input-group-prepend">
-                <label class="input-group-text">Reservation Type</label>
+        <form method="post">
+            <div class="form-control">
+                <div class="form-group-lg">
+                    <div class="label" for="windows">Available Windows</div>
+                    <select class="form-control form-control-lg" id="windows" name="windows" required>
+                        <option value="">Choose an time window...</option>
+                    </select>
+                </div>
             </div>
-            <select class="form-control" id="reservation_type" name="reservation_type" disabled required>
-                <option selected value="">Choose...</option>
-                {%  for each in reservation_types %}
-                <option value={{ each.id }}>{{ each.name }}</option>
-                {% endfor %}
-            </select>
-        </div>
-        <div class="form-group input-group mb-auto" style="margin: 1em" id="extra-people" hidden>
-            <label>You may add extra people to this reservation here:</label>
-        </div>
-        <div class="form-group input-group mb-auto" style="margin: 1em">
-            <div class="input-group-prepend">
-                <label class="input-group-text">Reservation Start</label>
+            <div class="container" style="padding-bottom: 10px">
+                <button type="submit" class="btn btn-primary" style="float: right; margin-top: 1em;">Submit Reservation</button>
             </div>
-            <select class="form-control" id="start_times" name="start_time" disabled required>
-                <option selected value="">Choose...</option>
-            </select>
-        </div>
-        <div class="form-group input-group mb-auto" style="margin: 1em">
-            <div class="input-group-prepend">
-                <label class="input-group-text">Reservation End</label>
-            </div>
-            <select class="form-control" id="end_times" name="end_time" disabled required>
-                <option selected value="">Choose...</option>
-            </select>
-            <small class="form-text text-muted" style="flex-basis: 100%;">Max reservation length is 3 hours.</small>
-        </div>
-        <button type="submit" class="btn btn-primary" style="float: right; margin-top: 1em;">Submit Reservation</button>
         </form>
     </div>
+
     </div>
 {% endblock %}
 {%  block scripts %}
@@ -72,10 +70,10 @@
         const myCalender = new CalendarPicker('#myCalendarWrapper', {
             // If max < min or min > max then the only available day will be today.
             //TODO Change min and max to be passed as template arguments
-            min:  new Date() > new Date(Number({{ openDate.year }}),Number({{ openDate.month }})-1,Number({{ openDate.day }})) ? new Date() : new Date(Number({{ openDate.year }}),Number({{ openDate.month }})-1,Number({{ openDate.day }})),
-            max: new Date("May 14,2021") // NOTE: new Date(nextYear, 10) is "Sun Nov 01 <nextYear>"
-
+            min:  new Date() ,
+            max: new Date(new Date().setDate(new Date().getDate() + 28))  // NOTE: new Date(nextYear, 10) is "Sun Nov 01 <nextYear>
         });
+
         const currentDateElement = document.getElementById('current-date');
         currentDateElement.value = myCalender.value;
 
@@ -92,5 +90,10 @@
             //console.log(`The current value of the calendar is: ${currentValue}`);
             updateDate();
         });
+    </script>
+    <script>
+        $('document').ready(
+            $('#current-datestring').attr('hidden','true')
+        );
     </script>
 {% endblock %}
