@@ -63,11 +63,10 @@ def training_interface():
     locked_list = []
     available_list = []
 
-    machine_query = db.query(Machine).filter_by(machineEnabled=1)
     userVideosWatched = TrainingVideosBridge.getWatchedVideos(session['sid'])
     # For Completed and In-progress
     overall_training = db.query(Training).outerjoin(Machine).filter(Training.trainee_id == session['sid']) \
-        .filter(Training.invalidation_date == None).all()
+        .filter(Training.invalidation_date == None).filter(Machine.machineEnabled == 1).all()
     in_progress_machineIds = []
     completed_machine_ids = []
     # iterate through training objects created for user,
@@ -82,33 +81,26 @@ def training_interface():
     # iterate through training objects created for user, identify trainings that are in-progress
     # when all machine_parents are in completed machine ids list
     for training in overall_training:
-        machine = machine_query.filter_by(id=training.machine_id).one_or_none()
-        if not machine: #handle exisitng trainings for machine objects which may be disabled.
-            break
         # if machine parents in completed_list or no parents but not in completed list
         # show in in_progress trainings
-        # print("training machine = ", machine.id, "parent =", machine.parent_id)
-        if (machine.parent_id is None):
-            if machine.id not in completed_machine_ids:
+        if training.machine.parent_id is None:
+            if training.machine.id not in completed_machine_ids:
                 in_progress_list.append(training)
                 in_progress_machineIds.append(int(training.machine_id))
-                # print("added to in_progress: ", training)
         else:
-            parents = json.loads(machine.parent_id)
+            parents = json.loads(training.machine.parent_id)
             parents = [i for i in parents]
             if not training.completed():
                 if all(x in completed_machine_ids for x in parents) and training.watched_videos:
                     in_progress_list.append(training)
                     in_progress_machineIds.append(int(training.machine_id))
-                # print("added to in_progress: ", training)
 
-    locked_query=machine_query.all()
+    locked_query = db.query(Machine).filter(Machine.machineEnabled == 1).all()
     # For Locked and available
 
     temp_parents = None
 
     for i in locked_query:
-        # print("in locked query: ",i)
         if(i.parent_id is not None):
             temp_parents = json.loads(i.parent_id)
         locked_flag = False
@@ -119,10 +111,8 @@ def training_interface():
                     break
         if locked_flag:
             locked_list.append(i)
-            # print("in locked list:", i)
         elif(i.id not in in_progress_machineIds):
             available_list.append(i)
-            # print("in available list:", i, "p_id=", i.parent_id)
     return render_template('trainings.html',
            completed_machine_ids=completed_machine_ids, completed=completed_list,
            in_progress=in_progress_list, available=available_list, locked=locked_list, watched = userVideosWatched)

@@ -129,7 +129,6 @@
                                                 Start Here
                                             </button>
                                             <div class="dropdown-menu dropdown-menu-right" aria-labelledby="{{ each.quiz.name }}AvailableMachinesDropdown">
-                                                {% set videoList = machine_video_ids[each.id] %}
                                                 {% for videoBridge in each.videos %}
                                                     <a class="dropdown-item" {% if video in watched %}style="background: lightgreen"{% endif %} href="{{ url_for('video.safety', video_id=videoBridge.video_id) }}">Video: {{ videoBridge.video.name }}</a>
                                                 {% endfor %}
