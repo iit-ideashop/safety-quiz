@@ -6,11 +6,7 @@
 
 {% block page %}
     <div class="container-fluid" style="padding: 2em;">
-        <h3>Hello {{session['email'] }}</h3>
-        <div class="alert alert-info">
-            <h3 class="badge badge-secondary">New!</h3> If you are having trouble completing the quizzes or do not remember the correct answer, check out this page on our wiki: <a href="https://wiki.ideashop.iit.edu/index.php?title=Safety_Quizzes">https://wiki.ideashop.iit.edu/index.php?title=Safety_Quizzes</a>
-        </div>
-
+        <h2>Hello {{session['name'] }},</h2>
         {#  If student has trainings available, generate trainings portion of webpage  #}
         {% if in_progress or completed or locked or available %}
             <div class="container-fluid" style="padding-left: 0; padding-right: 0">
@@ -26,6 +22,9 @@
                             </a>
                         </h4>
                         <div id="in_progress_trainings" class="collapse {% if in_progress|length %} show {% endif %}" aria-labelledby="heading-in_progress">
+                            <div class="alert alert-info">
+                                <h3 class="badge badge-secondary">New!</h3> If you are having trouble completing the quizzes or do not remember the correct answer, check out this page on our wiki: <a href="https://wiki.ideashop.iit.edu/index.php?title=Safety_Quizzes">https://wiki.ideashop.iit.edu/index.php?title=Safety_Quizzes</a>
+                            </div>
                             {% for each in in_progress %}
                                 <div class="card card-spaced-2">
                                     <h5 class="card-header">{{ each.machine.name  }}</h5>
@@ -40,8 +39,14 @@
                                                         <li><a class="btn-sm" {% if machineVideo.video.id in videos_watched %}style="background: lightgreen"{% endif %} href="{{ url_for('video.safety', video_id=machineVideo.video.id) }}">Video: {{ machineVideo.video.name }}{% if machineVideo.video.id in videos_watched %}<i class="bi bi-check-lg float-right" style="color: green"></i>{% endif %}</a></li>
                                                     {% endfor %}
                                                     {% if each.machine.in_person_component %}
-                                                        {% if each.videos_watched() %}
-                                                            <li><a class="btn-sm"><i class="bi bi-unlock-fill float-right" style="color: darkgreen"></i>In Person Training:<br>Registration Link</a></li>
+                                                        {% if each.videos_watched() and each.in_person_date %}
+                                                            <li><a class="btn-sm" style="background: lightgreen">In Person Training: Completed {{ each.in_person_date }}<i class="bi bi-check-lg float-right" style="color: green"></i></a></li>
+                                                        {% elif each.videos_watched() %}
+                                                            {% if each.in_person_reservation %}
+                                                                <li><a class="btn-sm">In-Person training scheduled for:<ul>{% for x in each.in_person_reservation %}<li>{{ x.window.start }} lasts ~{{ x.window.window_type.duration|int }} minutes</li>{% endfor %}</ul></a></li>
+                                                            {% else %}
+                                                                <li><a class="btn-sm" href="{{ url_for('reservation.reservations',training_id=each.id) }}">In Person Training: Click here to register.<i class="bi bi-unlock-fill float-right" style="color: darkgreen"></i></a></li>
+                                                            {% endif %}
                                                         {% else %}
                                                             <li><a class="btn-sm"><i class="bi bi-lock-fill float-right" style="color: red"></i>In Person Training:<br><small>You must watch all videos above before you can register for an in person training.</small></a></li>
                                                         {% endif %}
@@ -59,7 +64,7 @@
                                                     {% else %}
                                                         <li><a class="btn-sm" style="pointer-events: none" href="#" tabindex="-1" role="button" aria-disabled="true">
                                                             {% if each.quiz_available_date() %}
-                                                                Quiz: Currently Unavailable until {{ each.quiz_available_date() }}
+                                                                Quiz locked until {{ each.quiz_available_date().date() }}
                                                             {% else %}
                                                                 Quiz: Complete prerequisites to take the quiz.
                                                             {% endif %}
@@ -87,7 +92,7 @@
                                     {% if each.machine.about_link %} {{ each.machine.about_link }}
                                         {% else %} https://wiki.ideashop.iit.edu/index.php?title=Main_Page
                                     {% endif %}"
-                                           target="_blank" role="button">About this training</a>
+                                           target="_blank" role="button">About this training <i class="bi bi-box-arrow-up-right"></i></a>
                                         {% if each.quiz_attempts is not none %}
                                             {% if each.quiz_attempts >=1 %}
                                                 <button type="button" class="btn btn-secondary btn-training-card" data-toggle="modal" data-target="#{{ each.machine.name }}Modal">Show Details</button>
@@ -95,11 +100,10 @@
                                         {% endif %}
                                     </div>
                                 </div>
-                                </div>
                             {% endfor %}
                         {% if not in_progress|length %}
                             <div class="card card-spaced-2">
-                                <h5 class="card-header">Nothing to see here! If you just completed a video/Quiz, please check the Available Machine Topics tab for more content.</h5>
+                                <h5 class="card-header">Nothing to see here! Please check the <strong>Available Training Topics</strong> tab below for more content.</h5>
                             </div>
                         {% endif %}
                     </div>
@@ -109,7 +113,7 @@
                 <div class="card" style="margin-top: 4mm;">
                     <h4 class="card-header">
                         <a class="{% if in_progress|length %}collapsed{% endif %} d-block" data-toggle="collapse" href="#available_trainings" aria-expanded="true" aria-controls="collapse-completed" id="heading-available">
-                            Available Machine Topics
+                            Available Training Topics
                             <i class="fa fa-chevron-down float-right"></i>
                         </a>
                     </h4>
@@ -124,8 +128,7 @@
                                             <button class="btn btn-primary btn-training-card dropdown-toggle" type="button" id="{{ each.quiz.name }}AvailableMachinesDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                                 Start Here
                                             </button>
-                                            <div class="dropdown-menu" aria-labelledby="{{ each.quiz.name }}AvailableMachinesDropdown">
-                                                {% set videoList = machine_video_ids[each.id] %}
+                                            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="{{ each.quiz.name }}AvailableMachinesDropdown">
                                                 {% for videoBridge in each.videos %}
                                                     <a class="dropdown-item" {% if video in watched %}style="background: lightgreen"{% endif %} href="{{ url_for('video.safety', video_id=videoBridge.video_id) }}">Video: {{ videoBridge.video.name }}</a>
                                                 {% endfor %}
@@ -163,9 +166,9 @@
                                                 Training Videos
                                             </button>
                                             <div class="dropdown-menu" aria-labelledby="{{ each.machine.name }}AvailableDropdown">
-                                                {% set videoList = machine_video_ids[each.machine.id] %}
+                                                {% set videoList = each.machine.videos %}
                                                 {% for video in videoList %}
-                                                    <a class="dropdown-item" {% if video in watched %}style="background: lightgreen"{% endif %} href="{{ url_for('video.safety', video_id=video) }}">Training: {{ getVideoNameByID(video) }}</a>
+                                                    <a class="dropdown-item"  href="{{ url_for('video.safety', video_id=video.video_id) }}">Training: {{ video.video.name }}</a>
                                                 {% endfor %}
                                             </div>
                                         </div>
@@ -174,7 +177,7 @@
                                         {{ each.machine.about_link }}
                                     {% else %} https://wiki.ideashop.iit.edu/index.php?title=Main_Page
                                 {% endif %}"
-                                           target="_blank" role="button">About this training</a>
+                                           target="_blank" role="button">About this training <i class="bi bi-box-arrow-up-right"></i></a>
                                         <button type="button" class="btn btn-secondary btn-training-card" data-toggle="modal" data-target="#{{ each.machine.name }}Modal">Show Details</button>
                                     </div>
                                 </div>

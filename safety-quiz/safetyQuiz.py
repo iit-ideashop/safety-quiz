@@ -26,10 +26,10 @@ from public import public
 from userflow import userflow
 from auth import auth
 from api import api
-from reservation import init_reservation_db, reservation_bp
+from reservation import reservation_bp
 
 # app setup
-app = Flask(__name__, static_url_path='/safety/static', static_folder='static')  # create the application instance :)
+app = Flask(__name__, static_url_path='/static', static_folder='static')  # create the application instance :)
 app.config.from_object(__name__)
 app.config.from_pyfile('config.cfg')
 app.config.from_envvar('FLASKR_SETTINGS', silent=True)
@@ -42,7 +42,6 @@ Bootstrap(app)
 FontAwesome(app)
 
 db_session = init_db(app.config['DB'])
-db_reservations = init_reservation_db(app.config['DB_RESERVATION'])
 
 # This variable specifies the name of a file that contains the OAuth 2.0
 # information for this application, including its client_id and client_secret.
@@ -57,13 +56,13 @@ API_VERSION = 'v2'
 
 @app.before_request
 def before_request():
-    g.db_session = init_db(app.config['DB'])
+    g.db_session = db_session
     if 'sid' not in session \
-            and request.endpoint not in ['auth.login', 'auth.login_google', 'auth.authorize', 'auth.oauth2callback',
+            and request.endpoint not in [None, 'auth.login', 'auth.login_google', 'auth.authorize', 'auth.oauth2callback',
                                          'register', 'check_sid', 'logout', 'get_machine_access','public.welcome',
                                          'public.shop_status', 'static', 'public.custom_css', 'public.animation_js',
                                          'public.index', 'public.landing_js', 'api.get_machine_access', 'api.update_energizer',
-                                         'userflow.otsname_interface', 'app.instance_path', None]:
+                                         'userflow.otsname_interface']:
         return redirect(url_for('auth.login'))
 
 
@@ -84,6 +83,7 @@ def error_handler(e):
           'current time ' + str(datetime.datetime.now().strftime('%x %X')) +
           ' as well as a brief description of what you were doing.'), 'danger')
     return redirect(url_for('public.index'))
+
 
 @app.route('/admin/upload', methods=['GET', 'POST'])
 def upload_file():
@@ -129,7 +129,18 @@ def register():
         if college and major:
             user = User(sid=int(request.form['sid']), name=request.form['name'], email=request.form['email'], major_id=major.id, college_id=college.id, status=request.form['status'])
         else:
-            user = User(sid=int(request.form['sid']), name=request.form['name'], email=request.form['email'], status=request.form['status'])
+            user = User(sid=int(request.form['sid']), name=request.form['name'], email=request.form['email'],
+                        status=request.form['status'])
+            if not college:
+                college = College(name=request.form['custom-college'].title())
+                db.add(college)
+                db.flush()
+                user.college_id = college.id
+            if not major:
+                major = Major(name=request.form['custom-major'].title())
+                db.add(major)
+                db.flush()
+                user.major_id = major.id
         db.add(user)
         db.add(UserLocation(sid=user.sid,location_id=2,type_id=2))
         db.add(UserLocation(sid=user.sid,location_id=3,type_id=2))
@@ -259,7 +270,7 @@ def quiz(training_id):
         return redirect(url_for('public.index'))
     else:
         flash("There was an error with your request. Please try again or see Idea Shop staff if the issue persists.", 'danger')
-        return redirect(url_for('public.index'))
+        return redirect(url_for('userflow.training_interface'))
 
 
 @app.route('/edit_quiz/<id>', methods=['GET', 'POST'])
@@ -396,7 +407,8 @@ app.register_blueprint(api)
 # main
 if __name__ == '__main__':
     #os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1' #if insecure dev uncomment
-    app.wsgi_app = DispatcherMiddleware(no_app, {'/safety': app.wsgi_app})
+    if app.config['PATH']:
+        app.wsgi_app = DispatcherMiddleware(no_app, {str(app.config['PATH']): app.wsgi_app})
     app.jinja_env.auto_reload = True
     app.config['TEMPLATES_AUTO_RELOAD'] = True
     app.run(host='0.0.0.0', debug=bool(app.config['DEBUG']), port=app.config['PORT'])

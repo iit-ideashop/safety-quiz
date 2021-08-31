@@ -1,13 +1,20 @@
 {% extends 'layout.html' %}
 {% block page %}
-    <h2>Reservations for today.</h2>
+    <div class="container-fluid" style="margin: 2em;">
     {% if reservations == [] %}
-        <h4>There are currently no reservations.</h4>
+        <h2>There are currently no reservations.</h2>
     {% else %}
-        <ul>
-        {% for each in reservations %}
-            <li><strong>{{ each.start.time() }} :</strong> {{ each.sid }} reservation for {{ each.type.name }} ending at {{ each.end.time() }}</li>
+        <h2>Reservations for the next 7 days.</h2>
+        <div class="container-fluid" style="padding-left: 2em;">
+        {% for window in reservation_windows %}
+            <h3>{{ window.window_type.name }}</h3><small>{{ window.start }} -> {{ window.end }}</small>
+            <ul>
+                {% for reservation in window.reservations %}
+                    <li>{{ reservation.training.trainee.name }} | A{{ reservation.training.trainee.sid }}</li>
+                {% endfor %}
+            </ul>
         {% endfor %}
-        </ul>
+        </div>
     {% endif %}
+    </div>
 {% endblock %}
