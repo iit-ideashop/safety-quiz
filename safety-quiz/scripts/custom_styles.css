@@ -283,8 +283,7 @@ ol ol {
     visibility:visible;
     -webkit-perspective: 0;
     -webkit-backface-visibility: hidden;
-    background: lightskyblue;
-    color: #777777;
+
     text-align: center;
 }
 
@@ -304,12 +303,14 @@ ol ol {
 .card-back {
     grid-column-start: 1;
     grid-row-start: 1;
-    color: black;
-    background: #009ED1;
+    color: white;
+    background: #777777;
     -webkit-perspective: 0;
     -webkit-backface-visibility: hidden;
     -webkit-transform: rotateY(180deg);
     visibility:visible;
-
+    outline-color: #a5dff9;
+    outline-width: 1mm;
+    outline-style: dashed;
 
 }
