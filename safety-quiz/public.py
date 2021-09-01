@@ -20,16 +20,11 @@ def shop_status():
     db = g.db_session()
     user_count = db.query(Location.id, Location.name, Location.staff_ratio).all()
     energizers = db.query(Energizer).all()
-    in_lab = [len(db.query(Access) \
-                  .filter_by(timeOut=None) \
-                  .filter_by(location_id=1)
-                  .all()), len(db.query(Access) \
-                  .filter_by(timeOut=None) \
-                  .filter_by(location_id=2)
-                  .all())]
+    in_lab = [Access.getUserCount(db,2),Access.getUserCount(db,3)]
+    staff = [Access.getStaffCount(db,2), Access.getStaffCount(db,3)]
 
     if request.method =='GET':
-        return render_template('shop_status.html', user_count=user_count, in_lab=in_lab, energizers = energizers)
+        return render_template('shop_status.html', user_count=user_count, in_lab=in_lab, staff=staff, energizers = energizers)
 
 @public.route('/scripts/custom_styles.css')
 def custom_css():
