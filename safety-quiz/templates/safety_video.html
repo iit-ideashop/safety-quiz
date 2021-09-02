@@ -12,16 +12,20 @@
     <div class="container" style="text-align: center;">
         <div class="container covid-instruction">
             <h3>Video Instructions</h3>
-            <p>Pausing the video will stop your progress.
-                Leaving this window will pause your progress.
-                Fast forwarding through the video is not permitted.</p>
-            <small>We do not recommend watching these videos on a mobile device. Doing so prevent you from obtaining credit for watching this video.</small>
+            <div class="row flex-row" style="font-size: 0.9em;">
+            <p>Pausing the video will stop your progress.</ps>
+                &nbsp;
+            <p>Leaving this window will stop your progress.</p>
+                &nbsp;
+            <p>Fast forwarding through the video is not permitted.</p>
+            </div>
+            <small>We do not recommend watching these videos on a mobile device. Doing so may prevent you from obtaining credit for watching this video.</small>
         </div>
         <div class="container">
             <progress id="vid_progress" max="100" value="0">0%</progress>
         </div>
         <button class="btn btn-secondary" style="margin: 1em;" onclick="toggleCaptions()">Captions On/Off</button>
-        <div class="container" style="width:64vw; height:36vw;">
+        <div class="container" style="width:64vw; height:45vw;">
             <div id="player"></div>
         </div>
     </div>
