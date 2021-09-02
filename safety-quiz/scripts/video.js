@@ -1,5 +1,6 @@
 var tag = document.createElement('script');
 var elem = document.querySelector('#video_data')
+var captions = false;
 console.log(elem)
       tag.src = "https://www.youtube.com/iframe_api";
       const progress = document.getElementById("vid_progress");
@@ -10,8 +11,8 @@ console.log(elem)
       var player;
       function onYouTubeIframeAPIReady() {
         player = new YT.Player('player', {
-            width: '75%',
-            height: '500px',
+            width: '100%',
+            height: '100%',
             videoId: vid_id,
             playerVars: {
                 'controls': 0,
@@ -26,6 +27,17 @@ console.log(elem)
             }
         });
       }
+
+      function toggleCaptions() {
+          if (captions){
+              player.loadModule("captions");
+          }
+          else {
+              player.unloadModule("captions");
+          }
+          captions = !captions;
+      }
+
       function progressLoop() {
           setInterval(function() {
               progress.value = Math.round((player.getCurrentTime() / video_duration) * 100)
