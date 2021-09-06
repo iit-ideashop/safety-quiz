@@ -58,7 +58,7 @@ API_VERSION = 'v2'
 def before_request():
     g.db_session = db_session
     if 'sid' not in session \
-            and request.endpoint not in ['auth.login', 'auth.login_google', 'auth.authorize', 'auth.oauth2callback',
+            and request.endpoint not in [None, 'auth.login', 'auth.login_google', 'auth.authorize', 'auth.oauth2callback',
                                          'register', 'check_sid', 'logout', 'get_machine_access','public.welcome',
                                          'public.shop_status', 'static', 'public.custom_css', 'public.animation_js',
                                          'public.index', 'public.landing_js', 'api.get_machine_access', 'api.update_energizer',
@@ -83,6 +83,7 @@ def error_handler(e):
           'current time ' + str(datetime.datetime.now().strftime('%x %X')) +
           ' as well as a brief description of what you were doing.'), 'danger')
     return redirect(url_for('public.index'))
+
 
 @app.route('/admin/upload', methods=['GET', 'POST'])
 def upload_file():
@@ -140,7 +141,6 @@ def register():
                 db.add(major)
                 db.flush()
                 user.major_id = major.id
-        print(user.major)
         db.add(user)
         db.add(UserLocation(sid=user.sid,location_id=2,type_id=2))
         db.add(UserLocation(sid=user.sid,location_id=3,type_id=2))
@@ -407,7 +407,8 @@ app.register_blueprint(api)
 # main
 if __name__ == '__main__':
     #os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1' #if insecure dev uncomment
-    app.wsgi_app = DispatcherMiddleware(no_app, {'/safety': app.wsgi_app})
+    if app.config['PATH']:
+        app.wsgi_app = DispatcherMiddleware(no_app, {str(app.config['PATH']): app.wsgi_app})
     app.jinja_env.auto_reload = True
     app.config['TEMPLATES_AUTO_RELOAD'] = True
     app.run(host='0.0.0.0', debug=bool(app.config['DEBUG']), port=app.config['PORT'])

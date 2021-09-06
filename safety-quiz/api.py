@@ -29,7 +29,6 @@ def get_machine_access():
 
 @api.route('/api/energizer_status', methods=['POST'])
 def update_energizer():
-    print(request.form)
     if not request.form or not all(items in request.form.keys() for items in ['machine_id', 'name', 'timestamp', 'status', 'machine_enabled', 'active_user']):
         return jsonify({'response': 'Invalid request.'})
     machine_id=int(request.form['machine_id'])

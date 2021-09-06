@@ -1,65 +1,65 @@
 {% extends 'layout.html' %}
 {% block page %}
 
-
-<div class="card card-default">
-    <div class="card-header">
-        Login
-    </div>
-    <div class="card-body" {% if legacy == True %} hidden {%  endif %}>
-        <a class="btn btn-lg btn-success" href="{{ url_for( 'auth.login_google') }}">Click here to login with
-            Google.</a>
-        <a href="?legacy=true">Legacy login</a>
-    </div>
-    <div class="card-body" {% if legacy== False %} hidden {% endif %}>
-        <form action="{{ url_for('auth.login') }}" method="post">
-            <div class="form-group">
-                <label for="email">IIT Email</label>
-                <input type="email" id="email" onchange="validateEmail()" name="email" placeholder="Enter IIT email"
-                       required class="form-control"/>
-                <div id="displayError" style="color: #c64949">Please Enter Valid IIT Email</div>
+    <div class="container-fluid" style="padding: 2em; max-width: 30em;">
+        <div class="card card-default">
+            <div class="card-header">
+                <h2>Login</h2>
             </div>
-            <div class="form-group">
-                <label for="pin">A Number -- Do not include the 'A'</label>
-                <div class="input-group mb-2">
-                    <div class="input-group-prepend">
-                    <div class="input-group-text">A</div>
-                </div>
-                    <input type="password" pattern="[0-9]*" inputmode="numeric" id="pin" name="pin" min="20000000"
-                       max="29999999" step="1" required class="form-control"/>
-                </div>
-
-
+            <div class="card-body" style="text-align: center" {% if legacy == True %} hidden {%  endif %}>
+                <a class="btn btn-lg btn-success" href="{{ url_for( 'auth.login_google') }}"><small>Login with your</small><br>Illinois Tech Google Account</a>
+                {% if config['DEV'] == 'True' %}<br><br><a class="btn btn-warning" href="?legacy=true">Legacy login</a>{% endif %}
             </div>
-            <input type="text" value="True" name="legacy" hidden>
-            <input type="submit" disabled value="Login" id="btnSubmit" class="btn btn-primary"/>
-        </form>
+            <div class="card-body" {% if legacy == False %} hidden {% endif %}>
+                <form action="{{ url_for('auth.login') }}" method="post">
+                    <div class="form-group">
+                        <label for="email">IIT Email</label>
+                        <input type="email" id="email" onchange="validateEmail()" name="email" placeholder="Enter IIT email"
+                               required class="form-control"/>
+                        <div id="displayError" style="color: #c64949">Please Enter Valid IIT Email</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="pin">A Number -- Do not include the 'A'</label>
+                        <div class="input-group mb-2">
+                            <div class="input-group-prepend">
+                                <div class="input-group-text">A</div>
+                            </div>
+                            <input type="password" pattern="[0-9]*" inputmode="numeric" id="pin" name="pin" min="20000000"
+                                   max="29999999" step="1" required class="form-control"/>
+                        </div>
+
+
+                    </div>
+                    <input type="text" value="True" name="legacy" hidden>
+                    <input type="submit" disabled value="Login" id="btnSubmit" class="btn btn-primary"/>
+                </form>
+            </div>
+        </div>
     </div>
-</div>
-<script>
-    $(document).ready(function () {
-        $("#displayError").hide()
-    });
-
-    function validateEmail() {
-        var email_input = $('#email').val();
-        // var k = document.getElementById('email')
-        var bt = document.getElementById('btnSubmit');
-        var emailRegex = /^[A-Za-z0-9.%+-]+@[A-Za-z.%+-]+[.]iit[.]edu$/;
-        var secondRegex = /^[A-Za-z0-9.%+-]+@+iit[.]edu$/;
-        if ((emailRegex.test(email_input) === false) && secondRegex.test(email_input) === false) {
-            // alert("Please enter a valid iit email");
-            $("#displayError").show()
-            $('#pin').attr('readonly', 'readonly')
-            bt.disabled = true
-
-        } else {
-            $('#pin').removeAttr('readonly')
-            bt.disabled = false
+    <script>
+        $(document).ready(function () {
             $("#displayError").hide()
+        });
 
+        function validateEmail() {
+            var email_input = $('#email').val();
+            // var k = document.getElementById('email')
+            var bt = document.getElementById('btnSubmit');
+            var emailRegex = /^[A-Za-z0-9.%+-]+@[A-Za-z.%+-]+[.]iit[.]edu$/;
+            var secondRegex = /^[A-Za-z0-9.%+-]+@+iit[.]edu$/;
+            if ((emailRegex.test(email_input) === false) && secondRegex.test(email_input) === false) {
+                // alert("Please enter a valid iit email");
+                $("#displayError").show()
+                $('#pin').attr('readonly', 'readonly')
+                bt.disabled = true
+
+            } else {
+                $('#pin').removeAttr('readonly')
+                bt.disabled = false
+                $("#displayError").hide()
+
+            }
         }
-    }
-</script>
+    </script>
 {% endblock %}
 
