@@ -11,21 +11,25 @@
          data-video-path="{{ youtube_id }}"></div>
     <div class="container" style="text-align: center;">
         <div class="container covid-instruction">
-        <h3>Video Instructions</h3>
-        <p>Pausing the video will stop your progress.
-        Leaving this window will pause your progress.
-            Fast forwarding through the video is not permitted.</p>
+            <h3>Video Instructions</h3>
+            <div class="row flex-row" style="font-size: 0.9em;">
+            <p>Pausing the video will stop your progress.</ps>
+                &nbsp;
+            <p>Leaving this window will stop your progress.</p>
+                &nbsp;
+            <p>Fast forwarding through the video is not permitted.</p>
+            </div>
+            <small>We do not recommend watching these videos on a mobile device. Doing so may prevent you from obtaining credit for watching this video.</small>
         </div>
-    <div class="container">
-        <div id="player" style="padding-bottom: 1rem;"  ></div>
-    </div>
-
-    <div class="container">
-        <progress id="vid_progress" max="100" value="0">0%</progress>
-    </div>
+        <div class="container">
+            <progress id="vid_progress" max="100" value="0">0%</progress>
+        </div>
+        <button class="btn btn-secondary" style="margin: 1em;" onclick="toggleCaptions()">Captions On/Off</button>
+        <div class="container" style="width:64vw; height:45vw;">
+            <div id="player"></div>
+        </div>
     </div>
     <script src="{{url_for('public.video_js')}}"></script>
-
 {% endblock %}
 
 

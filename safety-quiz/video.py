@@ -17,8 +17,7 @@ def safety(video_id):
         video_object=db.query(Video).filter_by(id=video_id).one_or_none()
         if(not video_object):
             return 'bad request', 447
-        video_time_seconds=video_object.length
-        return render_template('safety_video.html', youtube_id=str(video_object.filepath), video_time_seconds=int(video_time_seconds))
+        return render_template('safety_video.html', youtube_id=str(video_object.filepath), video_time_seconds=video_object.length)
     elif request.method == 'POST':
         machines = [each.machine for each in db.query(VideoMachineBridge).filter_by(video_id=video_id).all()]
         new_trainings = []
