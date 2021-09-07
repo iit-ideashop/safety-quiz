@@ -51,7 +51,7 @@
                                                             <li><a class="btn-sm"><i class="bi bi-lock-fill float-right" style="color: red"></i>In Person Training:<br><small>You must watch all videos above before you can register for an in person training.</small></a></li>
                                                         {% endif %}
                                                     {% endif %}
-                                                    {% if quizAvailable(each.machine_id) %}
+                                                    {% if each.quiz_available() %}
                                                         <li><a class="btn-sm" href="{{ url_for('quiz', training_id=each.id)}}" role="button">
                                                             Take the Quiz!
                                                             <i class="bi bi-unlock-fill float-right" style="color: darkgreen"></i>
