@@ -126,11 +126,17 @@ def register():
         db = db_session()
         major = db.query(Major).filter_by(id=int(request.form['major'])).one_or_none()
         college = db.query(College).filter_by(id=int(request.form['college'])).one_or_none()
-        if college and major:
-            user = User(sid=int(request.form['sid']), name=request.form['name'], email=request.form['email'], major_id=major.id, college_id=college.id, status=request.form['status'])
+        user = db.query(User).filter_by(sid=request.form['sid']).one_or_none()
+        if user and not user.email:
+            user.name = request.form['name'].title()
+            user.email = request.form['email']
+            user.status = request.form['status']
         else:
-            user = User(sid=int(request.form['sid']), name=request.form['name'], email=request.form['email'],
-                        status=request.form['status'])
+            user = User(sid=int(request.form['sid']), name=request.form['name'], email=request.form['email'], status=request.form['status'])
+        if college and major:
+            user.major_id = major.id
+            user.college_id = college.id
+        else:
             if not college:
                 college = College(name=request.form['custom-college'].title())
                 db.add(college)
@@ -142,8 +148,11 @@ def register():
                 db.flush()
                 user.major_id = major.id
         db.add(user)
-        db.add(UserLocation(sid=user.sid,location_id=2,type_id=2))
-        db.add(UserLocation(sid=user.sid,location_id=3,type_id=2))
+        existingUserLocations = [x.location_id for x in db.query(UserLocation).filter_by(sid=user.sid).all()]
+        if 2 not in existingUserLocations:
+            db.add(UserLocation(sid=user.sid,location_id=2,type_id=2))
+        if 3 not in existingUserLocations:
+            db.add(UserLocation(sid=user.sid,location_id=3,type_id=2))
         db.commit()
         flash("Registered user %s." % user.name, 'success')
         return redirect(url_for('auth.login_google'))
@@ -157,7 +166,7 @@ def check_sid():
     db = db_session()
     user = db.query(User).filter_by(sid=request.args['sid']).one_or_none()
     if user:
-        return jsonify({'sid': user.sid, 'name':user.name, 'exists': True})
+        return jsonify({'sid': user.sid, 'name':user.name, 'exists': True, 'email': user.email})
     else:
         return jsonify({'sid': None, 'exists': False})
 
