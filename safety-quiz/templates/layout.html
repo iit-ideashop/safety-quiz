@@ -23,7 +23,7 @@
         </button>
         <div class="collapse navbar-collapse" style="font-weight: bold" id="navbarNavAltMarkup" >
             <div class="navbar-nav">
-                <a class="nav-item nav-link" href="{{ url_for('userflow.training_interface') }}" {% if not session['sid'] %} hidden="true" {% endif %}>Safety Training</a>
+                <a class="nav-item nav-link" href="{{ url_for('userflow.training_interface') }}">Safety Training</a>
             {% if session['admin'] %}
                 <a class="nav-item nav-link" href="{{ url_for('reservation.view_reservations') }}" {% if not session['sid'] %} hidden="true" {% endif %}>View Reservations</a>
             {%  endif %}
