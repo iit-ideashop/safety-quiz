@@ -75,10 +75,11 @@
             if (sid && sid !== 'none') {
                 $.getJSON('register/api/checkSID', {sid: sid}, function (data) {
                     if(data) {
+                        console.log(data);
                         if (data['exists'] === false) {
                             sid_warning.setAttribute('hidden', true);
                             sid_warning.textContent = "";
-                            sid_warning.style.color = 'red'
+                            sid_warning.style.color = 'red';
 
                             if (sid && sid !== 'none') {
                                 $.getJSON('otsname', {'user_id': sid}, function (data){
@@ -87,12 +88,12 @@
                                             sid_warning.textContent = ("CWID A" + sid + " belongs to " + data['name']);
                                             sid_warning.style.color = 'green';
                                             sid_warning.removeAttribute('hidden');
-                                            bt.disabled=false
+                                            bt.disabled=false;
                                         }
                                         else if (data['failed']){
                                             sid_warning.textContent = data['failed'];
                                             sid_warning.removeAttribute('hidden');
-                                            bt.disabled=true
+                                            bt.disabled=true;
                                         }
                                     }
                                     else if (id['name'] === null){
@@ -104,12 +105,18 @@
                                 })
                             }
                             bt.disabled=false
-                        } else if (data['exists'] === true) {
+                        } else if (data['exists'] === true && data['email'] === null) {
+                            sid_warning.removeAttribute('hidden');
+                            let label = document.getElementById('sid_warning');
+                            label.textContent = 'User for CWID: A' + data['sid'] + ' already exists, but there is no associated email. If you are ' + data['name'] + ' you may continue with registration.';
+                            $('#name').val(data['name']);
+                            bt.disabled=false;
+                        } else if (data['exists'] === true && data['user.email'] !== null) {
                             sid_warning.removeAttribute('hidden');
                             let label = document.getElementById('sid_warning');
                             label.textContent = 'User for CWID: A' + data['sid'] + ' already exists. Cannot register new Idea Shop user with existing CWID.';
                             $('#name').val(data['name']);
-                            bt.disabled=true
+                            bt.disabled=true;
                         }
                     }
                 });
