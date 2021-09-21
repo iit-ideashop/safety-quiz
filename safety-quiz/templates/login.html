@@ -7,8 +7,11 @@
                 <h2>Login</h2>
             </div>
             <div class="card-body" style="text-align: center" {% if legacy == True %} hidden {%  endif %}>
-                <a class="btn btn-lg btn-success" href="{{ url_for( 'auth.login_google') }}"><small>Login with your</small><br>Illinois Tech Google Account</a>
-                {% if config['DEV'] == 'True' %}<br><br><a class="btn btn-warning" href="?legacy=true">Legacy login</a>{% endif %}
+                <a class="btn btn-lg btn-success" style="margin: 1em;" href="{{ url_for( 'auth.login_google') }}"><small>Login with your</small><br>Illinois Tech Google Account</a>
+                <a class="btn btn-sm btn-outline-danger" style="margin: 1em;" href="{{ url_for( 'auth.login_google', design=True) }}"><img style="max-height:20px" src="https://id.iit.edu/wp-content/themes/id-iit-main/assets/images/xIIT_ID_Logo.png.pagespeed.ic.54e0HZeHmf.png"><br clear="all">
+                    <small>Login Here with your ID Google Account</small>
+                </a>
+                {% if config['DEV'] == 'True' %}<a class="btn btn-warning" style="margin: 1em;" href="?legacy=true">Legacy login</a>{% endif %}
             </div>
             <div class="card-body" {% if legacy == False %} hidden {% endif %}>
                 <form action="{{ url_for('auth.login') }}" method="post">

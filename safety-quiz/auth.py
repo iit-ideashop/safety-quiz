@@ -10,6 +10,7 @@ from checkIn.model import User, UserLocation, Type
 # This variable specifies the name of a file that contains the OAuth 2.0
 # information for this application, including its client_id and client_secret.
 CLIENT_SECRETS_FILE = "client_secret.json"
+CLIENT_SECRETS_FILE_ID = "client_secret_id.json"
 
 # This OAuth 2.0 access scope allows for full read/write access to the
 # authenticated user's account and requires requests to use an SSL connection.
@@ -25,8 +26,12 @@ def oauth2callback(): # AUTH
     # verified in the authorization server response.
     state = session['state']
 
-    flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(
-        CLIENT_SECRETS_FILE, scopes=SCOPES, state=state)
+    if session['design']:
+        flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(
+            CLIENT_SECRETS_FILE_ID, scopes=SCOPES)
+    else:
+        flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(
+            CLIENT_SECRETS_FILE, scopes=SCOPES)
     flow.redirect_uri = url_for('auth.oauth2callback', _external=True, _scheme='https') #if insecure dev change scheme to 'http'
 
     # Use the authorization server's response to fetch the OAuth 2.0 tokens.
@@ -89,6 +94,8 @@ def login(): # AUTH
 @auth.route('/login_google', methods=['GET'])
 def login_google(): # AUTH
     if 'credentials' not in session:
+        if request.args['design']:
+            session['design'] = True
         return redirect('authorize')
 
     # Load credentials from the session.
@@ -145,8 +152,12 @@ def login_google(): # AUTH
 @auth.route('/authorize')
 def authorize(): # AUTH
     # Create flow instance to manage the OAuth 2.0 Authorization Grant Flow steps.
-    flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(
-        CLIENT_SECRETS_FILE, scopes=SCOPES)
+    if session['design']:
+        flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(
+            CLIENT_SECRETS_FILE_ID, scopes=SCOPES)
+    else:
+        flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(
+            CLIENT_SECRETS_FILE, scopes=SCOPES)
 
     # The URI created here must exactly match one of the authorized redirect URIs
     # for the OAuth 2.0 client, which you configured in the API Console. If this
