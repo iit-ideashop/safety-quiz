@@ -94,8 +94,10 @@ def login(): # AUTH
 @auth.route('/login_google', methods=['GET'])
 def login_google(): # AUTH
     if 'credentials' not in session:
-        if request.args['design']:
+        if 'design' in request.args.keys() and request.args['design']:
             session['design'] = True
+        else:
+            session['design'] = False
         return redirect('authorize')
 
     # Load credentials from the session.
