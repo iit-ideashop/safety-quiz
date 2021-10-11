@@ -24,6 +24,12 @@ def get_machine_access():
         return jsonify({'response': 'Invalid request.'})
     sid_list = [item[0] for item in db.query(Training.trainee_id).filter_by(machine_id=machine_id).filter_by(invalidation_date=None)\
         .filter_by(quiz_score=100.0).all()]
+    partial_complete = db.query(Training).filter_by(machine_id=machine_id).filter_by(Training.in_person_date != None). \
+        filter_by(invalidation_date=None).filter(Training.quiz_score == None).all()
+    for each in partial_complete:
+        if not each.quiz_available():
+            sid_list.append(each.trainee_id)
+            print(each.trainee.name)
     access_list = db.query(HawkCard).filter(HawkCard.sid.in_(sid_list)).all()
     return jsonify({'response': 'Request Successful', 'users':[{'sid': card.sid, 'name': card.user.name, 'facility': card.facility, 'card_number': card.card} for card in access_list]})
 
