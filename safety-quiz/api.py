@@ -8,7 +8,7 @@ from flask import request, session, redirect, url_for, render_template, flash, j
 import sqlalchemy as sa
 from flask import current_app
 #import reservation
-from checkIn.model import User, UserLocation, Type, Energizer, Training, Machine, Quiz, Question, Option, MissedQuestion, init_db, Major, College, HawkCard
+from checkIn.model import User, UserLocation, Type, Energizer, Training, Machine, Quiz, Question, Option, MissedQuestion, init_db, Major, College, HawkCard, ReservationInpersontraining
 
 api = Blueprint('api', __name__)
 
@@ -58,3 +58,19 @@ def update_energizer():
         db.add(Energizer(machine_id=machine_id, name=name, status=status,timestamp=timestamp,active_user=active_user, machine_enabled=1))
     db.commit()
     return jsonify({'response': 'Request Successful'})
+
+
+@api.route('/api/delete_in_person_reservation', methods=['POST'])
+def delete_in_person_reservation():
+    if not 'id' in request.form.keys():
+        flash("Invalid request.", 'danger')
+        redirect(url_for('userflow.training_interface'))
+    db = g.db_session()
+    window = db.query(ReservationInpersontraining).filter_by(id=int(request.form['id'])).one_or_none()
+    if not window:
+        flash("Could not find reservation #%s" % request.form['id'], 'warning')
+        redirect(url_for('userflow.training_interface'))
+    else:
+        db.delete(window)
+        db.commit()
+    return redirect(url_for('userflow.training_interface'))

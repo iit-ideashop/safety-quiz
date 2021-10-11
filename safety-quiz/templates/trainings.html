@@ -43,7 +43,21 @@
                                                             <li><a class="btn-sm" style="background: lightgreen">In Person Training: Completed {{ each.in_person_date }}<i class="bi bi-check-lg float-right" style="color: green"></i></a></li>
                                                         {% elif each.videos_watched() %}
                                                             {% if each.in_person_reservation %}
-                                                                <li><a class="btn-sm">In-Person training scheduled for:<ul>{% for x in each.in_person_reservation %}<li>{{ x.window.start }} lasts ~{{ x.window.window_type.duration|int }} minutes</li>{% endfor %}</ul></a></li>
+                                                                <li>
+                                                                    <a class="btn-sm">
+                                                                        In-Person training scheduled for:
+                                                                        <ul>
+                                                                            {% for x in each.in_person_reservation %}
+                                                                                <li style="overflow: auto">
+                                                                                    <form action="{{ url_for('api.delete_in_person_reservation') }}" method="post">
+                                                                                        <button class="btn btn-sm btn-outline-danger float-right" title="Cancel this training."><input value="{{ x.id }}" name="id" hidden><i class="bi bi-trash-fill"></i></button>
+                                                                                    </form>
+                                                                                    {{ x.window.start }} lasts ~{{ x.window.window_type.duration|int }} minutes
+                                                                                </li>
+                                                                            {% endfor %}
+                                                                        </ul>
+                                                                    </a>
+                                                                </li>
                                                             {% else %}
                                                                 <li><a class="btn-sm" href="{{ url_for('reservation.reservations',training_id=each.id) }}">In Person Training: Click here to register.<i class="bi bi-unlock-fill float-right" style="color: darkgreen"></i></a></li>
                                                             {% endif %}
