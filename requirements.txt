@@ -30,7 +30,7 @@ idna==2.10
 isodate==0.6.0
 itsdangerous==2.0.1
 Jinja2==3.0.1
-lxml==4.6.3
+lxml==4.9.1
 MarkupSafe==2.0.1
 msgpack==1.0.2
 multidict==4.7.6
